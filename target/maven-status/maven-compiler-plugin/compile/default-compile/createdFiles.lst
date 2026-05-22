@@ -1,0 +1,11 @@
+modelo/criterios/porNombre.class
+modelo/interfaces/OperacionesCL4.class
+modelo/estructuras/Lista2DLinkedL.class
+modelo/criterios/PorArtista.class
+modelo/interfaces/OperacionesCL2.class
+modelo/criterios/PorAnio.class
+modelo/datos/Cancion.class
+modelo/estructuras/Lista0DLinkedL.class
+modelo/Main.class
+modelo/criterios/CriterioOrdenacion.class
+modelo/estructuras/NodoDoble.class

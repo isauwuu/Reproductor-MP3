@@ -1,5 +1,6 @@
 package modelo.estructuras;
 
+
 import modelo.interfaces.OperacionesCL2;
 
 //Hay que cambiar todos los printfs y ver como implementarlo en la gui(??//

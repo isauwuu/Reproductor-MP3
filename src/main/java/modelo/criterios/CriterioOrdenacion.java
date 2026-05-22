@@ -1,5 +1,6 @@
 package modelo.criterios;
 
+
 import modelo.datos.Cancion;
 
 public interface CriterioOrdenacion {

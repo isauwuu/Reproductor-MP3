@@ -38,9 +38,9 @@ Si no levanta, casi seguro es JavaFX. Verificar que los VM options del run confi
 
 ```
 /src
-  /modelo       → estructuras de datos y lógica
+  /main.java.modelo       → estructuras de datos y lógica
   /vista        → FXML y controladores de UI  
-  /controlador  → conexión entre modelo y vista
+  /controlador  → conexión entre main.java.modelo y vista
 /lib
   mp3agic-0.9.1.jar
 README.md
