@@ -59,7 +59,7 @@
 
                 <configuration>
                     <mainClass>
-                        modelo.Main
+                        reproductor.Main
                     </mainClass>
                 </configuration>
 

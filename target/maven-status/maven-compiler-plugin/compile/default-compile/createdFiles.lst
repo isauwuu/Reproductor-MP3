@@ -6,6 +6,6 @@ modelo/interfaces/OperacionesCL2.class
 modelo/criterios/PorAnio.class
 modelo/datos/Cancion.class
 modelo/estructuras/Lista0DLinkedL.class
-modelo/Main.class
 modelo/criterios/CriterioOrdenacion.class
+reproductor/Main.class
 modelo/estructuras/NodoDoble.class

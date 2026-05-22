@@ -1,18 +1,19 @@
-package modelo;
+package reproductor;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception {
 
-        Label label = new Label("Hola JavaFX");
+        FXMLLoader loader =
+                new FXMLLoader(getClass().getResource("/views/main-view.fxml"));
 
-        Scene scene = new Scene(label, 400, 200);
+        Scene scene = new Scene(loader.load());
 
         stage.setTitle("MP3 Player");
         stage.setScene(scene);
