@@ -1,7 +1,7 @@
-package modelo.estructuras;
+package model.estructuras;
 
 
-import modelo.interfaces.OperacionesCL2;
+import interfaces.OperacionesCL2;
 
 //Hay que cambiar todos los printfs y ver como implementarlo en la gui(??//
 public abstract class Lista0DLinkedL implements OperacionesCL2 {
