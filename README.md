@@ -1,49 +1,192 @@
 # Reproductor MP3 — TPI Algoritmos y Estructuras de Datos
 
-Reproductor de música con temática de **Máquina Expendedora Japonesa** :) . Proyecto integrador para la materia AyED — implementa estructuras de datos propias en lugar de las de Java, como parte de los requisitos de la materia.
+Aplicación de escritorio desarrollada en Java para reproducción de archivos MP3, creada como Trabajo Práctico Integrador de la materia **Algoritmos y Estructuras de Datos**.
+
+El proyecto implementa estructuras de datos propias desde cero, evitando el uso de colecciones provistas por Java como parte de los requisitos académicos.
+
 ---
 
-## => ¿Qué hace?
+## 🎵 Características
 
-Carga archivos MP3, lee sus metadatos (título, artista, portada del álbum) y los reproduce. La lista de canciones está manejada con estructuras propias — nada de `ArrayList`, ni de `LinkedList` de Java. Todo construido desde cero como pide la materia.
+- Reproducción de archivos MP3
+- Lectura de metadatos:
+  - título
+  - artista
+  - año
+  - portada del álbum
+- Interfaz gráfica desarrollada con JavaFX
+- Organización y ordenamiento de canciones mediante estructuras personalizadas
+- Estética visual inspirada en máquinas expendedoras japonesas y estilo Lo-Fi
 
-La interfaz en si tiene estética Lo-Fi, que encaja bastante bien con la temática japonesa que elegimos.
-
-##  => Estructuras implementadas
-
-- **Lista Simple (doblemente enlazada)** — para el manejo general de canciones
-- **Lista Ordenada (doblemente enlazada)** — para mantener el orden por distintos criterios
-
-## Stack
-
-| Tecnología -- Versión |
-
-- Java — JDK 24
-- JavaFX — 21
-- mp3agic — 0.9.1
-  
-## Cómo ejecutarlo
-
-Se necesita el JDK 24 y el SDK de JavaFX 21. Recomendamos IntelliJ — con otro IDE hay que configurar JavaFX a mano.
-
-1. Clonar el repo
-2. En IntelliJ: `File → Project Structure → Libraries` y agregar el SDK de JavaFX 21
-3. Agregar `lib/mp3agic-0.9.1.jar` al Build Path en el mismo lugar
-4. Correr la clase `Main`
-
-Si no levanta, casi seguro es JavaFX. Verificar que los VM options del run configuration tengan:
---module-path /ruta/a/javafx/lib --add-modules javafx.controls,javafx.fxml,javafx.media
-
-## Estructura del proyecto
-
-```
-/src
-  /main.java.modelo       → estructuras de datos y lógica
-  /vista        → FXML y controladores de UI  
-  /controlador  → conexión entre main.java.modelo y vista
-/lib
-  mp3agic-0.9.1.jar
-README.md
-```
 ---
-Hecho para regularizar AyED — 2026.
+
+## Estructuras de datos implementadas
+
+El proyecto evita utilizar estructuras de Java como `ArrayList` o `LinkedList`.
+
+Se implementaron manualmente:
+
+- Lista doblemente enlazada
+- Lista ordenada doblemente enlazada
+- Nodos personalizados
+- Criterios de ordenamiento dinámicos
+
+---
+
+## Tecnologías utilizadas
+
+| Tecnología | Versión |
+|---|---|
+| Java | JDK 21+ |
+| JavaFX | 22 |
+| Maven | 3.9+ |
+| mp3agic | 0.9.1 |
+
+---
+
+## 📁 Estructura del proyecto
+
+```text
+src/
+├── main/
+│   ├── java/
+│   │   ├── modelo/
+│   │   │   ├── criterios/
+│   │   │   ├── datos/
+│   │   │   ├── estructuras/
+│   │   │   └── interfaces/
+│   │   └── reproductor/
+│   │       └── Main.java
+│   │
+│   └── resources/
+│       └── views/
+│           └── main-view.fxml
+│
+└── resources/
+```
+
+---
+
+# Cómo ejecutar el proyecto
+
+## Opción 1 — IntelliJ IDEA (recomendada)
+
+### Requisitos
+
+- JDK 21 o superior
+- IntelliJ IDEA
+- Plugin de JavaFX habilitado
+
+### Pasos
+
+1. Clonar el repositorio
+
+```bash
+git clone <URL_DEL_REPO>
+cd Reproductor-MP3
+```
+
+2. Abrir el proyecto en IntelliJ IDEA
+
+3. Esperar a que Maven descargue las dependencias automáticamente
+
+4. Ejecutar la clase:
+
+```text
+reproductor.Main
+```
+
+o simplemente usar el botón ▶ Run del IDE.
+
+---
+
+## Opción 2 — Desde terminal con Maven
+
+### Requisitos
+
+Instalar:
+
+- Java JDK 21+
+- Maven
+
+Verificar instalación:
+
+```bash
+java -version
+mvn -version
+```
+
+### Ejecutar
+
+```bash
+mvn clean javafx:run
+```
+
+---
+
+# 📦 Dependencias
+
+El proyecto usa Maven, por lo que las dependencias se descargan automáticamente.
+
+Principales librerías:
+
+- JavaFX
+- mp3agic
+
+---
+
+# ⚠️ Problemas comunes
+
+## Error:
+
+```text
+JavaFX runtime components are missing
+```
+
+### Solución
+
+Asegurarse de:
+
+- usar JDK 21+
+- abrir el proyecto como proyecto Maven
+- esperar a que IntelliJ importe las dependencias
+- ejecutar `mvn clean install`
+
+---
+
+## Error:
+
+```text
+Location is not set
+```
+
+### Solución
+
+Verificar que exista el archivo:
+
+```text
+src/main/resources/views/main-view.fxml
+```
+
+y que se cargue correctamente desde `Main.java`.
+
+---
+
+# Objetivo académico
+
+Este proyecto fue desarrollado para practicar:
+
+- estructuras enlazadas
+- programación orientada a objetos
+- manipulación de archivos MP3
+- interfaces gráficas con JavaFX
+- arquitectura MVC
+- manejo de dependencias con Maven
+
+---
+
+# Autores
+
+Proyecto realizado para la materia **Algoritmos y Estructuras de Datos** — 2026.
+
+Desarrollado por estudiantes de la UNSa.
