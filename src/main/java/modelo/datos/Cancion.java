@@ -9,7 +9,7 @@ import java.io.File;
 public class Cancion {
     private String titulo;
     private String artista;
-    private String anio;
+    private int anio;
     private String rutaArchivo;
     private Image portada;
     private boolean valida;
@@ -18,13 +18,13 @@ public class Cancion {
         this.rutaArchivo = rutaArchivo;
         this.titulo = "Desconocido";
         this.artista = "Desconocido";
-        this.anio = "Desconocido";
+        this.anio = -1;
         this.portada = null;
         this.valida = false;
         cargaMetadatos();
     }
 
-    private void asignarMetadatosBasicos(String titulo, String artista, String anio) {
+    private void asignarMetadatosBasicos(String titulo, String artista, int anio) {
 
         //.trim saca los espacios de los costados, sirve para asegurarse q el titulo no este vacio nomas "   " -> ""
         //es mas q nada porq muchos mp3 tienen los campos de los metadatos grabados pero con espacios vacios nomas
@@ -35,7 +35,7 @@ public class Cancion {
         if ((artista != null) && (!artista.trim().isEmpty()))
             this.artista = artista;
 
-        if ((anio != null) && (!anio.trim().isEmpty()))
+        if (anio != -1)
             this.anio = anio;
     }
 
@@ -50,7 +50,7 @@ public class Cancion {
             Mp3File mp3 = new Mp3File(this.rutaArchivo);
             if (mp3.hasId3v2Tag()) {
                 ID3v2 tag = mp3.getId3v2Tag();
-                asignarMetadatosBasicos(tag.getTitle(), tag.getArtist(), tag.getYear());
+                asignarMetadatosBasicos(tag.getTitle(), tag.getArtist(), Integer.parseInt(tag.getYear()));
 
                 byte[] portadaBytes = tag.getAlbumImage();
                 if (portadaBytes != null)
@@ -59,7 +59,7 @@ public class Cancion {
 
             } else if (mp3.hasId3v1Tag()) {
                 ID3v1 tag = mp3.getId3v1Tag();
-                asignarMetadatosBasicos(tag.getTitle(), tag.getArtist(), tag.getYear());
+                asignarMetadatosBasicos(tag.getTitle(), tag.getArtist(), Integer.parseInt(tag.getYear()));
                 // ID3v1 no tiene portada
             }
             this.valida = true;
@@ -78,7 +78,7 @@ public class Cancion {
         return rutaArchivo;
     }
 
-    public String getAnio() {
+    public int getAnio() {
         return anio;
     }
 
@@ -98,7 +98,7 @@ public class Cancion {
         this.artista = artista;
     }
 
-    public void setAnio(String anio) {
+    public void setAnio(int anio) {
         this.anio = anio;
     }
 
