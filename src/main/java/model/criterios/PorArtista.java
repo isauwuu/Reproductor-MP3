@@ -1,7 +1,7 @@
-package modelo.criterios;
+package model.criterios;
 
 
-import modelo.datos.Cancion;
+import model.datos.Cancion;
 
 public class PorArtista implements CriterioOrdenacion{
 

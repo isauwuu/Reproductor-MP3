@@ -1,4 +1,4 @@
-package modelo.interfaces;
+package interfaces;
 
 public interface OperacionesCL2 {
     public int buscar(Object elemento);

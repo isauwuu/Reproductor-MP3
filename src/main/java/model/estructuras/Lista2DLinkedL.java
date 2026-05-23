@@ -1,9 +1,8 @@
-package modelo.estructuras;
+package model.estructuras;
 
 
-import modelo.criterios.CriterioOrdenacion;
-import modelo.datos.Cancion;
-import modelo.interfaces.OperacionesCL4;
+import model.criterios.CriterioOrdenacion;
+import interfaces.OperacionesCL4;
 
 public abstract class Lista2DLinkedL extends Lista0DLinkedL implements OperacionesCL4 {
     private CriterioOrdenacion criterio;

@@ -1,7 +1,7 @@
-package modelo.criterios;
+package model.criterios;
 
 
-import modelo.datos.Cancion;
+import model.datos.Cancion;
 
 public interface CriterioOrdenacion {
     public int comparar(Cancion c1, Cancion c2);

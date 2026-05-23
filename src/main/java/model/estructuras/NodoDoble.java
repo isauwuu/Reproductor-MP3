@@ -1,4 +1,4 @@
-package modelo.estructuras;
+package model.estructuras;
 
 public class NodoDoble {
     private Object nodoInfo;
