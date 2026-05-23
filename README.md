@@ -1,52 +1,39 @@
-# Reproductor MP3 — TPI Algoritmos y Estructuras de Datos
+# [ ♫ ] Reproductor MP3 — TPI Algoritmos y Estructuras de Datos
+ 
+Aplicación de escritorio en Java para reproducir archivos MP3, hecha como Trabajo Práctico Integrador de la materia Algoritmos y Estructuras de Datos. Usa estructuras de datos propias en lugar de las que ya trae Java, por requisito de la materia.
+ 
+---
+ 
+## [ * ] Características
+ 
+Reproduce archivos MP3 y lee sus metadatos (título, artista, año y portada del álbum). La organización y el ordenamiento de canciones se maneja con estructuras personalizadas. La interfaz está desarrollada con JavaFX y tiene estética Lo-Fi inspirada en máquinas expendedoras japonesas.
+ 
+---
+ 
+## [ # ] Estructuras de datos implementadas
+ 
+Sin `ArrayList` ni `LinkedList` de Java — todo construido desde cero: lista doblemente enlazada, lista ordenada doblemente enlazada, nodos personalizados y criterios de ordenamiento dinámicos.
+ 
+---
+ # [ √ ] Objetivo académico
 
-Aplicación de escritorio desarrollada en Java para reproducción de archivos MP3, creada como Trabajo Práctico Integrador de la materia **Algoritmos y Estructuras de Datos**.
-
-El proyecto implementa estructuras de datos propias desde cero, evitando el uso de colecciones provistas por Java como parte de los requisitos académicos.
+Este proyecto fue desarrollado para practicar los conceptos vistos en la materia: estructuras enlazadas, programación orientada a objetos, manipulación de archivos MP3, interfaces gráficas con JavaFX, arquitectura MVC y manejo de dependencias con Maven.
 
 ---
-
-## 🎵 Características
-
-- Reproducción de archivos MP3
-- Lectura de metadatos:
-  - título
-  - artista
-  - año
-  - portada del álbum
-- Interfaz gráfica desarrollada con JavaFX
-- Organización y ordenamiento de canciones mediante estructuras personalizadas
-- Estética visual inspirada en máquinas expendedoras japonesas y estilo Lo-Fi
-
----
-
-## Estructuras de datos implementadas
-
-El proyecto evita utilizar estructuras de Java como `ArrayList` o `LinkedList`.
-
-Se implementaron manualmente:
-
-- Lista doblemente enlazada
-- Lista ordenada doblemente enlazada
-- Nodos personalizados
-- Criterios de ordenamiento dinámicos
-
----
-
-## Tecnologías utilizadas
-
+## [~] Tecnologías utilizadas
+ 
 | Tecnología | Versión |
 |---|---|
 | Java | JDK 21+ |
 | JavaFX | 22 |
 | Maven | 3.9+ |
 | mp3agic | 0.9.1 |
-
+ 
 ---
-
-## 📁 Estructura del proyecto
-
-```text
+ 
+## [/] Estructura del proyecto
+ 
+```
 src/
 ├── main/
 │   ├── java/
@@ -57,136 +44,40 @@ src/
 │   │   │   └── interfaces/
 │   │   └── reproductor/
 │   │       └── Main.java
-│   │
 │   └── resources/
 │       └── views/
 │           └── main-view.fxml
-│
-└── resources/
 ```
-
+ 
 ---
-
-# Cómo ejecutar el proyecto
-
-## Opción 1 — IntelliJ IDEA (recomendada)
-
-### Requisitos
-
-- JDK 21 o superior
-- IntelliJ IDEA
-- Plugin de JavaFX habilitado
-
-### Pasos
-
-1. Clonar el repositorio
-
+ 
+## [>] Cómo ejecutar el proyecto
+ 
+**IntelliJ (recomendado):** clonar el repo, abrirlo en IntelliJ y esperar a que Maven descargue las dependencias. Después correr `reproductor.Main` o usar el botón Run.
+ 
 ```bash
 git clone <URL_DEL_REPO>
 cd Reproductor-MP3
 ```
-
-2. Abrir el proyecto en IntelliJ IDEA
-
-3. Esperar a que Maven descargue las dependencias automáticamente
-
-4. Ejecutar la clase:
-
-```text
-reproductor.Main
-```
-
-o simplemente usar el botón ▶ Run del IDE.
-
----
-
-## Opción 2 — Desde terminal con Maven
-
-### Requisitos
-
-Instalar:
-
-- Java JDK 21+
-- Maven
-
-Verificar instalación:
-
-```bash
-java -version
-mvn -version
-```
-
-### Ejecutar
-
+ 
+**Desde terminal:** requiere JDK 21+ y Maven instalados (`java -version` y `mvn -version` para verificar).
+ 
 ```bash
 mvn clean javafx:run
 ```
-
+ 
+Las dependencias (JavaFX, mp3agic) se descargan automáticamente con Maven.
+ 
 ---
-
-# 📦 Dependencias
-
-El proyecto usa Maven, por lo que las dependencias se descargan automáticamente.
-
-Principales librerías:
-
-- JavaFX
-- mp3agic
-
+ 
+## [!] Problemas comunes
+ 
+**"JavaFX runtime components are missing"** — casi siempre es porque no se abrió como proyecto Maven. Cerrar, volver a abrir eligiendo Maven, esperar que cargue y correr `mvn clean install`.
+ 
+**"Location is not set"** — verificar que exista `src/main/resources/views/main-view.fxml` y que se esté cargando correctamente desde `Main.java`.
+ 
 ---
-
-# ⚠️ Problemas comunes
-
-## Error:
-
-```text
-JavaFX runtime components are missing
-```
-
-### Solución
-
-Asegurarse de:
-
-- usar JDK 21+
-- abrir el proyecto como proyecto Maven
-- esperar a que IntelliJ importe las dependencias
-- ejecutar `mvn clean install`
-
----
-
-## Error:
-
-```text
-Location is not set
-```
-
-### Solución
-
-Verificar que exista el archivo:
-
-```text
-src/main/resources/views/main-view.fxml
-```
-
-y que se cargue correctamente desde `Main.java`.
-
----
-
-# Objetivo académico
-
-Este proyecto fue desarrollado para practicar:
-
-- estructuras enlazadas
-- programación orientada a objetos
-- manipulación de archivos MP3
-- interfaces gráficas con JavaFX
-- arquitectura MVC
-- manejo de dependencias con Maven
-
----
-
-# Autores
-
-Proyecto realizado para la materia **Algoritmos y Estructuras de Datos** — 2026.
+ 
+Proyecto realizado para la materia **Algoritmos y Estructuras de Datos** — UNSa 2026.
 
 Desarrollado por estudiantes de la UNSa.
