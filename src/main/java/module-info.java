@@ -3,7 +3,8 @@ module com.reproductor {
     requires javafx.fxml;
     requires javafx.media;
 
-    opens reproductor to javafx.fxml;
+    requires mp3agic;
 
+    opens reproductor to javafx.fxml;
     exports reproductor;
 }
