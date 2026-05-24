@@ -14,6 +14,12 @@ public class Main extends Application {
                 new FXMLLoader(getClass().getResource("/views/main-view.fxml"));
 
         Scene scene = new Scene(loader.load());
+        scene.getStylesheets().add(Main.class.getResource("/styles/style.css").toExternalForm());
+        scene.getStylesheets().add(Main.class.getResource("/styles/playlist.css").toExternalForm());
+        scene.getStylesheets().add(Main.class.getResource("/styles/player.css").toExternalForm());
+        scene.getStylesheets().add(Main.class.getResource("/styles/controls.css").toExternalForm());
+        scene.getStylesheets().add(Main.class.getResource("/styles/themes/darkTheme.css").toExternalForm());
+        scene.getStylesheets().add(Main.class.getResource("/styles/themes/lightTheme.css").toExternalForm());
 
         stage.setTitle("MP3 Player");
         stage.setScene(scene);

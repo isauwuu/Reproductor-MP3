@@ -1,0 +1,62 @@
+/* Chasis exterior de la máquina */
+#vending-machine {
+    -fx-background-color: -fx-bg-machine;
+    -fx-border-color: #000000;
+    -fx-border-width: 5px;
+    -fx-padding: 15px;
+    /* Gran sombra paralela que despega la máquina del fondo */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 0, 0, 15, 15);
+}
+
+/* Sección Derecha de Controles */
+#control-panel-section {
+    -fx-background-color: -fx-panel-right;
+    -fx-border-color: #000000;
+    -fx-border-width: 3px;
+}
+
+/* Pantalla LCD */
+#lcd-screen {
+    -fx-background-color: -fx-lcd-bg;
+    -fx-border-color: #000000;
+    -fx-border-width: 3px;
+}
+#lcd-screen .label {
+    -fx-font-family: "Courier New";
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-lcd-text;
+    -fx-font-size: 13px;
+}
+#lcd-text-status { -fx-font-size: 15px !important; }
+
+/* Ranura de Monedas */
+#coin-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+#coin-button {
+    -fx-background-color: #fbbf24;
+    -fx-font-size: 18px;
+    -fx-background-radius: 50;
+    -fx-border-color: #000000;
+    -fx-border-width: 2px;
+}
+
+/* Botones Multimedia (Play, Pause, etc) */
+.control-btn {
+    -fx-background-color: -fx-accent-cyan;
+    -fx-text-fill: #000000;
+    -fx-font-size: 18px;
+    -fx-background-radius: 0;
+    -fx-border-color: #000000;
+    -fx-border-width: 2px;
+    -fx-pref-width: 50px;
+    -fx-pref-height: 45px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 0, 0, 2, 2);
+}
+.control-btn:hover { -fx-background-color: #67e8f9; }
+.control-btn:pressed { -fx-translate-y: 2; -fx-effect: none; }
+
+#btn-play { -fx-background-color: #4ade80; } /* Resaltamos el Play en verde chillón */
+#btn-play:hover { -fx-background-color: #22c55e; }
