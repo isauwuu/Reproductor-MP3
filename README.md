@@ -34,19 +34,49 @@ Este proyecto fue desarrollado para practicar los conceptos vistos en la materia
 ## [/] Estructura del proyecto
  
 ```
-src/
-├── main/
-│   ├── java/
-│   │   ├── modelo/
-│   │   │   ├── criterios/
-│   │   │   ├── datos/
-│   │   │   ├── estructuras/
-│   │   │   └── interfaces/
-│   │   └── reproductor/
-│   │       └── Main.java
-│   └── resources/
-│       └── views/
-│           └── main-view.fxml
+❯ tree
+.
+└── main
+    ├── java
+    │   ├── controllers
+    │   │   └── MainController.java
+    │   ├── modelo
+    │   │   ├── criterios
+    │   │   │   ├── CriterioOrdenacion.java
+    │   │   │   ├── PorAnio.java
+    │   │   │   ├── PorArtista.java
+    │   │   │   └── PorNombre.java
+    │   │   ├── datos
+    │   │   │   ├── Cancion.java
+    │   │   │   ├── ListaCancion.java
+    │   │   │   └── ListaCancionOrdenada.java
+    │   │   ├── estructuras
+    │   │   │   ├── Lista0DLinkedL.java
+    │   │   │   ├── Lista1DLinkedL.java
+    │   │   │   ├── Lista2DLinkedL.java
+    │   │   │   └── NodoDoble.java
+    │   │   └── interfaces
+    │   │       ├── OperacionesCL2.java
+    │   │       ├── OperacionesCL3.java
+    │   │       └── OperacionesCL4.java
+    │   ├── module-info.java
+    │   ├── reproductor
+    │   │   └── Main.java
+    │   └── services
+    │       └── OrdenamientoService.java
+    └── resources
+        ├── assets
+        ├── icons
+        ├── styles
+        │   ├── controls.css
+        │   ├── player.css
+        │   ├── playlist.css
+        │   ├── style.css
+        │   └── themes
+        │       ├── darkTheme.css
+        │       └── lightTheme.css
+        └── views
+            └── main-view.fxml
 ```
  
 ---
@@ -56,7 +86,7 @@ src/
 **IntelliJ (recomendado):** clonar el repo, abrirlo en IntelliJ y esperar a que Maven descargue las dependencias. Después correr `reproductor.Main` o usar el botón Run.
  
 ```bash
-git clone <URL_DEL_REPO>
+git clone https://github.com/isauwuu/Reproductor-MP3.git
 cd Reproductor-MP3
 ```
  
