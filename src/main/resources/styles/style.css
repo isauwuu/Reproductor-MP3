@@ -1,0 +1,10 @@
+/* Importamos los sub-estilos respetando tu estructura */
+@import "themes/darkTheme.css";
+@import "controls.css";
+@import "player.css";
+@import "playlist.css";
+
+#root-pane {
+    -fx-background-color: #ffdeeb; /* Fondo de la app rosa pastel muy tierno */
+    -fx-font-family: "Courier New", "Monospace", "Arial";
+}
