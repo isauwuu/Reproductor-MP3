@@ -12,6 +12,7 @@ modelo/estructuras/Lista1DLinkedL.class
 modelo/criterios/PorNombre.class
 modelo/interfaces/OperacionesCL2.class
 services/OrdenamientoService.class
+ui/ThemeManager.class
 modelo/criterios/PorArtista.class
 modelo/datos/Cancion.class
 modelo/interfaces/OperacionesCL3.class

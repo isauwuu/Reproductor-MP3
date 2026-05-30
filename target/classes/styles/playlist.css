@@ -1,47 +1,57 @@
-/* Contenedor lateral derecho */
 .playlist-container {
-    -fx-background-color: #EEDCBE;
-    -fx-border-color: #000000;
-    -fx-border-width: 3px;
+
+    -fx-background-color: -panel;
+
+    -fx-border-color: -borde;
+    -fx-border-width: 4px;
 }
 
 .pixel-text-header {
+
+    -fx-text-fill: -brillante;
+
+    -fx-font-size: 14px;
+
     -fx-font-weight: bold;
-    -fx-font-size: 13px;
-    -fx-text-fill: #000000;
 }
 
-/* Estilización pixel art del TableView */
 .pixel-table {
-    -fx-background-color: #FFF6E5;
-    -fx-border-color: #000000;
-    -fx-border-width: 2px;
-}
 
-/* Cabeceras de la tabla */
-.pixel-table .column-header-background {
-    -fx-background-color: #D9C3A5;
+    -fx-background-color: -panel;
+
+    -fx-border-color: -borde;
+
+    -fx-table-cell-border-color: -borde;
 }
 
 .pixel-table .column-header {
-    -fx-background-color: transparent;
-    -fx-border-color: #000000;
-    -fx-border-width: 0 1px 1px 0;
+
+    -fx-background-color: -acento;
 }
 
 .pixel-table .column-header .label {
-    -fx-text-fill: #000000;
+
+    -fx-text-fill: -fondo;
+
     -fx-font-weight: bold;
-    -fx-font-size: 11px;
 }
 
-/* Filas de la tabla */
 .pixel-table .table-row-cell {
-    -fx-background-color: transparent;
-    -fx-text-background-color: #000000;
+
+    -fx-background-color: -panel;
 }
 
-.pixel-table .table-row-cell:filled:selected {
-    -fx-background-color: #8FA89B;
-    -fx-text-background-color: #FFFFFF;
+.pixel-table .table-row-cell .text {
+
+    -fx-fill: -texto;
+}
+
+.pixel-table .table-row-cell:selected {
+
+    -fx-background-color: -acento;
+}
+
+.pixel-table .table-row-cell:selected .text {
+
+    -fx-fill: -fondo;
 }

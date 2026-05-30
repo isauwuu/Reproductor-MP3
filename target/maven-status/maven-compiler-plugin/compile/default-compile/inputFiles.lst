@@ -3,6 +3,7 @@
 /home/rch/Reproductor-MP3/src/main/java/modelo/datos/ListaCancionOrdenada.java
 /home/rch/Reproductor-MP3/src/main/java/modelo/criterios/PorArtista.java
 /home/rch/Reproductor-MP3/src/main/java/modelo/datos/ListaCancion.java
+/home/rch/Reproductor-MP3/src/main/java/ui/ThemeManager.java
 /home/rch/Reproductor-MP3/src/main/java/modelo/interfaces/OperacionesCL4.java
 /home/rch/Reproductor-MP3/src/main/java/modelo/criterios/PorNombre.java
 /home/rch/Reproductor-MP3/src/main/java/modelo/criterios/CriterioOrdenacion.java
