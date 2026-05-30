@@ -22,13 +22,13 @@
 
             <VBox fx:id="turntableVisual" alignment="CENTER" prefHeight="518.0" prefWidth="618.0" styleClass="turntable-box" VBox.vgrow="ALWAYS">
                 <Pane id="vinyl-placeholder" fx:id="PaneContol" prefHeight="200.0" prefWidth="200.0" />
-   
+
                <HBox alignment="CENTER" spacing="10.0" styleClass="controls-panel">
                    <Button fx:id="btnShuffle" mnemonicParsing="false" onAction="#shuffleButtonEvent" styleClass="pixel-button" text="SHUFFLE" />
                    <Button fx:id="btnPrevious" mnemonicParsing="false" onAction="#previousButtonEvent" styleClass="pixel-button" text="|◀" />
-   
+
                    <Button fx:id="btnPlayPause" mnemonicParsing="false" onAction="#playButtonEvent" styleClass="pixel-button, btn-play-destacado" text="▶" />
-   
+
                    <Button fx:id="btnNext" mnemonicParsing="false" onAction="#nextButtonEvent" styleClass="pixel-button" text="▶|" />
                    <Button fx:id="btnLoop" mnemonicParsing="false" onAction="#loopButtonEvent" styleClass="pixel-button" text="LOOP" />
                </HBox>
