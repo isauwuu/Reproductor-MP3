@@ -1,51 +1,77 @@
-/* Botones de reproducción principales */
 .pixel-button {
+
     -fx-background-color: -acento;
-    -fx-text-fill: -texto;
+
+    -fx-text-fill: -fondo;
+
     -fx-background-radius: 0;
-    -fx-border-color: #000000;
+
+    -fx-border-color: -borde;
     -fx-border-width: 2px;
+
     -fx-font-size: 16px;
+
     -fx-cursor: hand;
 }
 
 .pixel-button:hover {
-    -fx-background-color: #D9C3A5;
+
+    -fx-background-color: -brillante;
+
+    -fx-text-fill: -fondo;
 }
 
 .pixel-button:pressed {
-    -fx-background-color: #BFA88F;
+
+    -fx-background-color: -texto;
+
+    -fx-text-fill: -fondo;
+
     -fx-translate-y: 1px;
 }
 
-/* Botones secundarios chicos */
 .pixel-button-small {
-    -fx-background-color: #EEDCBE;
+
+    -fx-background-color: -acento;
+
+    -fx-text-fill: -fondo;
+
     -fx-background-radius: 0;
-    -fx-border-color: #000000;
+
+    -fx-border-color: -borde;
     -fx-border-width: 2px;
+
     -fx-font-size: 11px;
     -fx-font-weight: bold;
-    -fx-text-fill: #000000;
+
     -fx-cursor: hand;
 }
 
 .pixel-button-small:hover {
-    -fx-background-color: #D9C3A5;
+
+    -fx-background-color: -brillante;
+
+    -fx-text-fill: -fondo;
 }
 
-/* El control deslizante de tiempo (Slider) */
 .pixel-slider .track {
-    -fx-background-color: #4A5850;
+
+    -fx-background-color: -borde;
+
     -fx-background-radius: 0;
+
     -fx-pref-height: 5px;
 }
 
 .pixel-slider .thumb {
-    -fx-background-color: #EEDCBE;
-    -fx-background-radius: 0;
-    -fx-border-color: #000000;
+
+    -fx-background-color: -acento;
+
+    -fx-border-color: -brillante;
     -fx-border-width: 2px;
+
+    -fx-background-radius: 0;
+
     -fx-pref-width: 10px;
     -fx-pref-height: 16px;
 }

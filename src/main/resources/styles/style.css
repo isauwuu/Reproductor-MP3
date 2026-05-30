@@ -1,9 +1,6 @@
-/* Importación modular de las hojas de estilo */
 @import "controls.css";
 @import "player.css";
 @import "playlist.css";
-
-
 
 .root {
     -fondo: #080c10;
@@ -16,7 +13,7 @@
 
 #root-pane {
     -fx-background-color: -fondo;
-    -fx-font-family: "Courier New", monospace;
+    -fx-font-family: "Press Start 2P";
 }
 
 .decoration-pane {

@@ -3,6 +3,7 @@ package reproductor;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -33,6 +34,8 @@ public class Main extends Application {
         scene.getStylesheets().add(
                 Main.class.getResource("/styles/themes/lightTheme.css").toExternalForm()
         );
+
+        Font.loadFont(getClass().getResourceAsStream("/fonts/PressStart2P-Regular.ttf"), 10);
 
         stage.setScene(scene);
         stage.setTitle("Reproductor MP3");
