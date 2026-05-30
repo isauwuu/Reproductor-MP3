@@ -15,43 +15,87 @@
     -fx-font-weight: bold;
 }
 
-.pixel-table {
+/* ==================================
+   LISTVIEW PLAYLIST
+   ================================== */
+
+.pixel-playlist {
 
     -fx-background-color: -panel;
 
     -fx-border-color: -borde;
+    -fx-border-width: 3px;
 
-    -fx-table-cell-border-color: -borde;
+    -fx-padding: 2px;
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
-.pixel-table .column-header {
+/* Fondo interno */
+
+.pixel-playlist .viewport {
+
+    -fx-background-color: -panel;
+}
+
+/* Cada canción */
+
+.pixel-playlist .list-cell {
+
+    -fx-background-color: -panel;
+
+    -fx-text-fill: -texto;
+
+    -fx-font-size: 12px;
+
+    -fx-padding: 8px;
+
+    -fx-border-color: transparent transparent -borde transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Hover */
+
+.pixel-playlist .list-cell:hover {
+
+    -fx-background-color: derive(-acento, -40%);
+}
+
+/* Canción seleccionada */
+
+.pixel-playlist .list-cell:selected {
 
     -fx-background-color: -acento;
-}
-
-.pixel-table .column-header .label {
 
     -fx-text-fill: -fondo;
 
     -fx-font-weight: bold;
 }
 
-.pixel-table .table-row-cell {
+/* Scrollbar */
+
+.pixel-playlist .scroll-bar {
 
     -fx-background-color: -panel;
 }
 
-.pixel-table .table-row-cell .text {
+.pixel-playlist .scroll-bar .track {
 
-    -fx-fill: -texto;
+    -fx-background-color: -panel;
 }
 
-.pixel-table .table-row-cell:selected {
+.pixel-playlist .scroll-bar .thumb {
 
     -fx-background-color: -acento;
+
+    -fx-background-radius: 0;
 }
 
-.pixel-table .table-row-cell:selected .text {
+/* Eliminar esquinas redondeadas */
 
-    -fx-fill: -fondo;
+.pixel-playlist .thumb,
+.pixel-playlist .track {
+
+    -fx-background-radius: 0;
 }

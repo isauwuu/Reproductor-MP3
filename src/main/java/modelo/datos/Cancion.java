@@ -97,6 +97,10 @@ public class Cancion {
         return titulo;
     }
 
+    public String getMediaURI() {
+        return new File(rutaArchivo).toURI().toString();
+    }
+
     public void setTitulo(String titulo) {
         this.titulo = titulo;
     }
