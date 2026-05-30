@@ -1,66 +1,51 @@
-/* Subtítulos de secciones de control */
-.panel-subtitles {
-    -fx-text-fill: #22d3ee;
-    -fx-font-weight: bold;
-    -fx-font-size: 11px;
-}
-
-/* Botones del Teclado Numérico */
-.key-btn {
-    -fx-background-color: -fx-btn-color;
-    -fx-text-fill: #3d2f4d;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-background-radius: 0; /* Totalmente cuadrado estilo píxel */
+/* Botones de reproducción principales */
+.pixel-button {
+    -fx-background-color: -acento;
+    -fx-text-fill: -texto;
+    -fx-background-radius: 0;
     -fx-border-color: #000000;
     -fx-border-width: 2px;
-    -fx-pref-width: 50px;
-    -fx-pref-height: 40px;
-    /* Efecto sombra dura 3D estilo retro */
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 0, 0, 3, 3);
-}
-.key-btn:hover {
-    -fx-background-color: #ffb7ce;
-}
-.key-btn:pressed {
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 0, 0, 0, 0);
-    -fx-translate-x: 3;
-    -fx-translate-y: 3;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
 }
 
-/* Botones Especiales Enter y Clear */
-#clear-btn { -fx-background-color: #f87171; }
-#enter-btn { -fx-background-color: #4ade80; }
+.pixel-button:hover {
+    -fx-background-color: #D9C3A5;
+}
 
-/* Botones de Modo: Shuffle y Loop */
-.mode-btn {
-    -fx-background-color: #634b7c;
-    -fx-text-fill: #ffffff;
-    -fx-border-color: -fx-border-main;
-    -fx-border-width: 2px;
+.pixel-button:pressed {
+    -fx-background-color: #BFA88F;
+    -fx-translate-y: 1px;
+}
+
+/* Botones secundarios chicos */
+.pixel-button-small {
+    -fx-background-color: #EEDCBE;
     -fx-background-radius: 0;
+    -fx-border-color: #000000;
+    -fx-border-width: 2px;
     -fx-font-size: 11px;
     -fx-font-weight: bold;
-    -fx-padding: 6px 12px;
-}
-.mode-btn:hover {
-    -fx-background-color: -fx-border-main;
     -fx-text-fill: #000000;
+    -fx-cursor: hand;
 }
 
-/* Estilización de los Sliders (Volumen y Reproducción) */
-.slider .track {
-    -fx-background-color: #1e122b;
-    -fx-background-radius: 0;
-    -fx-border-color: -fx-border-main;
-    -fx-border-width: 1px;
-    -fx-pref-height: 10px;
+.pixel-button-small:hover {
+    -fx-background-color: #D9C3A5;
 }
-.slider .thumb {
-    -fx-background-color: -fx-accent-cyan;
+
+/* El control deslizante de tiempo (Slider) */
+.pixel-slider .track {
+    -fx-background-color: #4A5850;
+    -fx-background-radius: 0;
+    -fx-pref-height: 5px;
+}
+
+.pixel-slider .thumb {
+    -fx-background-color: #EEDCBE;
     -fx-background-radius: 0;
     -fx-border-color: #000000;
     -fx-border-width: 2px;
-    -fx-pref-width: 14px;
-    -fx-pref-height: 20px;
+    -fx-pref-width: 10px;
+    -fx-pref-height: 16px;
 }

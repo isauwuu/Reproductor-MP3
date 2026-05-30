@@ -1,10 +1,24 @@
-/* Importamos los sub-estilos respetando tu estructura */
-@import "themes/darkTheme.css";
+/* Importación modular de las hojas de estilo */
 @import "controls.css";
 @import "player.css";
 @import "playlist.css";
 
+
+
+.root {
+    -fondo: #080c10;
+    -panel: #101820;
+    -borde: #1a3a4a;
+    -acento: #20a8c0;
+    -texto: #78b8c8;
+    -brillante: #c0e8f0;
+}
+
 #root-pane {
-    -fx-background-color: #ffdeeb; /* Fondo de la app rosa pastel muy tierno */
-    -fx-font-family: "Courier New", "Monospace", "Arial";
+    -fx-background-color: -fondo;
+    -fx-font-family: "Courier New", monospace;
+}
+
+.decoration-pane {
+    -fx-background-color: transparent;
 }

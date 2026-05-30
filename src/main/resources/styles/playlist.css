@@ -1,0 +1,47 @@
+/* Contenedor lateral derecho */
+.playlist-container {
+    -fx-background-color: #EEDCBE;
+    -fx-border-color: #000000;
+    -fx-border-width: 3px;
+}
+
+.pixel-text-header {
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-text-fill: #000000;
+}
+
+/* Estilización pixel art del TableView */
+.pixel-table {
+    -fx-background-color: #FFF6E5;
+    -fx-border-color: #000000;
+    -fx-border-width: 2px;
+}
+
+/* Cabeceras de la tabla */
+.pixel-table .column-header-background {
+    -fx-background-color: #D9C3A5;
+}
+
+.pixel-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: #000000;
+    -fx-border-width: 0 1px 1px 0;
+}
+
+.pixel-table .column-header .label {
+    -fx-text-fill: #000000;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+/* Filas de la tabla */
+.pixel-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-text-background-color: #000000;
+}
+
+.pixel-table .table-row-cell:filled:selected {
+    -fx-background-color: #8FA89B;
+    -fx-text-background-color: #FFFFFF;
+}

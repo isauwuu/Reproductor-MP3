@@ -1,0 +1,38 @@
+/* Estructura externa de madera del tocadiscos */
+.player-container {
+    -fx-background-color: -panel;
+    -fx-border-color: #3A2212;
+    -fx-border-width: 4px;
+    -fx-border-style: solid;
+}
+
+/* Pantalla / Marquesina donde va el texto track */
+.display-panel {
+    -fx-background-color: #8FA89B; /* Fondo vintage del display */
+    -fx-border-color: #4A5850;
+    -fx-border-width: 3px;
+    -fx-padding: 10px;
+}
+
+.pixel-text-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-text-fill: -brillante;
+}
+
+.pixel-text-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: #3E4E4A;
+}
+
+.pixel-text-time {
+    -fx-font-size: 10px;
+    -fx-text-fill: #1C2826;
+}
+
+/* Caja contenedora del vinilo */
+.turntable-box {
+    -fx-background-color: #A3BAB0;
+    -fx-border-color: #4A5850;
+    -fx-border-width: 4px;
+}
