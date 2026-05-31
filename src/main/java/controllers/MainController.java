@@ -1,81 +1,77 @@
 package controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.base.MediaPlayer;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import modelo.datos.Cancion;
 import modelo.datos.ExtractorPaleta;
 import modelo.datos.ListaCancion;
 import modelo.datos.Paleta;
-import modelo.estructuras.NodoDoble;
 import ui.ThemeManager;
-
 import java.io.File;
+import javafx.scene.layout.StackPane;
 
 public class MainController {
+
+    // --- LÓGICA DE NEGOCIO Y ESTRUCTURAS ---
     private Cancion cancionActual;
     private File ultimaCarpeta;
     private ListaCancion listaCancion;
     private int actualPos;
-    private final MediaPlayerFactory factory;
-    private final MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
+    private String tiempoTotalStr = "0:00";
 
-    public MainController(){
-        cancionActual = null;
-        ultimaCarpeta = null;
-        listaCancion = new ListaCancion();
-        actualPos = -1;
-        factory = new MediaPlayerFactory();
-        mediaPlayer = factory.mediaPlayers().newMediaPlayer();
-    }
+    // --- CONTROLADORES HIJOS (Inyectados por JavaFX) ---
+    @FXML
+    private TocadiscosController tocadiscosController;
+    @FXML
+    private ControlesController controlesController;
 
+    // --- NODOS DE LA VISTA PRINCIPAL (Panel Derecho) ---
     @FXML
     private Button btnAddSong;
     @FXML
-    private Button btnLoop;
-    @FXML
-    private Button btnNext;
-    @FXML
-    private Button btnPlayPause;
-    @FXML
-    private Button btnPrevious;
-    @FXML
     private Button btnRemoveSong;
     @FXML
-    private Button btnShuffle;
-    @FXML
-    private Label lblSongArtist;
-    @FXML
-    private Label lblSongTitle;
-    @FXML
-    private Label lblTime;
-    @FXML
-    private Pane leftDecorationPane;
-    @FXML
-    private Slider progressSlider;
-    @FXML
-    private VBox turntableVisual;
-    @FXML
-    private Pane PaneContol;
-    @FXML
     private MenuButton btnMenuOrdenamiento;
+    @FXML
+    private MenuItem btnOrdenarPorAnio;
     @FXML
     private MenuItem btnOrdenarPorArtista;
     @FXML
     private MenuItem btnOrdenarPorNombre;
     @FXML
     private ListView<String> lvListSong;
+    @FXML private StackPane mainStackPane;
+    private WebView bgWebView;
+
+    public MainController() {
+        cancionActual = null;
+        ultimaCarpeta = null;
+        listaCancion = new ListaCancion();
+        actualPos = -1;
+        mediaPlayer = null;
+    }
 
     @FXML
     public void initialize() {
+        if (controlesController != null) {
+            controlesController.setMainController(this);
+        }
+
+        // Crear WebView programáticamente y agregarlo al fondo del StackPane
+        bgWebView = new WebView();
+        bgWebView.setMouseTransparent(true);
+        mainStackPane.getChildren().add(0, bgWebView); // índice 0 = fondo
+
+        cargarFondo("#00c8c8", "#008888", "#003030");
     }
 
     @FXML
@@ -83,10 +79,13 @@ public class MainController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar canción");
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Archivos MP3","*.mp3")
+                new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3")
         );
-        if (ultimaCarpeta != null)
+
+        if (ultimaCarpeta != null) {
             fileChooser.setInitialDirectory(ultimaCarpeta);
+        }
+
         File archivo = fileChooser.showOpenDialog(btnAddSong.getScene().getWindow());
         if (archivo != null) {
             ultimaCarpeta = archivo.getParentFile();
@@ -94,99 +93,196 @@ public class MainController {
         }
     }
 
-    private void creaCancion(File file){
+    private void creaCancion(File file) {
         Cancion cancion = new Cancion(file.getAbsolutePath());
-        listaCancion.insertar(cancion,listaCancion.tam());
+        listaCancion.insertar(cancion, listaCancion.tam());
         lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
-        if(listaCancion.tam()==1)actualPos=0;
+
+        // Si es la primera canción que agregamos, nos posicionamos en ella
+        if (listaCancion.tam() == 1) {
+            actualPos = 0;
+        }
     }
 
     private void reproducir(Cancion cancion) {
+        if (cancion == null) return;
 
-        if(cancion == null)
-            return;
+        // Liberación de recursos del reproductor anterior
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+        }
 
-        mediaPlayer.controls().stop();
+        String uri = new File(cancion.getRutaArchivo()).toURI().toString();
+        Media media = new Media(uri);
+        mediaPlayer = new MediaPlayer(media);
 
-        mediaPlayer.media().play(
-                cancion.getRutaArchivo()
-        );
+        // Listener asíncrono para el progreso de la canción
+        mediaPlayer.currentTimeProperty().addListener((obs, oldVal, newVal) -> {
+            Platform.runLater(() -> {
+                double total = mediaPlayer.getTotalDuration().toSeconds();
+                if (total > 0) {
+                    controlesController.progressSlider.setValue((newVal.toSeconds() / total) * 100);
+                }
+                int segs = (int) newVal.toSeconds();
+                String tiempoActual = String.format("%d:%02d", segs / 60, segs % 60);
+                controlesController.actualizarTiempos(tiempoActual, tiempoTotalStr);
+            });
+        });
+
+        // Callback cuando el audio está cargado en memoria y listo
+        mediaPlayer.setOnReady(() -> {
+            int total = (int) mediaPlayer.getTotalDuration().toSeconds();
+            tiempoTotalStr = String.format("%d:%02d", total / 60, total % 60);
+            Platform.runLater(() ->
+                    controlesController.actualizarTiempos("0:00", tiempoTotalStr)
+            );
+        });
+
+        // Evento de arrastre del slider en la UI
+        controlesController.progressSlider.setOnMouseReleased(e -> {
+            if (mediaPlayer != null) {
+                double total = mediaPlayer.getTotalDuration().toSeconds();
+                mediaPlayer.seek(Duration.seconds(controlesController.progressSlider.getValue() / 100 * total));
+            }
+        });
+
+        // Transición automática a la siguiente pista
+        mediaPlayer.setOnEndOfMedia(() -> {
+            nextButtonEvent(null);
+        });
+
+        // Despliegue de reproducción y animaciones
+        mediaPlayer.play();
+        if (tocadiscosController != null) {
+            tocadiscosController.reproducirAnimacion();
+        }
+        if (controlesController != null) {
+            controlesController.cambiarTextoBotonPlay("▐▐");
+        }
     }
 
-    @FXML
-    void loopButtonEvent(ActionEvent event) {
+    // --- MÉTODOS DE CONTROL DE REPRODUCCIÓN (Llamados por ControlesController) ---
 
-    }
-
-    @FXML
-    void nextButtonEvent(ActionEvent event) {
-        actualizaCancion(actualPos+1);
-    }
-
-    @FXML
-    void playButtonEvent(ActionEvent event) {
-        if(mediaPlayer.status().isPlaying()) {
-
-            mediaPlayer.controls().pause();
-
+    public void playButtonEvent(ActionEvent event) {
+        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            mediaPlayer.pause();
+            tocadiscosController.pausarAnimacion();
+            controlesController.cambiarTextoBotonPlay("▶");
         } else {
-
-            actualizaCancion(actualPos);
-
-            if(cancionActual != null)
-                reproducir(cancionActual);
+            // Caso donde la app inicia y damos play por primera vez
+            if (cancionActual == null && actualPos != -1) {
+                actualizaCancion(actualPos);
+            }
+            // Caso de reanudación
+            else if (cancionActual != null) {
+                if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
+                    mediaPlayer.play();
+                    tocadiscosController.reproducirAnimacion();
+                    controlesController.cambiarTextoBotonPlay("▐▐");
+                } else {
+                    reproducir(cancionActual);
+                }
+            }
         }
     }
 
-    @FXML
-    void previousButtonEvent(ActionEvent event) {
-        actualizaCancion(actualPos-1);
+    public void nextButtonEvent(ActionEvent event) {
+        actualizaCancion(actualPos + 1);
     }
 
-    private void actualizaCancion(int actualPos){
-        if(actualPos<listaCancion.tam()&&actualPos>-1){
-            this.actualPos = actualPos;
-            this.cancionActual = (Cancion) listaCancion.devolver(actualPos);
+    public void previousButtonEvent(ActionEvent event) {
+        actualizaCancion(actualPos - 1);
+    }
+
+    private void actualizaCancion(int pos) {
+        if (pos >= 0 && pos < listaCancion.tam()) {
+            this.actualPos = pos;
+            this.cancionActual = (Cancion) listaCancion.devolver(pos);
             cargarCancion(cancionActual);
+            reproducir(cancionActual);
+        } else if (pos >= listaCancion.tam()) {
+            // Opcional: Detener o reiniciar al llegar al final de la lista
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                tocadiscosController.pausarAnimacion();
+                controlesController.cambiarTextoBotonPlay("▶");
+                controlesController.progressSlider.setValue(0);
+            }
         }
     }
 
-    @FXML
-    void removeSongEvent(ActionEvent event) {
-
-    }
-
-    @FXML
-    void shuffleButtonEvent(ActionEvent event) {
-
-    }
-
-    @FXML
-    void ordenarPorAnioEvent(ActionEvent event) {
-
-    }
-
-    @FXML
-    void ordenarPorArtistaEvent(ActionEvent event) {
-
-    }
-
-    @FXML
-    void ordenarPorNombreEvent(ActionEvent event) {
-
-    }
-
-    private void cargarCancion(Cancion cancion){
+    private void cargarCancion(Cancion cancion) {
         this.cancionActual = cancion;
-        lblSongTitle.setText(cancion.getTitulo());
-        lblSongArtist.setText(cancion.getArtista());
-
+        if (controlesController != null) {
+            controlesController.actualizarTextos(cancion.getTitulo(), cancion.getArtista());
+        }
         actualizarTema(cancion);
     }
 
+    // --- CÓDIGO CORREGIDO ---
+
     private void actualizarTema(Cancion cancion) {
         Image portada = cancion.getPortada();
-        Paleta paleta =ExtractorPaleta.extraerDe(portada);
-        ThemeManager.aplicarPaleta(lblSongTitle.getScene(),paleta);
+
+        // 1. DETERMINISMO: Obtenemos una paleta garantizada.
+        // Si 'portada' es null, ExtractorPaleta.extraerDe() ya está programado
+        // para devolver PALETA_BASE automáticamente.
+        // Si la extracción falla internamente, también devuelve PALETA_BASE.
+        Paleta paletaActiva = ExtractorPaleta.extraerDe(portada);
+
+        // 2. RENDERIZADO GARANTIZADO:
+        // Ahora ejecutamos la actualización gráfica SIEMPRE, usando 'paletaActiva'.
+        // Esto sobrescribe CUALQUIER estado anterior en la UI y el SVG.
+        ThemeManager.aplicarPaleta(lvListSong.getScene(), paletaActiva);
+
+        String acento = ExtractorPaleta.toHex(paletaActiva.getAcento());
+        String dim = ExtractorPaleta.toHex(paletaActiva.getBorde());
+        String glow = ExtractorPaleta.toHex(paletaActiva.getFondo());
+
+        // Al llamar a cargarFondo, los .replace() del SVG inyectan los colores nuevos (o los base)
+        // limpiando el rastro de la canción anterior.
+        cargarFondo(acento, dim, glow);
     }
+
+
+    private void cargarFondo(String acento, String acentoDim, String acentoGlow) {
+        try {
+            String svgOriginal = new String(getClass().getResourceAsStream("/views/FONOOO.svg").readAllBytes());
+
+            // Reemplazar los colores de acento con los de la paleta actual
+            String svgAdaptado = svgOriginal
+                    .replace("#00c8c8", acento)
+                    .replace("#008888", acentoDim)
+                    .replace("#003030", acentoGlow);
+
+            String html = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <style>
+                html, body { margin: 0; padding: 0; width: 100%%; height: 100%%;
+                             overflow: hidden; background: #12151f; }
+                svg { width: 100%%; height: 100%%; display: block; }
+            </style>
+            </head>
+            <body>%s</body>
+            </html>
+        """.formatted(svgAdaptado);
+
+            bgWebView.getEngine().loadContent(html);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // --- MÉTODOS DE LA LISTA ENLAZADA (Espacio para el Backend de la UI derecha) ---
+
+    @FXML void removeSongEvent(ActionEvent event) { }
+    @FXML void shuffleButtonEvent(ActionEvent event) { }
+    @FXML void ordenarPorAnioEvent(ActionEvent event) { }
+    @FXML void ordenarPorArtistaEvent(ActionEvent event) { }
+    @FXML void ordenarPorNombreEvent(ActionEvent event) { }
 }
