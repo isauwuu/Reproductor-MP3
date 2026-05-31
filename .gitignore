@@ -2,4 +2,5 @@
 *.iml
 out/
 bin/
+target/
 .DS_Store
