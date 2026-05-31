@@ -10,8 +10,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane id="root-pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="950.0" stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainController">
-
+<BorderPane id="root-pane"
+            prefHeight="650.0" prefWidth="950.0"
+            stylesheets="@../styles/style.css"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.MainController">
     <center>
         <VBox alignment="CENTER" spacing="15.0" styleClass="player-container"
               BorderPane.alignment="CENTER" VBox.vgrow="ALWAYS" fillWidth="true">

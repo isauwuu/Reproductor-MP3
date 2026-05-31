@@ -53,8 +53,8 @@
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
-            <artifactId>javafx-media</artifactId>
-            <version>${javafx.version}</version>
+            <artifactId>javafx-web</artifactId>
+            <version>23.0.1</version>
         </dependency>
     </dependencies>
 
