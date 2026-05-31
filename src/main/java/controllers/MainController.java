@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import modelo.datos.Cancion;
@@ -14,8 +15,8 @@ import modelo.datos.ExtractorPaleta;
 import modelo.datos.ListaCancion;
 import modelo.datos.Paleta;
 import ui.ThemeManager;
-
 import java.io.File;
+import javafx.scene.layout.StackPane;
 
 public class MainController {
 
@@ -28,17 +29,28 @@ public class MainController {
     private String tiempoTotalStr = "0:00";
 
     // --- CONTROLADORES HIJOS (Inyectados por JavaFX) ---
-    @FXML private TocadiscosController tocadiscosController;
-    @FXML private ControlesController controlesController;
+    @FXML
+    private TocadiscosController tocadiscosController;
+    @FXML
+    private ControlesController controlesController;
 
     // --- NODOS DE LA VISTA PRINCIPAL (Panel Derecho) ---
-    @FXML private Button btnAddSong;
-    @FXML private Button btnRemoveSong;
-    @FXML private MenuButton btnMenuOrdenamiento;
-    @FXML private MenuItem btnOrdenarPorAnio;
-    @FXML private MenuItem btnOrdenarPorArtista;
-    @FXML private MenuItem btnOrdenarPorNombre;
-    @FXML private ListView<String> lvListSong;
+    @FXML
+    private Button btnAddSong;
+    @FXML
+    private Button btnRemoveSong;
+    @FXML
+    private MenuButton btnMenuOrdenamiento;
+    @FXML
+    private MenuItem btnOrdenarPorAnio;
+    @FXML
+    private MenuItem btnOrdenarPorArtista;
+    @FXML
+    private MenuItem btnOrdenarPorNombre;
+    @FXML
+    private ListView<String> lvListSong;
+    @FXML private StackPane mainStackPane;
+    private WebView bgWebView;
 
     public MainController() {
         cancionActual = null;
@@ -50,12 +62,16 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Establecemos el canal de comunicación bidireccional.
-        // Le pasamos la referencia de ESTE controlador al de controles
-        // para que pueda avisarnos cuando el usuario hace clic.
         if (controlesController != null) {
             controlesController.setMainController(this);
         }
+
+        // Crear WebView programáticamente y agregarlo al fondo del StackPane
+        bgWebView = new WebView();
+        bgWebView.setMouseTransparent(true);
+        mainStackPane.getChildren().add(0, bgWebView); // índice 0 = fondo
+
+        cargarFondo("#00c8c8", "#008888", "#003030");
     }
 
     @FXML
@@ -204,15 +220,63 @@ public class MainController {
         actualizarTema(cancion);
     }
 
+    // --- CÓDIGO CORREGIDO ---
+
     private void actualizarTema(Cancion cancion) {
         Image portada = cancion.getPortada();
-        if (portada != null) {
-            Paleta paleta = ExtractorPaleta.extraerDe(portada);
-            // Usamos la escena desde lvListSong ya que lblSongTitle se movió a otro controlador
-            ThemeManager.aplicarPaleta(lvListSong.getScene(), paleta);
 
+        // 1. DETERMINISMO: Obtenemos una paleta garantizada.
+        // Si 'portada' es null, ExtractorPaleta.extraerDe() ya está programado
+        // para devolver PALETA_BASE automáticamente.
+        // Si la extracción falla internamente, también devuelve PALETA_BASE.
+        Paleta paletaActiva = ExtractorPaleta.extraerDe(portada);
+
+        // 2. RENDERIZADO GARANTIZADO:
+        // Ahora ejecutamos la actualización gráfica SIEMPRE, usando 'paletaActiva'.
+        // Esto sobrescribe CUALQUIER estado anterior en la UI y el SVG.
+        ThemeManager.aplicarPaleta(lvListSong.getScene(), paletaActiva);
+
+        String acento = ExtractorPaleta.toHex(paletaActiva.getAcento());
+        String dim = ExtractorPaleta.toHex(paletaActiva.getBorde());
+        String glow = ExtractorPaleta.toHex(paletaActiva.getFondo());
+
+        // Al llamar a cargarFondo, los .replace() del SVG inyectan los colores nuevos (o los base)
+        // limpiando el rastro de la canción anterior.
+        cargarFondo(acento, dim, glow);
+    }
+
+
+    private void cargarFondo(String acento, String acentoDim, String acentoGlow) {
+        try {
+            String svgOriginal = new String(getClass().getResourceAsStream("/views/FONOOO.svg").readAllBytes());
+
+            // Reemplazar los colores de acento con los de la paleta actual
+            String svgAdaptado = svgOriginal
+                    .replace("#00c8c8", acento)
+                    .replace("#008888", acentoDim)
+                    .replace("#003030", acentoGlow);
+
+            String html = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <style>
+                html, body { margin: 0; padding: 0; width: 100%%; height: 100%%;
+                             overflow: hidden; background: #12151f; }
+                svg { width: 100%%; height: 100%%; display: block; }
+            </style>
+            </head>
+            <body>%s</body>
+            </html>
+        """.formatted(svgAdaptado);
+
+            bgWebView.getEngine().loadContent(html);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
 
     // --- MÉTODOS DE LA LISTA ENLAZADA (Espacio para el Backend de la UI derecha) ---
 

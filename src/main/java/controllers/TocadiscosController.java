@@ -14,7 +14,6 @@ public class TocadiscosController {
 
     @FXML private Group brazoMecanico;
     @FXML private Ellipse brilloVinilo;
-    @FXML private Ellipse agujaPunta;
 
     private FadeTransition animacionVinilo;
     private Timeline brazoPlay;
@@ -58,9 +57,5 @@ public class TocadiscosController {
         brazoPlay.stop();
         brazoPause.playFromStart();
     }
-    public void setColorAguja(String hexColor) {
-        // Ejemplo de uso: tocadiscosController.setColorAguja("#FF0000");
-        agujaPunta.setFill(javafx.scene.paint.Color.web(hexColor));
-        agujaPunta.setStroke(javafx.scene.paint.Color.web(hexColor).brighter());
-    }
+
 }

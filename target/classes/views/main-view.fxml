@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.StackPane?>
 <BorderPane id="root-pane"
             prefHeight="650.0" prefWidth="950.0"
             stylesheets="@../styles/style.css"
@@ -23,7 +24,9 @@
                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
             </padding>
 
-            <fx:include fx:id="tocadiscos" source="tocadiscos-view.fxml" VBox.vgrow="ALWAYS"/>
+            <StackPane fx:id="mainStackPane" VBox.vgrow="ALWAYS">
+                <fx:include fx:id="tocadiscos" source="tocadiscos-view.fxml"/>
+            </StackPane>
 
             <fx:include fx:id="controles" source="controles-view.fxml" />
         </VBox>
