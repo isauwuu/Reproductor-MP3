@@ -46,3 +46,18 @@
     -fx-border-color: -borde;
     -fx-border-width: 4px;
 }
+.chasis-tapa-superior {
+    -fx-fill: -panel;
+}
+
+.brazo-cabezal-iso {
+    -fx-fill: -acento;
+}
+
+.vinilo-centro-isometrico {
+    -fx-fill: -acento;
+}
+
+.chasis-isometrico {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0.3, 0, 3);
+}

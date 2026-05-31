@@ -5,7 +5,7 @@ module com.reproductor {
     requires mp3agic;
     requires color.thief;
     requires javafx.swing;
-    requires uk.co.caprica.vlcj;
+
     opens controllers to javafx.fxml;
     opens modelo.datos to javafx.base;
 

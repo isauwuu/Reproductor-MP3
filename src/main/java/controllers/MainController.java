@@ -5,8 +5,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
@@ -20,11 +18,27 @@ import ui.ThemeManager;
 import java.io.File;
 
 public class MainController {
+
+    // --- LÓGICA DE NEGOCIO Y ESTRUCTURAS ---
     private Cancion cancionActual;
     private File ultimaCarpeta;
     private ListaCancion listaCancion;
     private int actualPos;
     private MediaPlayer mediaPlayer;
+    private String tiempoTotalStr = "0:00";
+
+    // --- CONTROLADORES HIJOS (Inyectados por JavaFX) ---
+    @FXML private TocadiscosController tocadiscosController;
+    @FXML private ControlesController controlesController;
+
+    // --- NODOS DE LA VISTA PRINCIPAL (Panel Derecho) ---
+    @FXML private Button btnAddSong;
+    @FXML private Button btnRemoveSong;
+    @FXML private MenuButton btnMenuOrdenamiento;
+    @FXML private MenuItem btnOrdenarPorAnio;
+    @FXML private MenuItem btnOrdenarPorArtista;
+    @FXML private MenuItem btnOrdenarPorNombre;
+    @FXML private ListView<String> lvListSong;
 
     public MainController() {
         cancionActual = null;
@@ -34,27 +48,14 @@ public class MainController {
         mediaPlayer = null;
     }
 
-    @FXML private Button btnAddSong;
-    @FXML private Button btnLoop;
-    @FXML private Button btnNext;
-    @FXML private Button btnPlayPause;
-    @FXML private Button btnPrevious;
-    @FXML private Button btnRemoveSong;
-    @FXML private Button btnShuffle;
-    @FXML private Label lblSongArtist;
-    @FXML private Label lblSongTitle;
-    @FXML private Label lblTime;
-    @FXML private Pane leftDecorationPane;
-    @FXML private Slider progressSlider;
-    @FXML private VBox turntableVisual;
-    @FXML private Pane PaneContol;
-    @FXML private MenuButton btnMenuOrdenamiento;
-    @FXML private MenuItem btnOrdenarPorArtista;
-    @FXML private MenuItem btnOrdenarPorNombre;
-    @FXML private ListView<String> lvListSong;
-
     @FXML
     public void initialize() {
+        // Establecemos el canal de comunicación bidireccional.
+        // Le pasamos la referencia de ESTE controlador al de controles
+        // para que pueda avisarnos cuando el usuario hace clic.
+        if (controlesController != null) {
+            controlesController.setMainController(this);
+        }
     }
 
     @FXML
@@ -64,8 +65,11 @@ public class MainController {
         fileChooser.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3")
         );
-        if (ultimaCarpeta != null)
+
+        if (ultimaCarpeta != null) {
             fileChooser.setInitialDirectory(ultimaCarpeta);
+        }
+
         File archivo = fileChooser.showOpenDialog(btnAddSong.getScene().getWindow());
         if (archivo != null) {
             ultimaCarpeta = archivo.getParentFile();
@@ -77,12 +81,17 @@ public class MainController {
         Cancion cancion = new Cancion(file.getAbsolutePath());
         listaCancion.insertar(cancion, listaCancion.tam());
         lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
-        if (listaCancion.tam() == 1) actualPos = 0;
+
+        // Si es la primera canción que agregamos, nos posicionamos en ella
+        if (listaCancion.tam() == 1) {
+            actualPos = 0;
+        }
     }
 
     private void reproducir(Cancion cancion) {
         if (cancion == null) return;
 
+        // Liberación de recursos del reproductor anterior
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.dispose();
@@ -92,58 +101,81 @@ public class MainController {
         Media media = new Media(uri);
         mediaPlayer = new MediaPlayer(media);
 
+        // Listener asíncrono para el progreso de la canción
         mediaPlayer.currentTimeProperty().addListener((obs, oldVal, newVal) -> {
             Platform.runLater(() -> {
                 double total = mediaPlayer.getTotalDuration().toSeconds();
                 if (total > 0) {
-                    progressSlider.setValue((newVal.toSeconds() / total) * 100);
+                    controlesController.progressSlider.setValue((newVal.toSeconds() / total) * 100);
                 }
                 int segs = (int) newVal.toSeconds();
-                lblTime.setText(String.format("%d:%02d", segs / 60, segs % 60));
+                String tiempoActual = String.format("%d:%02d", segs / 60, segs % 60);
+                controlesController.actualizarTiempos(tiempoActual, tiempoTotalStr);
             });
         });
 
-        progressSlider.setOnMouseReleased(e -> {
+        // Callback cuando el audio está cargado en memoria y listo
+        mediaPlayer.setOnReady(() -> {
+            int total = (int) mediaPlayer.getTotalDuration().toSeconds();
+            tiempoTotalStr = String.format("%d:%02d", total / 60, total % 60);
+            Platform.runLater(() ->
+                    controlesController.actualizarTiempos("0:00", tiempoTotalStr)
+            );
+        });
+
+        // Evento de arrastre del slider en la UI
+        controlesController.progressSlider.setOnMouseReleased(e -> {
             if (mediaPlayer != null) {
                 double total = mediaPlayer.getTotalDuration().toSeconds();
-                mediaPlayer.seek(Duration.seconds(progressSlider.getValue() / 100 * total));
+                mediaPlayer.seek(Duration.seconds(controlesController.progressSlider.getValue() / 100 * total));
             }
         });
-        // Cuando la canción termine, simulamos un clic en el botón "Siguiente"
+
+        // Transición automática a la siguiente pista
         mediaPlayer.setOnEndOfMedia(() -> {
             nextButtonEvent(null);
         });
+
+        // Despliegue de reproducción y animaciones
         mediaPlayer.play();
+        if (tocadiscosController != null) {
+            tocadiscosController.reproducirAnimacion();
+        }
+        if (controlesController != null) {
+            controlesController.cambiarTextoBotonPlay("▐▐");
+        }
     }
 
-    @FXML
-    void loopButtonEvent(ActionEvent event) {
-    }
+    // --- MÉTODOS DE CONTROL DE REPRODUCCIÓN (Llamados por ControlesController) ---
 
-    @FXML
-    void nextButtonEvent(ActionEvent event) {
-        actualizaCancion(actualPos + 1);
-    }
-
-    @FXML
-    void playButtonEvent(ActionEvent event) {
-        // Si el reproductor ya existe
-        if (mediaPlayer != null) {
-            if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-                mediaPlayer.pause(); // Pausamos
-            } else {
-                mediaPlayer.play();  // Reanudamos desde donde se quedó
-            }
+    public void playButtonEvent(ActionEvent event) {
+        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            mediaPlayer.pause();
+            tocadiscosController.pausarAnimacion();
+            controlesController.cambiarTextoBotonPlay("▶");
         } else {
-            // Si el reproductor es null (todavía no le dimos play por primera vez)
-            if (actualPos != -1) {
+            // Caso donde la app inicia y damos play por primera vez
+            if (cancionActual == null && actualPos != -1) {
                 actualizaCancion(actualPos);
+            }
+            // Caso de reanudación
+            else if (cancionActual != null) {
+                if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
+                    mediaPlayer.play();
+                    tocadiscosController.reproducirAnimacion();
+                    controlesController.cambiarTextoBotonPlay("▐▐");
+                } else {
+                    reproducir(cancionActual);
+                }
             }
         }
     }
 
-    @FXML
-    void previousButtonEvent(ActionEvent event) {
+    public void nextButtonEvent(ActionEvent event) {
+        actualizaCancion(actualPos + 1);
+    }
+
+    public void previousButtonEvent(ActionEvent event) {
         actualizaCancion(actualPos - 1);
     }
 
@@ -153,25 +185,40 @@ public class MainController {
             this.cancionActual = (Cancion) listaCancion.devolver(pos);
             cargarCancion(cancionActual);
             reproducir(cancionActual);
+        } else if (pos >= listaCancion.tam()) {
+            // Opcional: Detener o reiniciar al llegar al final de la lista
+            if (mediaPlayer != null) {
+                mediaPlayer.stop();
+                tocadiscosController.pausarAnimacion();
+                controlesController.cambiarTextoBotonPlay("▶");
+                controlesController.progressSlider.setValue(0);
+            }
         }
     }
+
+    private void cargarCancion(Cancion cancion) {
+        this.cancionActual = cancion;
+        if (controlesController != null) {
+            controlesController.actualizarTextos(cancion.getTitulo(), cancion.getArtista());
+        }
+        actualizarTema(cancion);
+    }
+
+    private void actualizarTema(Cancion cancion) {
+        Image portada = cancion.getPortada();
+        if (portada != null) {
+            Paleta paleta = ExtractorPaleta.extraerDe(portada);
+            // Usamos la escena desde lvListSong ya que lblSongTitle se movió a otro controlador
+            ThemeManager.aplicarPaleta(lvListSong.getScene(), paleta);
+
+        }
+    }
+
+    // --- MÉTODOS DE LA LISTA ENLAZADA (Espacio para el Backend de la UI derecha) ---
 
     @FXML void removeSongEvent(ActionEvent event) { }
     @FXML void shuffleButtonEvent(ActionEvent event) { }
     @FXML void ordenarPorAnioEvent(ActionEvent event) { }
     @FXML void ordenarPorArtistaEvent(ActionEvent event) { }
     @FXML void ordenarPorNombreEvent(ActionEvent event) { }
-
-    private void cargarCancion(Cancion cancion) {
-        this.cancionActual = cancion;
-        lblSongTitle.setText(cancion.getTitulo());
-        lblSongArtist.setText(cancion.getArtista());
-        actualizarTema(cancion);
-    }
-
-    private void actualizarTema(Cancion cancion) {
-        Image portada = cancion.getPortada();
-        Paleta paleta = ExtractorPaleta.extraerDe(portada);
-        ThemeManager.aplicarPaleta(lblSongTitle.getScene(), paleta);
-    }
 }
