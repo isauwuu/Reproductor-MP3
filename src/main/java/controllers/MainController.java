@@ -10,12 +10,11 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
-import modelo.datos.Cancion;
-import modelo.datos.ExtractorPaleta;
-import modelo.datos.ListaCancion;
-import modelo.datos.Paleta;
+import modelo.criterios.PorAnio;
+import modelo.criterios.PorArtista;
+import modelo.criterios.PorNombre;
+import modelo.datos.*;
 import ui.ThemeManager;
-
 import java.io.File;
 import javafx.scene.layout.StackPane;
 
@@ -32,7 +31,7 @@ public class MainController {
     // --- CONTROLADORES Y GESTORES DE VISTA ---
     @FXML private TocadiscosController tocadiscosController;
     @FXML private ControlesController controlesController;
-    private SvgController motorSvg; // Nuestro nuevo motor delegado
+    private SvgController motorSvg;
 
     // --- NODOS FXML ---
     @FXML private Button btnAddSong;
@@ -47,23 +46,25 @@ public class MainController {
     public MainController() {
         cancionActual = null;
         ultimaCarpeta = null;
-        listaCancion = new ListaCancion();
         actualPos = -1;
         mediaPlayer = null;
+        listaCancion = new ListaCancion();
     }
+
+    public Cancion getCancionActual() { return cancionActual; }
+    public ListaCancion getListaCancion() { return listaCancion; }
+    public int getActualPos() { return actualPos; }
+    public void setActualPos(int actualPos) { this.actualPos = actualPos; }
 
     @FXML
     public void initialize() {
         if (controlesController != null) {
             controlesController.setMainController(this);
         }
-
-        // 1. Configurar lienzo web
         WebView bgWebView = new WebView();
         bgWebView.setMouseTransparent(true);
         mainStackPane.getChildren().add(0, bgWebView);
 
-        // 2. Inicializar el motor SVG y cargar estado en frío
         motorSvg = new SvgController(bgWebView);
         motorSvg.actualizarFondo(ExtractorPaleta.PALETA_BASE, null);
     }
@@ -72,10 +73,9 @@ public class MainController {
     void abrirArchivosEvent(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar canción");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3"));
-
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3"));
         if (ultimaCarpeta != null) fileChooser.setInitialDirectory(ultimaCarpeta);
-
         File archivo = fileChooser.showOpenDialog(btnAddSong.getScene().getWindow());
         if (archivo != null) {
             ultimaCarpeta = archivo.getParentFile();
@@ -87,20 +87,30 @@ public class MainController {
         Cancion cancion = new Cancion(file.getAbsolutePath());
         listaCancion.insertar(cancion, listaCancion.tam());
         lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
-
+        // Si es la primera canción que agregamos, nos posicionamos en ella
         if (listaCancion.tam() == 1) {
             actualPos = 0;
         }
     }
 
+    private void actualizaListaView(ListaCancionOrdenada l) {
+        if (!listaCancion.estaVacia()) {
+            for (int i = 0; i < listaCancion.tam(); i++)
+                l.insertar(listaCancion.devolver(i));
+            lvListSong.getItems().clear();
+            for (int i = 0; i < l.tam(); i++) {
+                Cancion cancion = (Cancion) l.devolver(i);
+                lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
+            }
+        }
+    }
+
     private void reproducir(Cancion cancion) {
         if (cancion == null) return;
-
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.dispose();
         }
-
         Media media = new Media(new File(cancion.getRutaArchivo()).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
 
@@ -111,8 +121,8 @@ public class MainController {
                     controlesController.progressSlider.setValue((newVal.toSeconds() / total) * 100);
                 }
                 int segs = (int) newVal.toSeconds();
-                String tiempoActual = String.format("%d:%02d", segs / 60, segs % 60);
-                controlesController.actualizarTiempos(tiempoActual, tiempoTotalStr);
+                controlesController.actualizarTiempos(
+                        String.format("%d:%02d", segs / 60, segs % 60), tiempoTotalStr);
             });
         });
 
@@ -125,13 +135,13 @@ public class MainController {
         controlesController.progressSlider.setOnMouseReleased(e -> {
             if (mediaPlayer != null) {
                 double total = mediaPlayer.getTotalDuration().toSeconds();
-                mediaPlayer.seek(Duration.seconds(controlesController.progressSlider.getValue() / 100 * total));
+                mediaPlayer.seek(Duration.seconds(
+                        controlesController.progressSlider.getValue() / 100 * total));
             }
         });
 
         mediaPlayer.setOnEndOfMedia(() -> nextButtonEvent(null));
         mediaPlayer.play();
-
         if (tocadiscosController != null) tocadiscosController.reproducirAnimacion();
         if (controlesController != null) controlesController.cambiarTextoBotonPlay("▐▐");
     }
@@ -156,8 +166,23 @@ public class MainController {
         }
     }
 
-    public void nextButtonEvent(ActionEvent event) { actualizaCancion(actualPos + 1); }
-    public void previousButtonEvent(ActionEvent event) { actualizaCancion(actualPos - 1); }
+    public void nextButtonEvent(ActionEvent event) {
+        if (controlesController.isShuffle()) {
+            actualizaCancion(controlesController.nextShufflePos());
+        } else if (controlesController.isLoop()) {
+            reproducir(cancionActual);
+        } else {
+            actualizaCancion(actualPos + 1);
+        }
+    }
+
+    public void previousButtonEvent(ActionEvent event) {
+        if (controlesController.isShuffle()) {
+            actualizaCancion(controlesController.previousShufflePos());
+        } else {
+            actualizaCancion(actualPos - 1);
+        }
+    }
 
     private void actualizaCancion(int pos) {
         if (pos >= 0 && pos < listaCancion.tam()) {
@@ -187,24 +212,34 @@ public class MainController {
         Image portada = cancion.getPortada();
         Paleta paletaActiva = ExtractorPaleta.extraerDe(portada);
 
-        // 1. Delegar a gestor nativo de UI
         ThemeManager.aplicarPaleta(lvListSong.getScene(), paletaActiva);
 
-        // 2. Delegar a controlador de tocadiscos
         if (tocadiscosController != null) {
-            tocadiscosController.actualizarColoresDinamicos(paletaActiva.getAcento(), paletaActiva.getBrillante());
+            tocadiscosController.actualizarColoresDinamicos(
+                    paletaActiva.getAcento(), paletaActiva.getBrillante());
         }
-
-        // 3. Delegar a motor web/SVG
         if (motorSvg != null) {
             motorSvg.actualizarFondo(paletaActiva, portada);
         }
     }
 
-    // --- METODOS VACIOS ---
+    // --- ORDENAMIENTO ---
+
+    @FXML void ordenarPorAnioEvent(ActionEvent event) {
+        ListaCancionOrdenada l = new ListaCancionOrdenada(new PorAnio());
+        actualizaListaView(l);
+    }
+
+    @FXML void ordenarPorNombreEvent(ActionEvent event) {
+        ListaCancionOrdenada l = new ListaCancionOrdenada(new PorNombre());
+        actualizaListaView(l);
+    }
+
+    @FXML void ordenarPorArtistaEvent(ActionEvent event) {
+        ListaCancionOrdenada l = new ListaCancionOrdenada(new PorArtista());
+        actualizaListaView(l);
+    }
+
     @FXML void removeSongEvent(ActionEvent event) { }
     @FXML void shuffleButtonEvent(ActionEvent event) { }
-    @FXML void ordenarPorAnioEvent(ActionEvent event) { }
-    @FXML void ordenarPorArtistaEvent(ActionEvent event) { }
-    @FXML void ordenarPorNombreEvent(ActionEvent event) { }
 }

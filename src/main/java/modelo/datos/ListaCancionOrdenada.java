@@ -6,9 +6,11 @@ import services.OrdenamientoService;
 
 public class ListaCancionOrdenada extends Lista2DLinkedL {
     OrdenamientoService comparador;
+    CriterioOrdenacion criterio;
     public ListaCancionOrdenada(CriterioOrdenacion criterio){
         comparador = new OrdenamientoService();
         comparador.setCriterio(criterio);
+        this.criterio = criterio;
     }
 
     @Override

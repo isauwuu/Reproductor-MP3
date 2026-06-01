@@ -63,18 +63,4 @@ public abstract class Lista2DLinkedL extends Lista0DLinkedL implements Operacion
     public abstract boolean iguales(Object e1,Object e2);
     public abstract boolean esMenor(Object e1,Object e2);
     public abstract boolean esMayor(Object e1,Object e2);
-
-//    public boolean iguales(Object elemento1, Object elemento2){
-//        return criterio.comparar((Cancion)e1, (Cancion)e2) == 0;
-//    }
-//    public boolean esMenor(Object elemento1, Object elemento2){
-//        return criterio.comparar((Cancion)e1, (Cancion)e2)<0;
-//    }
-//    public  boolean esMayor(Object elemento1, Object elemento2){
-//        return criterio.comparar((Cancion)e1, (Cancion)e2) > 0;
-//    }
-    //Cuando el usuario haga clic en el botón "Ordenar por Artista", el controlador simplemente hace:
-    //miLista.setCriterio(new PorArtista());
-    //Como tu lista ya está cargada, si quisieran re-ordenar una lista existente, tendrían que vaciarla y volver a insertar
-    // todo (es el costo de tener una lista ordenada), o implementar un algoritmo de ordenamiento (sort) in-place.
 }
