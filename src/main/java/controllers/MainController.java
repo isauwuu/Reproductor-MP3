@@ -14,26 +14,24 @@ import modelo.criterios.PorAnio;
 import modelo.criterios.PorArtista;
 import modelo.criterios.PorNombre;
 import modelo.datos.*;
+import modelo.interfaces.ReproductorListener;
+import ui.ShuffleManager;
 import ui.ThemeManager;
 import java.io.File;
 import javafx.scene.layout.StackPane;
 
-public class MainController {
-
-    // --- LÓGICA DE NEGOCIO Y ESTRUCTURAS ---
+public class MainController implements ReproductorListener {
     private Cancion cancionActual;
     private File ultimaCarpeta;
     private ListaCancion listaCancion;
     private int actualPos;
     private MediaPlayer mediaPlayer;
     private String tiempoTotalStr = "0:00";
+    private SvgController motorSvg;
+    private ShuffleManager shuffleManager = new ShuffleManager();
 
-    // --- CONTROLADORES Y GESTORES DE VISTA ---
     @FXML private TocadiscosController tocadiscosController;
     @FXML private ControlesController controlesController;
-    private SvgController motorSvg;
-
-    // --- NODOS FXML ---
     @FXML private Button btnAddSong;
     @FXML private Button btnRemoveSong;
     @FXML private MenuButton btnMenuOrdenamiento;
@@ -59,7 +57,7 @@ public class MainController {
     @FXML
     public void initialize() {
         if (controlesController != null) {
-            controlesController.setMainController(this);
+            controlesController.setListener(this);
         }
         WebView bgWebView = new WebView();
         bgWebView.setMouseTransparent(true);
@@ -73,8 +71,7 @@ public class MainController {
     void abrirArchivosEvent(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar canción");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos MP3","*.mp3"));
         if (ultimaCarpeta != null) fileChooser.setInitialDirectory(ultimaCarpeta);
         File archivo = fileChooser.showOpenDialog(btnAddSong.getScene().getWindow());
         if (archivo != null) {
@@ -87,10 +84,7 @@ public class MainController {
         Cancion cancion = new Cancion(file.getAbsolutePath());
         listaCancion.insertar(cancion, listaCancion.tam());
         lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
-        // Si es la primera canción que agregamos, nos posicionamos en ella
-        if (listaCancion.tam() == 1) {
-            actualPos = 0;
-        }
+        if (listaCancion.tam() == 1) { actualPos = 0; }
     }
 
     private void actualizaListaView(ListaCancionOrdenada l) {
@@ -139,48 +133,10 @@ public class MainController {
             }
         });
 
-        mediaPlayer.setOnEndOfMedia(() -> nextButtonEvent(null));
+        mediaPlayer.setOnEndOfMedia(() -> onNext());
         mediaPlayer.play();
         if (tocadiscosController != null) tocadiscosController.reproducirAnimacion();
         if (controlesController != null) controlesController.cambiarTextoBotonPlay("▐▐");
-    }
-
-    public void playButtonEvent(ActionEvent event) {
-        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-            mediaPlayer.pause();
-            tocadiscosController.pausarAnimacion();
-            controlesController.cambiarTextoBotonPlay("▶");
-        } else {
-            if (cancionActual == null && actualPos != -1) {
-                actualizaCancion(actualPos);
-            } else if (cancionActual != null) {
-                if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
-                    mediaPlayer.play();
-                    tocadiscosController.reproducirAnimacion();
-                    controlesController.cambiarTextoBotonPlay("▐▐");
-                } else {
-                    reproducir(cancionActual);
-                }
-            }
-        }
-    }
-
-    public void nextButtonEvent(ActionEvent event) {
-        if (controlesController.isShuffle()) {
-            actualizaCancion(controlesController.nextShufflePos());
-        } else if (controlesController.isLoop()) {
-            reproducir(cancionActual);
-        } else {
-            actualizaCancion(actualPos + 1);
-        }
-    }
-
-    public void previousButtonEvent(ActionEvent event) {
-        if (controlesController.isShuffle()) {
-            actualizaCancion(controlesController.previousShufflePos());
-        } else {
-            actualizaCancion(actualPos - 1);
-        }
     }
 
     private void actualizaCancion(int pos) {
@@ -202,9 +158,8 @@ public class MainController {
 
     private void cargarCancion(Cancion cancion) {
         this.cancionActual = cancion;
-        if (controlesController != null) {
+        if (controlesController != null)
             controlesController.actualizarTextos(cancion.getTitulo(), cancion.getArtista());
-        }
         actualizarTema(cancion);
     }
 
@@ -222,17 +177,12 @@ public class MainController {
             motorSvg.actualizarFondo(paletaActiva, portada);
         }
     }
-    /**
-     * Reordena el ListView según el orden de colaShuffle.
-     * Si shuffleActivo=true, muestra las canciones en el orden aleatorio generado.
-     * Si shuffleActivo=false, restaura el orden de listaCancion.
-     */
+
     public void reordenarVista(boolean shuffleActivo) {
         Platform.runLater(() -> {
             lvListSong.getItems().clear();
-
             if (shuffleActivo) {
-                ListaIndices cola = controlesController.getColaShuffle();
+                ListaIndices cola = shuffleManager.getCola(); // ya no toca ControlesController
                 for (int i = 0; i < cola.tam(); i++) {
                     int idx = (Integer) cola.devolver(i);
                     Cancion c = (Cancion) listaCancion.devolver(idx);
@@ -246,7 +196,6 @@ public class MainController {
             }
         });
     }
-    // --- ORDENAMIENTO ---
 
     @FXML void ordenarPorAnioEvent(ActionEvent event) {
         ListaCancionOrdenada l = new ListaCancionOrdenada(new PorAnio());
@@ -268,4 +217,57 @@ public class MainController {
 
     @FXML void removeSongEvent(ActionEvent event) { }
 
+    @Override
+    public void onPlay() {
+        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+            mediaPlayer.pause();
+            tocadiscosController.pausarAnimacion();
+            controlesController.cambiarTextoBotonPlay("▶");
+        } else {
+            if (cancionActual == null && actualPos != -1) {
+                actualizaCancion(actualPos);
+            } else if (cancionActual != null) {
+                if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
+                    mediaPlayer.play();
+                    tocadiscosController.reproducirAnimacion();
+                    controlesController.cambiarTextoBotonPlay("▐▐");
+                } else {
+                    reproducir(cancionActual);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onNext() {
+        if (controlesController.isShuffle())
+            actualizaCancion(shuffleManager.siguiente(listaCancion.tam(), actualPos));
+        else if (controlesController.isLoop())
+            reproducir(cancionActual);
+        else
+            actualizaCancion(actualPos + 1);
+    }
+
+    @Override
+    public void onPrevious() {
+        if (controlesController.isShuffle())
+            actualizaCancion(shuffleManager.anterior(actualPos));
+        else
+            actualizaCancion(actualPos - 1);
+    }
+
+    @Override
+    public void onShuffleToggled(boolean activo) {
+        if (activo) {
+            shuffleManager.generarCola(listaCancion.tam(), actualPos);
+        } else {
+            shuffleManager.limpiar();
+        }
+        reordenarVista(activo);
+    }
+
+    @Override
+    public void onLoopToggled(boolean activo) {
+        shuffleManager.limpiar(); // si activa loop, el shuffle se cancela
+    }
 }
