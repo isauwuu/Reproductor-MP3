@@ -99,3 +99,35 @@
 
     -fx-background-radius: 0;
 }
+/* Canción activa en la playlist */
+.list-cell-active {
+    -fx-background-color: -acento;
+    -fx-text-fill: -fondo;
+    -fx-font-family: 'Press Start 2P';
+}
+
+.list-cell-active:hover {
+    -fx-background-color: -brillante;
+}
+.pixel-button-small .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 4px 0 4px;
+}
+
+.pixel-button-small .arrow-button .arrow {
+    -fx-background-color: -fondo;
+}
+
+.pixel-button-small:hover .arrow-button .arrow {
+    -fx-background-color: -fondo;
+}
+
+.pixel-button-small:showing {
+    -fx-background-color: -brillante;
+    -fx-text-fill: -fondo;
+    -fx-border-color: -texto;
+}
+.list-cell:selected {
+    -fx-background-color: -acento;
+    -fx-text-fill: -fondo;
+}

@@ -103,3 +103,20 @@
     -fx-background-color: -brillante;
     -fx-border-color: -texto;
 }
+.pixel-button-active {
+    -fx-background-color: -acento;
+    -fx-text-fill: -fondo;
+    -fx-border-color: -brillante;
+}
+
+.pixel-button-active:hover {
+    -fx-background-color: -brillante;
+    -fx-border-color: -texto;
+}
+.pixel-button-small .label {
+    -fx-text-fill: -fondo;
+}
+
+.pixel-button-small:hover .label {
+    -fx-text-fill: -fondo;
+}

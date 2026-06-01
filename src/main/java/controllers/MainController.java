@@ -135,8 +135,7 @@ public class MainController {
         controlesController.progressSlider.setOnMouseReleased(e -> {
             if (mediaPlayer != null) {
                 double total = mediaPlayer.getTotalDuration().toSeconds();
-                mediaPlayer.seek(Duration.seconds(
-                        controlesController.progressSlider.getValue() / 100 * total));
+                mediaPlayer.seek(Duration.seconds(controlesController.progressSlider.getValue() / 100 * total));
             }
         });
 
@@ -190,6 +189,7 @@ public class MainController {
             this.cancionActual = (Cancion) listaCancion.devolver(pos);
             cargarCancion(cancionActual);
             reproducir(cancionActual);
+            lvListSong.getSelectionModel().select(actualPos);
         } else if (pos >= listaCancion.tam()) {
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
@@ -222,24 +222,50 @@ public class MainController {
             motorSvg.actualizarFondo(paletaActiva, portada);
         }
     }
+    /**
+     * Reordena el ListView según el orden de colaShuffle.
+     * Si shuffleActivo=true, muestra las canciones en el orden aleatorio generado.
+     * Si shuffleActivo=false, restaura el orden de listaCancion.
+     */
+    public void reordenarVista(boolean shuffleActivo) {
+        Platform.runLater(() -> {
+            lvListSong.getItems().clear();
 
+            if (shuffleActivo) {
+                ListaIndices cola = controlesController.getColaShuffle();
+                for (int i = 0; i < cola.tam(); i++) {
+                    int idx = (Integer) cola.devolver(i);
+                    Cancion c = (Cancion) listaCancion.devolver(idx);
+                    lvListSong.getItems().add("♪ " + c.getTitulo() + " - " + c.getArtista());
+                }
+            } else {
+                for (int i = 0; i < listaCancion.tam(); i++) {
+                    Cancion c = (Cancion) listaCancion.devolver(i);
+                    lvListSong.getItems().add("♪ " + c.getTitulo() + " - " + c.getArtista());
+                }
+            }
+        });
+    }
     // --- ORDENAMIENTO ---
 
     @FXML void ordenarPorAnioEvent(ActionEvent event) {
         ListaCancionOrdenada l = new ListaCancionOrdenada(new PorAnio());
         actualizaListaView(l);
+        btnMenuOrdenamiento.setText("año ↑");
     }
 
     @FXML void ordenarPorNombreEvent(ActionEvent event) {
         ListaCancionOrdenada l = new ListaCancionOrdenada(new PorNombre());
         actualizaListaView(l);
+        btnMenuOrdenamiento.setText("nombre ↑");
     }
 
     @FXML void ordenarPorArtistaEvent(ActionEvent event) {
         ListaCancionOrdenada l = new ListaCancionOrdenada(new PorArtista());
         actualizaListaView(l);
+        btnMenuOrdenamiento.setText("artista ↑");
     }
 
     @FXML void removeSongEvent(ActionEvent event) { }
-    @FXML void shuffleButtonEvent(ActionEvent event) { }
+
 }

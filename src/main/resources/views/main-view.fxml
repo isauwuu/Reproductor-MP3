@@ -37,13 +37,13 @@
             <padding>
                 <Insets bottom="20.0" left="15.0" right="20.0" top="20.0" />
             </padding>
-            <Label styleClass="pixel-text-header" text="LISTA DE REPRODUCCIÓN" />
+            <Label styleClass="pixel-text-header" text="LISTA DE CANCIONES" />
             <HBox spacing="8.0">
                 <Button fx:id="btnAddSong" mnemonicParsing="false" onAction="#abrirArchivosEvent" styleClass="pixel-button-small" text="✚" />
                 <Button fx:id="btnRemoveSong" mnemonicParsing="false" onAction="#removeSongEvent" styleClass="pixel-button-small" text="✖" />
                 <MenuButton fx:id="btnMenuOrdenamiento" mnemonicParsing="false" styleClass="pixel-button-small" text="ordenar">
                     <items>
-                        <MenuItem fx:id="btnordenarPorAnio" mnemonicParsing="false" onAction="#ordenarPorAnioEvent" text="ordenar por anio" />
+                        <MenuItem fx:id="btnordenarPorAnio" mnemonicParsing="false" onAction="#ordenarPorAnioEvent" text="ordenar por año" />
                         <MenuItem fx:id="btnOrdenarPorArtista" mnemonicParsing="false" onAction="#ordenarPorArtistaEvent" text="ordenar por artista" />
                         <MenuItem fx:id="btnOrdenarPorNombre" mnemonicParsing="false" onAction="#ordenarPorNombreEvent" text="ordenar por nombre" />
                     </items>

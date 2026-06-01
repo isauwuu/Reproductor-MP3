@@ -63,6 +63,7 @@ public class ControlesController {
             colaShuffle.limpiar();
             posEnCola = -1;
         }
+        mainController.reordenarVista(shuffle);
     }
 
     @FXML void onLoop(ActionEvent event) {
@@ -168,5 +169,8 @@ public class ControlesController {
     public void actualizarTiempos(String actual, String total) {
         lblTimeCurrent.setText(actual);
         lblTimeTotal.setText(total);
+    }
+    public ListaIndices getColaShuffle(){
+        return this.colaShuffle;
     }
 }

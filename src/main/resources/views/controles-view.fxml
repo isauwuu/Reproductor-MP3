@@ -14,7 +14,7 @@
     </HBox>
 
     <VBox alignment="CENTER" styleClass="display-panel">
-        <Label fx:id="lblSongTitle" styleClass="pixel-text-title" text="ESPERANDO CANCIÓN..." />
+        <Label fx:id="lblSongTitle" styleClass="pixel-text-title" text="ESPERANDO CANCION..." />
         <Label fx:id="lblSongArtist" styleClass="pixel-text-subtitle" text="-" />
         <Slider fx:id="progressSlider" styleClass="pixel-slider" />
         <HBox maxWidth="Infinity">
