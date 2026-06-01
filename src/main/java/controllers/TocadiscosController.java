@@ -6,6 +6,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
@@ -14,7 +15,9 @@ public class TocadiscosController {
 
     @FXML private Group brazoMecanico;
     @FXML private Ellipse brilloVinilo;
-
+    @FXML private Ellipse agujaPunta;
+    @FXML private Ellipse viniloCentro;
+    @FXML private Group perillaRotacion;
     private FadeTransition animacionVinilo;
     private Timeline brazoPlay;
     private Timeline brazoPause;
@@ -22,27 +25,23 @@ public class TocadiscosController {
 
     @FXML
     public void initialize() {
-        // 1. Animación del vinilo (Ilusión de giro)
         animacionVinilo = new FadeTransition(Duration.millis(800), brilloVinilo);
         animacionVinilo.setFromValue(0.1);
         animacionVinilo.setToValue(0.7);
         animacionVinilo.setCycleCount(FadeTransition.INDEFINITE);
         animacionVinilo.setAutoReverse(true);
 
-        // 2. EL SECRETO DE LA ROTACIÓN PERFECTA:
-        // Clavamos el eje en el 0,0 relativo al Group.
-        // Empezamos en -35 grados (que es la posición de descanso, en la cuna)
-        rotacionBrazo = new Rotate(-35, 0, 0);
+        // Ángulo de reposo (-28 grados) encaja exacto en la nueva cuna dibujada
+        rotacionBrazo = new Rotate(-28, 0, 0);
         brazoMecanico.getTransforms().add(rotacionBrazo);
 
-        // 3. Play: Gira de la cuna (-35) hacia el disco (0 grados)
+        // Ángulo de reproducción (-14 grados) cae sobre el vinilo negro, fuera de la etiqueta
         brazoPlay = new Timeline(
-                new KeyFrame(Duration.seconds(0.8), new KeyValue(rotacionBrazo.angleProperty(), 0))
+                new KeyFrame(Duration.seconds(0.8), new KeyValue(rotacionBrazo.angleProperty(), -14))
         );
 
-        // 4. Pause: Gira del disco (0) de vuelta a su cuna (-35 grados)
         brazoPause = new Timeline(
-                new KeyFrame(Duration.seconds(0.8), new KeyValue(rotacionBrazo.angleProperty(), -35))
+                new KeyFrame(Duration.seconds(0.8), new KeyValue(rotacionBrazo.angleProperty(), -28))
         );
     }
 
@@ -56,6 +55,16 @@ public class TocadiscosController {
         animacionVinilo.pause();
         brazoPlay.stop();
         brazoPause.playFromStart();
+    }
+
+    public void actualizarColoresDinamicos(Color acento, Color brillante) {
+        if (agujaPunta != null) {
+            agujaPunta.setFill(brillante);
+            agujaPunta.setStroke(brillante.brighter());
+        }
+        if (viniloCentro != null) {
+            viniloCentro.setFill(acento);
+        }
     }
 
 }

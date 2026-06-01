@@ -4,95 +4,135 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.Group?>
 
+
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-           fx:controller="controllers.TocadiscosController" styleClass="chasis-isometrico"
-            translateY="145.0"
-            translateX="20.0">
+           fx:controller="controllers.TocadiscosController"
+           styleClass="chasis-isometrico"
+           translateX="50.0"
+           translateY="147.0">
+
     <Group scaleX="0.42" scaleY="0.42">
-        <Pane prefWidth="660.0" prefHeight="400.0">
+        <Pane prefWidth="760.0" prefHeight="400.0">
 
-            <Polygon points="30,358, 628,358, 628,385, 30,385" fill="#1b1d22" stroke="#101216" strokeWidth="2"/>
-            <Polygon points="24,328, 634,328, 634,358, 24,358" fill="#25282e" stroke="#101216" strokeWidth="2"/>
-            <Polygon points="24,328, 634,328, 558,95, 100,95" styleClass="chasis-tapa-superior" stroke="#101216" strokeWidth="2"/>
+            <!-- ── Chasis (borde derecho ampliado +80px) ── -->
+            <Polygon points="30,358, 708,358, 708,385, 30,385"
+                     fill="#1b1d22" stroke="#101216" strokeWidth="2"/>
+            <Polygon points="24,328, 714,328, 714,358, 24,358"
+                     fill="#25282e" stroke="#101216" strokeWidth="2"/>
+            <Polygon points="24,328, 714,328, 638,95, 100,95"
+                     styleClass="chasis-tapa-superior" stroke="#101216" strokeWidth="2"/>
 
+            <!-- Patas (derechas desplazadas +80px) -->
             <Ellipse centerX="115" centerY="382" radiusX="22" radiusY="8" fill="#1b1d22"/>
-            <Ellipse centerX="543" centerY="382" radiusX="22" radiusY="8" fill="#1b1d22"/>
+            <Ellipse centerX="623" centerY="382" radiusX="22" radiusY="8" fill="#1b1d22"/>
             <Ellipse centerX="68"  centerY="374" radiusX="14" radiusY="5" fill="#1b1d22"/>
-            <Ellipse centerX="590" centerY="374" radiusX="14" radiusY="5" fill="#1b1d22"/>
+            <Ellipse centerX="670" centerY="374" radiusX="14" radiusY="5" fill="#1b1d22"/>
 
-            <Ellipse centerX="300" centerY="222" radiusX="205" radiusY="100" fill="#9ca3af" stroke="#4b5563" strokeWidth="1.5"/>
-            <Ellipse centerX="300" centerY="215" radiusX="205" radiusY="100" fill="#d1d5db"/>
+            <!-- ── Plato base del disco ── -->
+            <Ellipse centerX="320" centerY="222" radiusX="185" radiusY="90"
+                     fill="#9ca3af" stroke="#4b5563" strokeWidth="1.5"/>
+            <Ellipse centerX="320" centerY="215" radiusX="185" radiusY="90"
+                     fill="#d1d5db"/>
 
-            <Group fx:id="viniloContenedor" layoutX="300" layoutY="215">
-                <Ellipse centerX="0" centerY="0" radiusX="190" radiusY="92" fill="#111113" stroke="#000" strokeWidth="1.5"/>
-                <Ellipse centerX="0" centerY="0" radiusX="168" radiusY="81" fill="transparent" stroke="#252830" strokeWidth="2"/>
-                <Ellipse centerX="0" centerY="0" radiusX="144" radiusY="70" fill="transparent" stroke="#252830" strokeWidth="1.5"/>
-                <Ellipse centerX="0" centerY="0" radiusX="118" radiusY="57" fill="transparent" stroke="#252830" strokeWidth="1.5"/>
-                <Ellipse centerX="0" centerY="0" radiusX="92"  radiusY="45" fill="transparent" stroke="#252830" strokeWidth="1"/>
-                <Ellipse centerX="0" centerY="0" radiusX="68"  radiusY="33" fill="transparent" stroke="#252830" strokeWidth="1"/>
-                <Ellipse fx:id="viniloCentro" centerX="0" centerY="0" radiusX="50" radiusY="24" styleClass="vinilo-centro-isometrico"/>
-                <Ellipse fx:id="brilloVinilo" centerX="0" centerY="0" radiusX="44" radiusY="21" fill="transparent" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5"/>
+            <!-- ── Vinilo (reducido: radiusX 190→170, surcos x0.895) ── -->
+            <Group fx:id="viniloContenedor" layoutX="320" layoutY="215">
+                <Ellipse centerX="0" centerY="0" radiusX="170" radiusY="83"
+                         fill="#111113" stroke="#000" strokeWidth="1.5"/>
+                <Ellipse centerX="0" centerY="0" radiusX="150" radiusY="72"
+                         fill="transparent" stroke="#252830" strokeWidth="2"/>
+                <Ellipse centerX="0" centerY="0" radiusX="129" radiusY="62"
+                         fill="transparent" stroke="#252830" strokeWidth="1.5"/>
+                <Ellipse centerX="0" centerY="0" radiusX="106" radiusY="51"
+                         fill="transparent" stroke="#252830" strokeWidth="1.5"/>
+                <Ellipse centerX="0" centerY="0" radiusX="82"  radiusY="40"
+                         fill="transparent" stroke="#252830" strokeWidth="1"/>
+                <Ellipse centerX="0" centerY="0" radiusX="61"  radiusY="29"
+                         fill="transparent" stroke="#252830" strokeWidth="1"/>
+
+                <Ellipse fx:id="viniloCentro" centerX="0" centerY="0"
+                         radiusX="44" radiusY="21"
+                         styleClass="vinilo-centro-isometrico"/>
+                <Ellipse fx:id="brilloVinilo" centerX="0" centerY="0"
+                         radiusX="39" radiusY="19"
+                         fill="transparent" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5"/>
             </Group>
 
+            <!-- ── Contrapeso / slider lateral (desplazado +80px) ── -->
             <Group>
-                <Polygon points="552,218, 572,218, 590,305, 570,305" fill="#1b1d22" stroke="#374151" strokeWidth="1.5"/>
-                <Line startX="562" startY="224" endX="578" endY="299" stroke="#111113" strokeWidth="2.5"/>
-                <Polygon points="564,265, 578,265, 580,273, 566,273" fill="#e5e7eb" stroke="#4b5563" strokeWidth="1"/>
+                <Polygon points="632,218, 652,218, 670,305, 650,305"
+                         fill="#1b1d22" stroke="#374151" strokeWidth="1.5"/>
+                <Line startX="642" startY="224" endX="658" endY="299"
+                      stroke="#111113" strokeWidth="2.5"/>
+                <Polygon points="644,265, 658,265, 660,273, 646,273"
+                         fill="#e5e7eb" stroke="#4b5563" strokeWidth="1"/>
             </Group>
 
-            <Group>
-                <Ellipse centerX="491" centerY="140" radiusX="48" radiusY="24" fill="#101216" opacity="0.6"/>
+            <!-- ── Perilla/mecanismo (layoutX 480→540) ── -->
+            <Group layoutX="540" layoutY="130">
+                <Ellipse centerX="0" centerY="0" radiusX="60" radiusY="35"
+                         fill="#101216" opacity="0.6"/>
+                <Ellipse centerX="0" centerY="0" radiusX="55" radiusY="32"
+                         fill="#111113"/>
+                <Polygon points="-55,-4, 55,-4, 55,0, -55,0" fill="#111113"/>
+                <Ellipse centerX="0" centerY="-4" radiusX="55" radiusY="32"
+                         fill="#9ca3af"/>
+                <Ellipse centerX="0" centerY="-6" radiusX="45" radiusY="26"
+                         fill="#1f2937"/>
+                <Ellipse centerX="0" centerY="-5" radiusX="45" radiusY="26"
+                         fill="transparent" stroke="#111113" strokeWidth="1.5"/>
 
-                <Polygon points="441,132, 541,132, 541,138, 441,138" fill="#4b5563"/>
-                <Ellipse centerX="491" centerY="138" radiusX="50" radiusY="24" fill="#4b5563"/>
-                <Ellipse centerX="491" centerY="132" radiusX="50" radiusY="24" fill="#6b7280" stroke="#374151" strokeWidth="1.5" />
+                <!-- Knob secundario -->
+                <Group layoutX="35" layoutY="15">
+                    <Ellipse centerX="0" centerY="0"  radiusX="12" radiusY="6" fill="#111113"/>
+                    <Ellipse centerX="0" centerY="-2" radiusX="11" radiusY="5" fill="#4b5563"/>
+                    <Ellipse centerX="0" centerY="-4" radiusX="9"  radiusY="4" fill="#6b7280"/>
+                    <Ellipse centerX="5" centerY="-4" radiusX="2"  radiusY="1" fill="#111113"/>
+                </Group>
 
-                <Ellipse centerX="491" centerY="132" radiusX="38" radiusY="18" fill="#1f2937" />
+                <!-- Cabeza de la aguja decorativa -->
+                <Group layoutX="0" layoutY="-6">
+                    <Polygon points="-5,-5, 5,-5, 25,-25, 15,-25" fill="#9ca3af"/>
+                    <Polygon points="10,-15, 20,-5, 35,-20, 25,-30" fill="#374151"/>
+                    <Ellipse centerX="15" centerY="-10" radiusX="7" radiusY="10"
+                             fill="#374151" rotate="45"/>
+                    <Ellipse centerX="30" centerY="-25" radiusX="7" radiusY="10"
+                             fill="#4b5563" rotate="45"/>
+                    <Polygon points="15,-15, 18,-12, 30,-24, 27,-27" fill="#111113"/>
+                </Group>
 
-                <Polygon points="457,126, 525,126, 525,132, 457,132" fill="#9ca3af"/>
-                <Ellipse centerX="491" centerY="132" radiusX="34" radiusY="16" fill="#9ca3af"/>
-                <Ellipse centerX="491" centerY="126" radiusX="34" radiusY="16" fill="#d1d5db" stroke="#9ca3af" strokeWidth="1.5" />
-            </Group>
-
-            <Group fx:id="botonVolumen" layoutX="496" layoutY="292">
-                <Group fx:id="perillaRotacion">
-                    <Ellipse centerX="0" centerY="18" radiusX="14" radiusY="7" fill="#101216" opacity="0.6"/>
-                    <Polygon points="-10,14, 10,14, 10,-2, -10,-2" fill="#374151"/>
-                    <Ellipse centerX="0" centerY="14" radiusX="10" radiusY="5" fill="#374151"/>
-
-                    <Polygon points="-4,-2, 4,-2, 5,-10, -5,-10" fill="#6b7280" />
-                    <Ellipse centerX="0" centerY="-10" radiusX="12" radiusY="6" fill="#4b5563" />
-                    <Ellipse centerX="0" centerY="-11" radiusX="8" radiusY="3" fill="#111113" />
+                <!-- Cuerpo superior de la perilla -->
+                <Group layoutX="0" layoutY="-6">
+                    <Ellipse centerX="0" centerY="0"   radiusX="16" radiusY="10" fill="#d1d5db"/>
+                    <Polygon points="-16,0, 16,0, 16,-12, -16,-12"              fill="#d1d5db"/>
+                    <Ellipse centerX="0" centerY="-12"  radiusX="16" radiusY="10" fill="#e5e7eb"/>
+                    <Ellipse centerX="0" centerY="-12"  radiusX="10" radiusY="6"  fill="#374151"/>
+                    <Ellipse centerX="0" centerY="-12"  radiusX="4"  radiusY="2"  fill="#111113"/>
                 </Group>
             </Group>
 
-            <Group fx:id="brazoMecanico" layoutX="491" layoutY="126">
+            <!-- ── Brazo mecánico (layoutX 480→540, path y cabeza ajustados) ── -->
+            <Group fx:id="brazoMecanico" layoutX="540" layoutY="112">
+                <!-- -220,103 → llega al centro del disco: 540-220=320, 112+103=215 ✓ -->
+                <SVGPath content="M 0,0 Q -80,72 -220,103"
+                         stroke="#9ca3af" strokeWidth="8"
+                         fill="transparent" strokeLineCap="ROUND"/>
+                <SVGPath content="M 0,0 Q -80,72 -220,103"
+                         stroke="#e5e7eb" strokeWidth="5"
+                         fill="transparent" strokeLineCap="ROUND"/>
 
-                <Group>
-                    <Polygon points="-8,4, 14,-14, 22,-6, 0,12" fill="#6b7280" stroke="#4b5563" strokeWidth="1"/>
-                    <Ellipse centerX="18" centerY="-10" radiusX="6" radiusY="10" fill="#9ca3af" stroke="#4b5563" strokeWidth="1"/>
+                <!-- Cabeza del brazo (layoutX -160→-220) -->
+                <Group layoutX="-220" layoutY="103" rotate="-20">
+                    <Rectangle x="0"   y="-4" width="10" height="8"
+                               fill="#9ca3af" arcWidth="4" arcHeight="4"/>
+                    <Rectangle x="-30" y="-8" width="30" height="16"
+                               fill="#1f2937" arcWidth="6" arcHeight="6"/>
+                    <Rectangle x="-30" y="-8" width="30" height="4"
+                               fill="#374151" arcWidth="2" arcHeight="2"/>
+                    <Rectangle x="-20" y="-6" width="15" height="2" fill="#111113"/>
+                    <Rectangle x="-20" y="-2" width="15" height="2" fill="#111113"/>
+                    <Line startX="-5" startY="8" endX="-5" endY="16"
+                          stroke="#d1d5db" strokeWidth="1.5" strokeLineCap="ROUND"/>
                 </Group>
-
-                <Group>
-                    <Polygon points="-14,0, 14,0, 14,-12, -14,-12" fill="#4b5563"/>
-                    <Ellipse centerX="0" centerY="0" radiusX="14" radiusY="7" fill="#4b5563"/>
-                    <Ellipse centerX="0" centerY="-12" radiusX="14" radiusY="7" fill="#6b7280" stroke="#374151" strokeWidth="1.5"/>
-                    <Ellipse centerX="0" centerY="-12" radiusX="5" radiusY="2.5" fill="#d1d5db"/>
-                </Group>
-
-                <Polyline points="0,-6, -11,20, -91,137" fill="transparent" stroke="#9ca3af" strokeWidth="6" strokeLineCap="ROUND"/>
-                <Polyline points="0,-6, -11,20, -91,137" fill="transparent" stroke="#e5e7eb" strokeWidth="1.5" strokeLineCap="ROUND"/>
-
-                <Group>
-                    <Polygon points="-91,137, -79,130, -99,116, -111,123" fill="#6b7280" stroke="#374151" strokeWidth="1.5"/>
-                    <Line startX="-85" startY="125" endX="-80" endY="115" stroke="#d1d5db" strokeWidth="2" strokeLineCap="ROUND"/>
-                    <Ellipse centerX="-78" centerY="113" radiusX="5" radiusY="3" fill="transparent" stroke="#d1d5db" strokeWidth="2"/>
-                    <Polygon points="-107,130, -99,126, -101,120, -109,124" fill="#4b5563" stroke="#1f2937" strokeWidth="1"/>
-                    <Group>
-                        <Ellipse fx:id="agujaPunta" centerX="-104" centerY="134" radiusX="2.5" radiusY="2.5" />
-                    </Group>
-                </Group>
-
             </Group>
 
         </Pane>

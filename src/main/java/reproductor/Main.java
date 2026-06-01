@@ -38,6 +38,7 @@ public class Main extends Application {
         Font.loadFont(getClass().getResourceAsStream("/fonts/PressStart2P-Regular.ttf"), 10);
 
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.setTitle("Reproductor MP3");
         stage.show();
     }
