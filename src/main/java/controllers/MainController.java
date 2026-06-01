@@ -15,6 +15,7 @@ import modelo.datos.ExtractorPaleta;
 import modelo.datos.ListaCancion;
 import modelo.datos.Paleta;
 import ui.ThemeManager;
+
 import java.io.File;
 import javafx.scene.layout.StackPane;
 
@@ -28,29 +29,20 @@ public class MainController {
     private MediaPlayer mediaPlayer;
     private String tiempoTotalStr = "0:00";
 
-    // --- CONTROLADORES HIJOS (Inyectados por JavaFX) ---
-    @FXML
-    private TocadiscosController tocadiscosController;
-    @FXML
-    private ControlesController controlesController;
+    // --- CONTROLADORES Y GESTORES DE VISTA ---
+    @FXML private TocadiscosController tocadiscosController;
+    @FXML private ControlesController controlesController;
+    private SvgController motorSvg; // Nuestro nuevo motor delegado
 
-    // --- NODOS DE LA VISTA PRINCIPAL (Panel Derecho) ---
-    @FXML
-    private Button btnAddSong;
-    @FXML
-    private Button btnRemoveSong;
-    @FXML
-    private MenuButton btnMenuOrdenamiento;
-    @FXML
-    private MenuItem btnOrdenarPorAnio;
-    @FXML
-    private MenuItem btnOrdenarPorArtista;
-    @FXML
-    private MenuItem btnOrdenarPorNombre;
-    @FXML
-    private ListView<String> lvListSong;
+    // --- NODOS FXML ---
+    @FXML private Button btnAddSong;
+    @FXML private Button btnRemoveSong;
+    @FXML private MenuButton btnMenuOrdenamiento;
+    @FXML private MenuItem btnOrdenarPorAnio;
+    @FXML private MenuItem btnOrdenarPorArtista;
+    @FXML private MenuItem btnOrdenarPorNombre;
+    @FXML private ListView<String> lvListSong;
     @FXML private StackPane mainStackPane;
-    private WebView bgWebView;
 
     public MainController() {
         cancionActual = null;
@@ -66,25 +58,23 @@ public class MainController {
             controlesController.setMainController(this);
         }
 
-        // Crear WebView programáticamente y agregarlo al fondo del StackPane
-        bgWebView = new WebView();
+        // 1. Configurar lienzo web
+        WebView bgWebView = new WebView();
         bgWebView.setMouseTransparent(true);
-        mainStackPane.getChildren().add(0, bgWebView); // índice 0 = fondo
+        mainStackPane.getChildren().add(0, bgWebView);
 
-        cargarFondo("#00c8c8", "#008888", "#003030");
+        // 2. Inicializar el motor SVG y cargar estado en frío
+        motorSvg = new SvgController(bgWebView);
+        motorSvg.actualizarFondo(ExtractorPaleta.PALETA_BASE, null);
     }
 
     @FXML
     void abrirArchivosEvent(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar canción");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3")
-        );
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3"));
 
-        if (ultimaCarpeta != null) {
-            fileChooser.setInitialDirectory(ultimaCarpeta);
-        }
+        if (ultimaCarpeta != null) fileChooser.setInitialDirectory(ultimaCarpeta);
 
         File archivo = fileChooser.showOpenDialog(btnAddSong.getScene().getWindow());
         if (archivo != null) {
@@ -98,7 +88,6 @@ public class MainController {
         listaCancion.insertar(cancion, listaCancion.tam());
         lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
 
-        // Si es la primera canción que agregamos, nos posicionamos en ella
         if (listaCancion.tam() == 1) {
             actualPos = 0;
         }
@@ -107,17 +96,14 @@ public class MainController {
     private void reproducir(Cancion cancion) {
         if (cancion == null) return;
 
-        // Liberación de recursos del reproductor anterior
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.dispose();
         }
 
-        String uri = new File(cancion.getRutaArchivo()).toURI().toString();
-        Media media = new Media(uri);
+        Media media = new Media(new File(cancion.getRutaArchivo()).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
 
-        // Listener asíncrono para el progreso de la canción
         mediaPlayer.currentTimeProperty().addListener((obs, oldVal, newVal) -> {
             Platform.runLater(() -> {
                 double total = mediaPlayer.getTotalDuration().toSeconds();
@@ -130,16 +116,12 @@ public class MainController {
             });
         });
 
-        // Callback cuando el audio está cargado en memoria y listo
         mediaPlayer.setOnReady(() -> {
             int total = (int) mediaPlayer.getTotalDuration().toSeconds();
             tiempoTotalStr = String.format("%d:%02d", total / 60, total % 60);
-            Platform.runLater(() ->
-                    controlesController.actualizarTiempos("0:00", tiempoTotalStr)
-            );
+            Platform.runLater(() -> controlesController.actualizarTiempos("0:00", tiempoTotalStr));
         });
 
-        // Evento de arrastre del slider en la UI
         controlesController.progressSlider.setOnMouseReleased(e -> {
             if (mediaPlayer != null) {
                 double total = mediaPlayer.getTotalDuration().toSeconds();
@@ -147,22 +129,12 @@ public class MainController {
             }
         });
 
-        // Transición automática a la siguiente pista
-        mediaPlayer.setOnEndOfMedia(() -> {
-            nextButtonEvent(null);
-        });
-
-        // Despliegue de reproducción y animaciones
+        mediaPlayer.setOnEndOfMedia(() -> nextButtonEvent(null));
         mediaPlayer.play();
-        if (tocadiscosController != null) {
-            tocadiscosController.reproducirAnimacion();
-        }
-        if (controlesController != null) {
-            controlesController.cambiarTextoBotonPlay("▐▐");
-        }
-    }
 
-    // --- MÉTODOS DE CONTROL DE REPRODUCCIÓN (Llamados por ControlesController) ---
+        if (tocadiscosController != null) tocadiscosController.reproducirAnimacion();
+        if (controlesController != null) controlesController.cambiarTextoBotonPlay("▐▐");
+    }
 
     public void playButtonEvent(ActionEvent event) {
         if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
@@ -170,12 +142,9 @@ public class MainController {
             tocadiscosController.pausarAnimacion();
             controlesController.cambiarTextoBotonPlay("▶");
         } else {
-            // Caso donde la app inicia y damos play por primera vez
             if (cancionActual == null && actualPos != -1) {
                 actualizaCancion(actualPos);
-            }
-            // Caso de reanudación
-            else if (cancionActual != null) {
+            } else if (cancionActual != null) {
                 if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
                     mediaPlayer.play();
                     tocadiscosController.reproducirAnimacion();
@@ -187,13 +156,8 @@ public class MainController {
         }
     }
 
-    public void nextButtonEvent(ActionEvent event) {
-        actualizaCancion(actualPos + 1);
-    }
-
-    public void previousButtonEvent(ActionEvent event) {
-        actualizaCancion(actualPos - 1);
-    }
+    public void nextButtonEvent(ActionEvent event) { actualizaCancion(actualPos + 1); }
+    public void previousButtonEvent(ActionEvent event) { actualizaCancion(actualPos - 1); }
 
     private void actualizaCancion(int pos) {
         if (pos >= 0 && pos < listaCancion.tam()) {
@@ -202,7 +166,6 @@ public class MainController {
             cargarCancion(cancionActual);
             reproducir(cancionActual);
         } else if (pos >= listaCancion.tam()) {
-            // Opcional: Detener o reiniciar al llegar al final de la lista
             if (mediaPlayer != null) {
                 mediaPlayer.stop();
                 tocadiscosController.pausarAnimacion();
@@ -220,66 +183,25 @@ public class MainController {
         actualizarTema(cancion);
     }
 
-    // --- CÓDIGO CORREGIDO ---
-
     private void actualizarTema(Cancion cancion) {
         Image portada = cancion.getPortada();
-
-        // 1. DETERMINISMO: Obtenemos una paleta garantizada.
-        // Si 'portada' es null, ExtractorPaleta.extraerDe() ya está programado
-        // para devolver PALETA_BASE automáticamente.
-        // Si la extracción falla internamente, también devuelve PALETA_BASE.
         Paleta paletaActiva = ExtractorPaleta.extraerDe(portada);
 
-        // 2. RENDERIZADO GARANTIZADO:
-        // Ahora ejecutamos la actualización gráfica SIEMPRE, usando 'paletaActiva'.
-        // Esto sobrescribe CUALQUIER estado anterior en la UI y el SVG.
+        // 1. Delegar a gestor nativo de UI
         ThemeManager.aplicarPaleta(lvListSong.getScene(), paletaActiva);
 
-        String acento = ExtractorPaleta.toHex(paletaActiva.getAcento());
-        String dim = ExtractorPaleta.toHex(paletaActiva.getBorde());
-        String glow = ExtractorPaleta.toHex(paletaActiva.getFondo());
+        // 2. Delegar a controlador de tocadiscos
+        if (tocadiscosController != null) {
+            tocadiscosController.actualizarColoresDinamicos(paletaActiva.getAcento(), paletaActiva.getBrillante());
+        }
 
-        // Al llamar a cargarFondo, los .replace() del SVG inyectan los colores nuevos (o los base)
-        // limpiando el rastro de la canción anterior.
-        cargarFondo(acento, dim, glow);
-    }
-
-
-    private void cargarFondo(String acento, String acentoDim, String acentoGlow) {
-        try {
-            String svgOriginal = new String(getClass().getResourceAsStream("/views/FONOOO.svg").readAllBytes());
-
-            // Reemplazar los colores de acento con los de la paleta actual
-            String svgAdaptado = svgOriginal
-                    .replace("#00c8c8", acento)
-                    .replace("#008888", acentoDim)
-                    .replace("#003030", acentoGlow);
-
-            String html = """
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <style>
-                html, body { margin: 0; padding: 0; width: 100%%; height: 100%%;
-                             overflow: hidden; background: #12151f; }
-                svg { width: 100%%; height: 100%%; display: block; }
-            </style>
-            </head>
-            <body>%s</body>
-            </html>
-        """.formatted(svgAdaptado);
-
-            bgWebView.getEngine().loadContent(html);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        // 3. Delegar a motor web/SVG
+        if (motorSvg != null) {
+            motorSvg.actualizarFondo(paletaActiva, portada);
         }
     }
 
-
-    // --- MÉTODOS DE LA LISTA ENLAZADA (Espacio para el Backend de la UI derecha) ---
-
+    // --- METODOS VACIOS ---
     @FXML void removeSongEvent(ActionEvent event) { }
     @FXML void shuffleButtonEvent(ActionEvent event) { }
     @FXML void ordenarPorAnioEvent(ActionEvent event) { }
