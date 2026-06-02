@@ -156,6 +156,17 @@ public class MainController implements ReproductorListener {
         }
     }
 
+    public void actualizaCancionLoop(int pos){
+        if(pos>=0 && pos<listaCancion.tam()) actualPos=pos;
+        else if(pos>=listaCancion.tam()) actualPos = 0;
+        else actualPos = listaCancion.tam()-1;
+
+        this.cancionActual = (Cancion) listaCancion.devolver(actualPos);
+        cargarCancion(cancionActual);
+        reproducir(cancionActual);
+        lvListSong.getSelectionModel().select(actualPos);
+    }
+
     private void cargarCancion(Cancion cancion) {
         this.cancionActual = cancion;
         if (controlesController != null)
