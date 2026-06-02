@@ -26,7 +26,7 @@ public class SvgController {
      */
     private String cargarPlantillaDesdeDisco() {
         try {
-            return new String(getClass().getResourceAsStream("/views/FONOOO.svg").readAllBytes());
+            return new String(getClass().getResourceAsStream("/assets/FONOOO.svg").readAllBytes());
         } catch (Exception e) {
             e.printStackTrace();
             return "";

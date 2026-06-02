@@ -5,9 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import modelo.interfaces.ReproductorListener;
 
 public class ControlesController {
-
     @FXML private Button btnPlayPause;
     @FXML private Button btnShuffle;
     @FXML private Button btnLoop;
@@ -17,72 +17,45 @@ public class ControlesController {
     @FXML private Label lblTimeTotal;
     @FXML public Slider progressSlider;
 
-    private MainController mainController;
+    private ReproductorListener listener;
+    private boolean shuffle = false;
+    private boolean loop    = false;
 
-    // Solo guardamos el estado visual (prendido/apagado)
-    private boolean shuffleActivo = false;
-    private boolean loopActivo    = false;
+    public void setListener(ReproductorListener l) { this.listener = l; }
+    public boolean isShuffle() { return shuffle; }
+    public boolean isLoop()    { return loop; }
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
-
-    // Getters para que el MainController sepa qué botón está presionado
-    public boolean isShuffle() { return shuffleActivo; }
-    public boolean isLoop()    { return loopActivo; }
-
-
-  //Solo delegan el trabajo al MainController)
-
-    @FXML void onPlayPause(ActionEvent event) {
-        if (mainController != null) mainController.playButtonEvent(event);
-    }
-
-    @FXML void onNext(ActionEvent event) {
-        if (mainController != null) mainController.nextButtonEvent(event);
-    }
-
-    @FXML void onPrevious(ActionEvent event) {
-        if (mainController != null) mainController.previousButtonEvent(event);
-    }
-
+    @FXML void onPlayPause(ActionEvent event) { if (listener != null) listener.onPlay(); }
+    @FXML void onNext(ActionEvent event) { if (listener != null) listener.onNext(); }
+    @FXML void onPrevious(ActionEvent event) { if (listener != null) listener.onPrevious(); }
 
     @FXML void onShuffle(ActionEvent event) {
-        shuffleActivo = !shuffleActivo;
-        loopActivo = false; // El shuffle apaga el loop por defecto
-
-        actualizarEstiloBoton(btnShuffle, shuffleActivo);
+        shuffle = !shuffle;
+        loop = false;
+        actualizarEstiloBoton(btnShuffle, shuffle);
         actualizarEstiloBoton(btnLoop, false);
-
-        // (En el futuro, acá le avisaremos al MainController que arme la nueva lógica aleatoria)
+        listener.onShuffleToggled(shuffle);
     }
 
     @FXML void onLoop(ActionEvent event) {
-        loopActivo = !loopActivo;
-        shuffleActivo = false; // El loop apaga el shuffle por defecto
-
-        actualizarEstiloBoton(btnLoop, loopActivo);
+        loop = !loop;
+        shuffle = false;
+        actualizarEstiloBoton(btnLoop, loop);
         actualizarEstiloBoton(btnShuffle, false);
+        listener.onLoopToggled(loop);
     }
-
-    // -----------------------------------------------------------------------
-    // UI HELPERS (Modifican elementos gráficos de la pantalla)
-    // -----------------------------------------------------------------------
 
     private void actualizarEstiloBoton(Button btn, boolean activo) {
         if (btn == null) return;
         if (activo) {
-            if (!btn.getStyleClass().contains("pixel-button-active")) {
+            if (!btn.getStyleClass().contains("pixel-button-active"))
                 btn.getStyleClass().add("pixel-button-active");
-            }
         } else {
             btn.getStyleClass().remove("pixel-button-active");
         }
     }
 
-    public void cambiarTextoBotonPlay(String texto) {
-        btnPlayPause.setText(texto);
-    }
+    public void cambiarTextoBotonPlay(String texto) { btnPlayPause.setText(texto); }
 
     public void actualizarTextos(String titulo, String artista) {
         lblSongTitle.setText(titulo);
