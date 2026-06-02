@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import modelo.criterios.PorAnio;
 import modelo.criterios.PorArtista;
@@ -121,12 +122,16 @@ public class MainController implements ReproductorListener {
     void abrirArchivosEvent(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar canciones");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3"));
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3"));
         if (ultimaCarpeta != null) fileChooser.setInitialDirectory(ultimaCarpeta);
-        java.util.List<File> archivos = fileChooser.showOpenMultipleDialog(btnAddSong.getScene().getWindow());
-        if (archivos != null && !archivos.isEmpty()) {
-            ultimaCarpeta = archivos.get(0).getParentFile();
-            for (File archivo : archivos) creaCancion(archivo);
+
+        var resultado = fileChooser.showOpenMultipleDialog(btnAddSong.getScene().getWindow());
+        if (resultado != null && !resultado.isEmpty()) {
+            File[] archivos = resultado.toArray(new File[0]);
+            ultimaCarpeta = archivos[0].getParentFile();
+            for (int i = 0; i < archivos.length; i++)
+                creaCancion(archivos[i]);
         }
     }
 
