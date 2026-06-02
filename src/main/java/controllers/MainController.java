@@ -284,7 +284,7 @@ public class MainController implements ReproductorListener {
 
     @Override
     public void onLoopSongCircle(boolean activo) {
-
+        
     }
 
     @Override
