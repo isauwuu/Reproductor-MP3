@@ -6,6 +6,4 @@ public interface ReproductorListener {
     void onPrevious();
     void onShuffleToggled(boolean activo);
     void onLoopToggled(boolean activo);
-    void onLoopSongCircle(boolean activo);
-    void onStopSong();
 }

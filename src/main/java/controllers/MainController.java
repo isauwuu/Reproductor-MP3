@@ -30,6 +30,7 @@ public class MainController implements ReproductorListener {
     private SvgController motorSvg;
     private ShuffleManager shuffleManager = new ShuffleManager();
     private ReproductorDeAudio reproductor;
+    private boolean loopSong;
 
     @FXML private TocadiscosController tocadiscosController;
     @FXML private ControlesController controlesController;
@@ -49,6 +50,7 @@ public class MainController implements ReproductorListener {
         this.tiempoTotalStr = "0:00";
         this.reproductor = new ReproductorDeAudio();
         this.cancionActual = null;
+        this.loopSong = false;
     }
 
     public NodoDoble getCancionActual() { return cancionActual; }
@@ -226,35 +228,46 @@ public class MainController implements ReproductorListener {
 
     @Override
     public void onNext() {
-        if (controlesController.isShuffle()) {
-            actualizaCancionPorIndice(shuffleManager.siguiente(listaCancion.tam(), actualPos));
-        } else if (controlesController.isLoop()) {
-            if (cancionActual != null && cancionActual.getNextNodo() != null) {
-                actualPos++;
-                cargarDesdeNodo(cancionActual.getNextNodo(), actualPos);
-            } else {
+        if(cancionActual != null){                              //futuro try catch
+            if (controlesController.isShuffle())
+                actualizaCancionPorIndice(shuffleManager.siguiente(listaCancion.tam(), actualPos));
+            else if (controlesController.isLoopSong()) {
+                actualPos = actualPos+1 == listaCancion.tam() ? 0 : actualPos+1;
+                actualizaCancionPorIndice(actualPos);
+            }else if(controlesController.isLoop())
                 actualizaCancionPorIndice(0);
-            }
-        } else {
-            if (cancionActual != null && cancionActual.getNextNodo() != null) {
-                actualPos++;
-                cargarDesdeNodo(cancionActual.getNextNodo(), actualPos);
-            } else {
-                reproductor.alternarPausaReproduccion();
-                controlesController.progressSlider.setValue(0);
+            else {
+                if (cancionActual.getNextNodo() != null) {
+                    actualPos++;
+                    cargarDesdeNodo(cancionActual.getNextNodo(), actualPos);
+                } else {
+                    reproductor.alternarPausaReproduccion();
+                    controlesController.progressSlider.setValue(0);
+                }
             }
         }
     }
 
     @Override
     public void onPrevious() {
-        if (controlesController.isShuffle()) {
-            actualizaCancionPorIndice(shuffleManager.anterior(actualPos));
-        } else if (cancionActual != null && cancionActual.getPrevNodo() != null) {
-            actualPos--;
-            cargarDesdeNodo(cancionActual.getPrevNodo(), actualPos);
-        } else {
-            actualizaCancionPorIndice(0);
+        if(cancionActual!=null){
+            if (controlesController.isShuffle()) {
+                actualizaCancionPorIndice(shuffleManager.anterior(actualPos));
+            }
+            else if (controlesController.isLoopSong()) {
+                actualPos = actualPos-1 == -1 ? listaCancion.tam()-1 : actualPos-1;
+                actualizaCancionPorIndice(actualPos);
+            }else if(controlesController.isLoop())
+                actualizaCancionPorIndice(0);
+            else {
+                if (cancionActual.getPrevNodo() != null) {
+                    --actualPos;
+                    cargarDesdeNodo(cancionActual.getPrevNodo(), actualPos);
+                } else {
+                    reproductor.alternarPausaReproduccion();
+                    controlesController.progressSlider.setValue(0);
+                }
+            }
         }
     }
 
@@ -268,15 +281,5 @@ public class MainController implements ReproductorListener {
     @Override
     public void onLoopToggled(boolean activo) {
         shuffleManager.limpiar();
-    }
-
-    @Override
-    public void onLoopSongCircle(boolean activo) {
-        
-    }
-
-    @Override
-    public void onStopSong() {
-
     }
 }
