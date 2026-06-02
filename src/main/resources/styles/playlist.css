@@ -1,0 +1,133 @@
+.playlist-container {
+
+    -fx-background-color: -panel;
+
+    -fx-border-color: -borde;
+    -fx-border-width: 4px;
+}
+
+.pixel-text-header {
+
+    -fx-text-fill: -brillante;
+
+    -fx-font-size: 14px;
+
+    -fx-font-weight: bold;
+}
+
+/* ==================================
+   LISTVIEW PLAYLIST
+   ================================== */
+
+.pixel-playlist {
+
+    -fx-background-color: -panel;
+
+    -fx-border-color: -borde;
+    -fx-border-width: 3px;
+
+    -fx-padding: 2px;
+
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* Fondo interno */
+
+.pixel-playlist .viewport {
+
+    -fx-background-color: -panel;
+}
+
+/* Cada canción */
+
+.pixel-playlist .list-cell {
+
+    -fx-background-color: -panel;
+
+    -fx-text-fill: -texto;
+
+    -fx-font-size: 12px;
+
+    -fx-padding: 8px;
+
+    -fx-border-color: transparent transparent -borde transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* Hover */
+
+.pixel-playlist .list-cell:hover {
+
+    -fx-background-color: derive(-acento, -40%);
+}
+
+/* Canción seleccionada */
+
+.pixel-playlist .list-cell:selected {
+
+    -fx-background-color: -acento;
+
+    -fx-text-fill: -fondo;
+
+    -fx-font-weight: bold;
+}
+
+/* Scrollbar */
+
+.pixel-playlist .scroll-bar {
+
+    -fx-background-color: -panel;
+}
+
+.pixel-playlist .scroll-bar .track {
+
+    -fx-background-color: -panel;
+}
+
+.pixel-playlist .scroll-bar .thumb {
+
+    -fx-background-color: -acento;
+
+    -fx-background-radius: 0;
+}
+
+/* Eliminar esquinas redondeadas */
+
+.pixel-playlist .thumb,
+.pixel-playlist .track {
+
+    -fx-background-radius: 0;
+}
+/* Canción activa en la playlist */
+.list-cell-active {
+    -fx-background-color: -acento;
+    -fx-text-fill: -fondo;
+    -fx-font-family: 'Press Start 2P';
+}
+
+.list-cell-active:hover {
+    -fx-background-color: -brillante;
+}
+.pixel-button-small .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 4px 0 4px;
+}
+
+.pixel-button-small .arrow-button .arrow {
+    -fx-background-color: -fondo;
+}
+
+.pixel-button-small:hover .arrow-button .arrow {
+    -fx-background-color: -fondo;
+}
+
+.pixel-button-small:showing {
+    -fx-background-color: -brillante;
+    -fx-text-fill: -fondo;
+    -fx-border-color: -texto;
+}
+.list-cell:selected {
+    -fx-background-color: -acento;
+    -fx-text-fill: -fondo;
+}

@@ -3,6 +3,7 @@ package reproductor;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -11,12 +12,34 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
 
         FXMLLoader loader =
-                new FXMLLoader(getClass().getResource("/views/main-view.fxml"));
+                new FXMLLoader(Main.class.getResource("/views/main-view.fxml"));
 
         Scene scene = new Scene(loader.load());
 
-        stage.setTitle("MP3 Player");
+        scene.getStylesheets().add(
+                Main.class.getResource("/styles/style.css").toExternalForm()
+        );
+        scene.getStylesheets().add(
+                Main.class.getResource("/styles/controls.css").toExternalForm()
+        );
+        scene.getStylesheets().add(
+                Main.class.getResource("/styles/player.css").toExternalForm()
+        );
+        scene.getStylesheets().add(
+                Main.class.getResource("/styles/playlist.css").toExternalForm()
+        );
+        scene.getStylesheets().add(
+                Main.class.getResource("/styles/themes/darkTheme.css").toExternalForm()
+        );
+        scene.getStylesheets().add(
+                Main.class.getResource("/styles/themes/lightTheme.css").toExternalForm()
+        );
+
+        Font.loadFont(getClass().getResourceAsStream("/fonts/PressStart2P-Regular.ttf"), 10);
+
         stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.setTitle("Reproductor MP3");
         stage.show();
     }
 
