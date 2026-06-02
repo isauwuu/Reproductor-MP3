@@ -58,7 +58,7 @@ public abstract class Lista1DLinkedL extends Lista0DLinkedL implements Operacion
         nodo.setNodoInfo(elemento);
     }
 
-    private NodoDoble obtenerNodo(int pos) {
+    public NodoDoble obtenerNodo(int pos) {
         int size = tam();
         if (pos < 0 || pos >= size) {
             throw new IndexOutOfBoundsException("Posición inválida");

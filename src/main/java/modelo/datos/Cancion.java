@@ -14,8 +14,9 @@ public class Cancion {
     private Image portada;
     private boolean valida;
     private long duracionSegundos;
+    private int posEnLista;
 
-    public Cancion(String rutaArchivo) {
+    public Cancion(String rutaArchivo,int posEnLista) {
         this.rutaArchivo = rutaArchivo;
         this.titulo = "Desconocido";
         this.artista = "Desconocido";
@@ -23,7 +24,9 @@ public class Cancion {
         this.duracionSegundos=0;
         this.portada = null;
         this.valida = false;
+        this.posEnLista=posEnLista;
         cargaMetadatos();
+
     }
 
     private void asignarMetadatosBasicos(String titulo, String artista, int anio) {
@@ -81,10 +84,6 @@ public class Cancion {
         return portada;
     }
 
-    public String getRutaArchivo() {
-        return rutaArchivo;
-    }
-
     public int getAnio() {
         return anio;
     }
@@ -135,6 +134,7 @@ public class Cancion {
                 ", valida=" + valida +
                 '}';
     }
+
 }
 
 
