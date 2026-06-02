@@ -1,6 +1,7 @@
 package controllers;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -17,6 +18,10 @@ import modelo.interfaces.ReproductorListener;
 import ui.ShuffleManager;
 import ui.ThemeManager;
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import javafx.scene.layout.StackPane;
 import services.ReproductorDeAudio;
 
@@ -215,7 +220,33 @@ public class MainController implements ReproductorListener {
         btnMenuOrdenamiento.setText("artista ↑");
     }
 
-    @FXML void removeSongEvent(ActionEvent event) { }
+    @FXML void removeSongEvent(ActionEvent event) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Eliminar canciones");
+
+        ListView<String> lista = new ListView<>();
+        lista.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        for (int i = 0; i < listaCancion.tam(); i++)
+            lista.getItems().add(lvListSong.getItems().get(i));
+
+        dialog.getDialogPane().setContent(lista);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Optional<ButtonType> resultado = dialog.showAndWait();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            ObservableList<Integer> seleccionados = lista.getSelectionModel().getSelectedIndices();     //preguntar si se pueda
+
+            ListaIndices indices = new ListaIndices();
+            for (int i = 0; i < seleccionados.size(); i++)
+                indices.insertar(seleccionados.get(i), i);
+
+            for (int i = indices.tam() - 1; i >= 0; i--) {
+                int idx = (Integer) indices.devolver(i);
+                listaCancion.eliminar(idx);
+                lvListSong.getItems().remove(idx);
+            }
+        }
+    }
 
     @Override
     public void onPlay() {
