@@ -5,13 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import modelo.datos.ListaIndices;
 import modelo.interfaces.ReproductorListener;
 
-import java.util.Random;
-
 public class ControlesController {
-
     @FXML private Button btnPlayPause;
     @FXML private Button btnShuffle;
     @FXML private Button btnLoop;
@@ -26,16 +22,11 @@ public class ControlesController {
     private boolean loop    = false;
 
     public void setListener(ReproductorListener l) { this.listener = l; }
-
     public boolean isShuffle() { return shuffle; }
     public boolean isLoop()    { return loop; }
 
-    @FXML void onPlayPause(ActionEvent event) {
-        if (listener != null) listener.onPlay();
-    }
-
+    @FXML void onPlayPause(ActionEvent event) { if (listener != null) listener.onPlay(); }
     @FXML void onNext(ActionEvent event) { if (listener != null) listener.onNext(); }
-
     @FXML void onPrevious(ActionEvent event) { if (listener != null) listener.onPrevious(); }
 
     @FXML void onShuffle(ActionEvent event) {

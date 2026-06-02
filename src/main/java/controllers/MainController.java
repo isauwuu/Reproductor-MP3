@@ -5,30 +5,31 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
-import javafx.util.Duration;
 import modelo.criterios.PorAnio;
 import modelo.criterios.PorArtista;
 import modelo.criterios.PorNombre;
 import modelo.datos.*;
+import modelo.estructuras.NodoDoble;
 import modelo.interfaces.ReproductorListener;
 import ui.ShuffleManager;
 import ui.ThemeManager;
 import java.io.File;
 import javafx.scene.layout.StackPane;
+import services.ReproductorDeAudio;
 
 public class MainController implements ReproductorListener {
-    private Cancion cancionActual;
+
+    private NodoDoble cancionActual;
     private File ultimaCarpeta;
     private ListaCancion listaCancion;
     private int actualPos;
-    private MediaPlayer mediaPlayer;
     private String tiempoTotalStr = "0:00";
     private SvgController motorSvg;
     private ShuffleManager shuffleManager = new ShuffleManager();
+    private ReproductorDeAudio reproductor;
 
     @FXML private TocadiscosController tocadiscosController;
     @FXML private ControlesController controlesController;
@@ -42,14 +43,15 @@ public class MainController implements ReproductorListener {
     @FXML private StackPane mainStackPane;
 
     public MainController() {
-        cancionActual = null;
-        ultimaCarpeta = null;
-        actualPos = -1;
-        mediaPlayer = null;
-        listaCancion = new ListaCancion();
+        this.ultimaCarpeta = null;
+        this.actualPos = -1;
+        this.listaCancion = new ListaCancion();
+        this.tiempoTotalStr = "0:00";
+        this.reproductor = new ReproductorDeAudio();
+        this.cancionActual = null;
     }
 
-    public Cancion getCancionActual() { return cancionActual; }
+    public NodoDoble getCancionActual() { return cancionActual; }
     public ListaCancion getListaCancion() { return listaCancion; }
     public int getActualPos() { return actualPos; }
     public void setActualPos(int actualPos) { this.actualPos = actualPos; }
@@ -62,29 +64,70 @@ public class MainController implements ReproductorListener {
         WebView bgWebView = new WebView();
         bgWebView.setMouseTransparent(true);
         mainStackPane.getChildren().add(0, bgWebView);
-
         motorSvg = new SvgController(bgWebView);
         motorSvg.actualizarFondo(ExtractorPaleta.PALETA_BASE, null);
+        configurarEventosReproductor();
+    }
+
+    private void configurarEventosReproductor() {
+        reproductor.setFinalizaCancion(() -> Platform.runLater(this::onNext));
+
+        reproductor.tiempoActualProperty().addListener((obs, viejo, nuevo) -> {
+            Platform.runLater(() -> {
+                var total = reproductor.tiempoTotalProperty().get();
+                if (total != null && total.toSeconds() > 0) {
+                    double porcentaje = (nuevo.toSeconds() / total.toSeconds()) * 100;
+                    if (!controlesController.progressSlider.isValueChanging())
+                        controlesController.progressSlider.setValue(porcentaje);
+                    int segs = (int) nuevo.toSeconds();
+                    controlesController.actualizarTiempos(
+                            String.format("%d:%02d", segs / 60, segs % 60), tiempoTotalStr);
+                }
+            });
+        });
+
+        reproductor.tiempoTotalProperty().addListener((obs, viejo, nuevo) -> {
+            Platform.runLater(() -> {
+                int totalSecs = (int) nuevo.toSeconds();
+                tiempoTotalStr = String.format("%d:%02d", totalSecs / 60, totalSecs % 60);
+                controlesController.actualizarTiempos("0:00", tiempoTotalStr);
+            });
+        });
+
+        reproductor.estadoProperty().addListener((obs, viejo, estado) -> {
+            Platform.runLater(() -> {
+                if (estado == MediaPlayer.Status.PLAYING) {
+                    if (tocadiscosController != null) tocadiscosController.reproducirAnimacion();
+                    if (controlesController != null) controlesController.cambiarTextoBotonPlay("▐▐");
+                } else {
+                    if (tocadiscosController != null) tocadiscosController.pausarAnimacion();
+                    if (controlesController != null) controlesController.cambiarTextoBotonPlay("▶");
+                }
+            });
+        });
+
+        controlesController.progressSlider.setOnMouseReleased(e ->
+                reproductor.adelantar(controlesController.progressSlider.getValue() / 100.0));
     }
 
     @FXML
     void abrirArchivosEvent(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleccionar canción");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos MP3","*.mp3"));
+        fileChooser.setTitle("Seleccionar canciones");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3"));
         if (ultimaCarpeta != null) fileChooser.setInitialDirectory(ultimaCarpeta);
-        File archivo = fileChooser.showOpenDialog(btnAddSong.getScene().getWindow());
-        if (archivo != null) {
-            ultimaCarpeta = archivo.getParentFile();
-            creaCancion(archivo);
+        java.util.List<File> archivos = fileChooser.showOpenMultipleDialog(btnAddSong.getScene().getWindow());
+        if (archivos != null && !archivos.isEmpty()) {
+            ultimaCarpeta = archivos.get(0).getParentFile();
+            for (File archivo : archivos) creaCancion(archivo);
         }
     }
 
     private void creaCancion(File file) {
-        Cancion cancion = new Cancion(file.getAbsolutePath());
+        Cancion cancion = new Cancion(file.getAbsolutePath(), listaCancion.tam());
         listaCancion.insertar(cancion, listaCancion.tam());
         lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
-        if (listaCancion.tam() == 1) { actualPos = 0; }
+        if (listaCancion.tam() == 1) actualPos = 0;
     }
 
     private void actualizaListaView(ListaCancionOrdenada l) {
@@ -101,99 +144,43 @@ public class MainController implements ReproductorListener {
 
     private void reproducir(Cancion cancion) {
         if (cancion == null) return;
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-        }
-        Media media = new Media(new File(cancion.getRutaArchivo()).toURI().toString());
-        mediaPlayer = new MediaPlayer(media);
-
-        mediaPlayer.currentTimeProperty().addListener((obs, oldVal, newVal) -> {
-            Platform.runLater(() -> {
-                double total = mediaPlayer.getTotalDuration().toSeconds();
-                if (total > 0) {
-                    controlesController.progressSlider.setValue((newVal.toSeconds() / total) * 100);
-                }
-                int segs = (int) newVal.toSeconds();
-                controlesController.actualizarTiempos(
-                        String.format("%d:%02d", segs / 60, segs % 60), tiempoTotalStr);
-            });
-        });
-
-        mediaPlayer.setOnReady(() -> {
-            int total = (int) mediaPlayer.getTotalDuration().toSeconds();
-            tiempoTotalStr = String.format("%d:%02d", total / 60, total % 60);
-            Platform.runLater(() -> controlesController.actualizarTiempos("0:00", tiempoTotalStr));
-        });
-
-        controlesController.progressSlider.setOnMouseReleased(e -> {
-            if (mediaPlayer != null) {
-                double total = mediaPlayer.getTotalDuration().toSeconds();
-                mediaPlayer.seek(Duration.seconds(controlesController.progressSlider.getValue() / 100 * total));
-            }
-        });
-
-        mediaPlayer.setOnEndOfMedia(() -> onNext());
-        mediaPlayer.play();
-        if (tocadiscosController != null) tocadiscosController.reproducirAnimacion();
-        if (controlesController != null) controlesController.cambiarTextoBotonPlay("▐▐");
+        reproductor.reproducirNueva(cancion);
     }
 
-    private void actualizaCancion(int pos) {
-        if (pos >= 0 && pos < listaCancion.tam()) {
-            this.actualPos = pos;
-            this.cancionActual = (Cancion) listaCancion.devolver(pos);
-            cargarCancion(cancionActual);
-            reproducir(cancionActual);
-            lvListSong.getSelectionModel().select(actualPos);
-        } else if (pos >= listaCancion.tam()) {
-            if (mediaPlayer != null) {
-                mediaPlayer.stop();
-                tocadiscosController.pausarAnimacion();
-                controlesController.cambiarTextoBotonPlay("▶");
-                controlesController.progressSlider.setValue(0);
-            }
-        }
-    }
-
-    public void actualizaCancionLoop(int pos){
-        if(pos>=0 && pos<listaCancion.tam()) actualPos=pos;
-        else if(pos>=listaCancion.tam()) actualPos = 0;
-        else actualPos = listaCancion.tam()-1;
-
-        this.cancionActual = (Cancion) listaCancion.devolver(actualPos);
-        cargarCancion(cancionActual);
-        reproducir(cancionActual);
+    private void cargarDesdeNodo(NodoDoble nodo, int posLista) {
+        if (nodo == null) return;
+        this.cancionActual = nodo;
+        this.actualPos = posLista;
+        Cancion cancionPura = (Cancion) nodo.getNodoInfo();
+        if (controlesController != null)
+            controlesController.actualizarTextos(cancionPura.getTitulo(), cancionPura.getArtista());
+        actualizarTema(cancionPura);
+        reproducir(cancionPura);
         lvListSong.getSelectionModel().select(actualPos);
     }
 
-    private void cargarCancion(Cancion cancion) {
-        this.cancionActual = cancion;
-        if (controlesController != null)
-            controlesController.actualizarTextos(cancion.getTitulo(), cancion.getArtista());
-        actualizarTema(cancion);
+    private void actualizaCancionPorIndice(int pos) {
+        if (pos >= 0 && pos < listaCancion.tam()) {
+            NodoDoble nodo = listaCancion.obtenerNodo(pos);
+            cargarDesdeNodo(nodo, pos);
+        }
     }
 
     private void actualizarTema(Cancion cancion) {
         Image portada = cancion.getPortada();
         Paleta paletaActiva = ExtractorPaleta.extraerDe(portada);
-
         ThemeManager.aplicarPaleta(lvListSong.getScene(), paletaActiva);
-
-        if (tocadiscosController != null) {
-            tocadiscosController.actualizarColoresDinamicos(
-                    paletaActiva.getAcento(), paletaActiva.getBrillante());
-        }
-        if (motorSvg != null) {
+        if (tocadiscosController != null)
+            tocadiscosController.actualizarColoresDinamicos(paletaActiva.getAcento(), paletaActiva.getBrillante());
+        if (motorSvg != null)
             motorSvg.actualizarFondo(paletaActiva, portada);
-        }
     }
 
     public void reordenarVista(boolean shuffleActivo) {
         Platform.runLater(() -> {
             lvListSong.getItems().clear();
             if (shuffleActivo) {
-                ListaIndices cola = shuffleManager.getCola(); // ya no toca ControlesController
+                ListaIndices cola = shuffleManager.getCola();
                 for (int i = 0; i < cola.tam(); i++) {
                     int idx = (Integer) cola.devolver(i);
                     Cancion c = (Cancion) listaCancion.devolver(idx);
@@ -230,50 +217,51 @@ public class MainController implements ReproductorListener {
 
     @Override
     public void onPlay() {
-        if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-            mediaPlayer.pause();
-            tocadiscosController.pausarAnimacion();
-            controlesController.cambiarTextoBotonPlay("▶");
+        if (cancionActual == null && actualPos != -1) {
+            actualizaCancionPorIndice(actualPos);
         } else {
-            if (cancionActual == null && actualPos != -1) {
-                actualizaCancion(actualPos);
-            } else if (cancionActual != null) {
-                if (mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED) {
-                    mediaPlayer.play();
-                    tocadiscosController.reproducirAnimacion();
-                    controlesController.cambiarTextoBotonPlay("▐▐");
-                } else {
-                    reproducir(cancionActual);
-                }
-            }
+            reproductor.alternarPausaReproduccion();
         }
     }
 
     @Override
     public void onNext() {
-        if (controlesController.isShuffle())
-            actualizaCancion(shuffleManager.siguiente(listaCancion.tam(), actualPos));
-        else if (controlesController.isLoop())
-            reproducir(cancionActual);
-        else
-            actualizaCancion(actualPos + 1);
+        if (controlesController.isShuffle()) {
+            actualizaCancionPorIndice(shuffleManager.siguiente(listaCancion.tam(), actualPos));
+        } else if (controlesController.isLoop()) {
+            if (cancionActual != null && cancionActual.getNextNodo() != null) {
+                actualPos++;
+                cargarDesdeNodo(cancionActual.getNextNodo(), actualPos);
+            } else {
+                actualizaCancionPorIndice(0);
+            }
+        } else {
+            if (cancionActual != null && cancionActual.getNextNodo() != null) {
+                actualPos++;
+                cargarDesdeNodo(cancionActual.getNextNodo(), actualPos);
+            } else {
+                reproductor.alternarPausaReproduccion();
+                controlesController.progressSlider.setValue(0);
+            }
+        }
     }
 
     @Override
     public void onPrevious() {
-        if (controlesController.isShuffle())
-            actualizaCancion(shuffleManager.anterior(actualPos));
-        else
-            actualizaCancion(actualPos - 1);
+        if (controlesController.isShuffle()) {
+            actualizaCancionPorIndice(shuffleManager.anterior(actualPos));
+        } else if (cancionActual != null && cancionActual.getPrevNodo() != null) {
+            actualPos--;
+            cargarDesdeNodo(cancionActual.getPrevNodo(), actualPos);
+        } else {
+            actualizaCancionPorIndice(0);
+        }
     }
 
     @Override
     public void onShuffleToggled(boolean activo) {
-        if (activo) {
-            shuffleManager.generarCola(listaCancion.tam(), actualPos);
-        } else {
-            shuffleManager.limpiar();
-        }
+        if (activo) shuffleManager.generarCola(listaCancion.tam(), actualPos);
+        else shuffleManager.limpiar();
         reordenarVista(activo);
     }
 
