@@ -279,6 +279,16 @@ public class MainController implements ReproductorListener {
 
     @Override
     public void onLoopToggled(boolean activo) {
-        shuffleManager.limpiar(); // si activa loop, el shuffle se cancela
+        shuffleManager.limpiar();
+    }
+
+    @Override
+    public void onLoopSongCircle(boolean activo) {
+
+    }
+
+    @Override
+    public void onStopSong() {
+
     }
 }
