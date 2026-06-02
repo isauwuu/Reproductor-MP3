@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="controllers.ControlesController" alignment="CENTER" spacing="15.0">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="15.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ControlesController">
 
     <HBox alignment="CENTER" spacing="10.0" styleClass="controls-panel">
         <Button fx:id="btnShuffle" mnemonicParsing="false" onAction="#onShuffle" styleClass="pixel-button" text="SHUFFLE" />
+      <Button fx:id="btnReboot" mnemonicParsing="false" onAction="#onRebootSong" styleClass="pixel-button" text="STOP" />
         <Button fx:id="btnPrevious" mnemonicParsing="false" onAction="#onPrevious" styleClass="pixel-button" text="|◀" />
         <Button fx:id="btnPlayPause" mnemonicParsing="false" onAction="#onPlayPause" styleClass="pixel-button, btn-play-destacado" text="▶" />
         <Button fx:id="btnNext" mnemonicParsing="false" onAction="#onNext" styleClass="pixel-button" text="▶|" />
         <Button fx:id="btnLoop" mnemonicParsing="false" onAction="#onLoop" styleClass="pixel-button" text="LOOP" />
+      <Button fx:id="btnLoopSongs" mnemonicParsing="false" onAction="#onLoopSongs" styleClass="pixel-button" text="LSONGS" />
     </HBox>
 
     <VBox alignment="CENTER" styleClass="display-panel">
@@ -18,7 +23,7 @@
         <Label fx:id="lblSongArtist" styleClass="pixel-text-subtitle" text="-" />
         <Slider fx:id="progressSlider" styleClass="pixel-slider" />
         <HBox maxWidth="Infinity">
-            <Label fx:id="lblTimeCurrent" styleClass="pixel-text-time" text="0:00" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <Label fx:id="lblTimeCurrent" maxWidth="Infinity" styleClass="pixel-text-time" text="0:00" HBox.hgrow="ALWAYS" />
             <Label fx:id="lblTimeTotal" styleClass="pixel-text-time" text="0:00" />
         </HBox>
     </VBox>

@@ -75,4 +75,14 @@ public class ControlesController {
         lblTimeCurrent.setText(actual);
         lblTimeTotal.setText(total);
     }
+
+    @FXML
+    void onRebootSong(ActionEvent event) {
+
+    }
+
+    @FXML
+    void onLoopSongs(ActionEvent event) {
+
+    }
 }
