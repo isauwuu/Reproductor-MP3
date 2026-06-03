@@ -218,21 +218,10 @@ public class MainController implements ReproductorListener {
     private void reordenarVista() {
         Platform.runLater(() -> {
             lvListSong.getItems().clear();
-            boolean shuffleActivo = controlesController != null && controlesController.isShuffle();
-            if (shuffleActivo && !shuffleManager.estaVacia()) {
-                ListaIndices cola = shuffleManager.getCola();
-                listaVista = new ListaCancion();
-                for (int i = 0; i < cola.tam(); i++) {
-                    Cancion c = (Cancion) listaCancion.devolver((Integer) cola.devolver(i));
-                    listaVista.insertar(c, i);
-                    lvListSong.getItems().add("♪ " + c.getTitulo() + " - " + c.getArtista());
-                }
-            } else {
-                listaVista = listaCancion;
-                for (int i = 0; i < listaCancion.tam(); i++) {
-                    Cancion c = (Cancion) listaCancion.devolver(i);
-                    lvListSong.getItems().add("♪ " + c.getTitulo() + " - " + c.getArtista());
-                }
+            listaVista = listaCancion;
+            for (int i = 0; i < listaCancion.tam(); i++) {
+                Cancion c = (Cancion) listaCancion.devolver(i);
+                lvListSong.getItems().add("♪ " + c.getTitulo() + " - " + c.getArtista());
             }
             lvListSong.getSelectionModel().select(actualPos);
         });
@@ -320,7 +309,6 @@ public class MainController implements ReproductorListener {
     public void onShuffleToggled(boolean activo) {
         if (activo) shuffleManager.generarCola(listaCancion.tam(), actualPos);
         else shuffleManager.limpiar();
-        reordenarVista();
     }
 
     @Override
