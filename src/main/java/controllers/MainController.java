@@ -63,7 +63,7 @@ public class MainController implements ReproductorListener {
         bgWebView.setMouseTransparent(true);
         mainStackPane.getChildren().add(0, bgWebView);
         motorSvg = new SvgController(bgWebView);
-        motorSvg.actualizarFondo(ExtractorPaleta.PALETA_BASE, null);
+        motorSvg.actualizarFondo(ExtractorPaleta.PALETA_BASE, null, false);
         configurarEventosReproductor();
         lvListSong.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
@@ -99,17 +99,24 @@ public class MainController implements ReproductorListener {
                 })
         );
 
-        reproductor.estadoProperty().addListener((obs, viejo, estado) ->
-                Platform.runLater(() -> {
-                    boolean reproduciendo = estado == MediaPlayer.Status.PLAYING;
-                    if (tocadiscosController != null) {
-                        if (reproduciendo) tocadiscosController.reproducirAnimacion();
-                        else tocadiscosController.pausarAnimacion();
-                    }
-                    if (controlesController != null)
-                        controlesController.cambiarTextoBotonPlay(reproduciendo ? "▐▐" : "▶");
-                })
-        );
+        reproductor.estadoProperty().addListener((obs, viejo, estado) -> {
+            Platform.runLater(() -> {
+                if (estado == MediaPlayer.Status.PLAYING) {
+                    if (tocadiscosController != null) tocadiscosController.reproducirAnimacion();
+                    if (controlesController != null) controlesController.cambiarTextoBotonPlay("▐▐");
+
+                    // PRENDER NOTAS MUSICALES
+                    if (motorSvg != null) motorSvg.alternarNotasAnimadas(true);
+
+                } else {
+                    if (tocadiscosController != null) tocadiscosController.pausarAnimacion();
+                    if (controlesController != null) controlesController.cambiarTextoBotonPlay("▶");
+
+                    // APAGAR NOTAS MUSICALES
+                    if (motorSvg != null) motorSvg.alternarNotasAnimadas(false);
+                }
+            });
+        });
 
         controlesController.setOnProgresoSoltado(() ->
                 reproductor.adelantar(controlesController.getProgreso() / 100.0));
@@ -152,8 +159,8 @@ public class MainController implements ReproductorListener {
     private void creaCancion(File file) {
         Cancion cancion = new Cancion(file.getAbsolutePath(), listaCancion.tam());
         listaCancion.insertar(cancion, listaCancion.tam());
-        listaVista = listaCancion; // resetea cualquier ordenamiento activo
-        btnMenuOrdenamiento.setText("ordenar"); // resetea el texto del menú
+        listaVista = listaCancion;
+        btnMenuOrdenamiento.setText("ordenar");
         lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
         if (listaCancion.tam() == 1) actualPos = 0;
 
@@ -181,7 +188,9 @@ public class MainController implements ReproductorListener {
         Cancion cancion = (Cancion) nodo.getNodoInfo();
         if (controlesController != null)
             controlesController.actualizarTextos(cancion.getTitulo(), cancion.getArtista());
+
         actualizarTema(cancion);
+
         reproductor.reproducirNueva(cancion);
         lvListSong.getSelectionModel().select(actualPos);
     }
@@ -195,10 +204,15 @@ public class MainController implements ReproductorListener {
         Image portada = cancion.getPortada();
         Paleta paleta = ExtractorPaleta.extraerDe(portada);
         ThemeManager.aplicarPaleta(lvListSong.getScene(), paleta);
+
         if (tocadiscosController != null)
             tocadiscosController.actualizarColoresDinamicos(paleta.getAcento(), paleta.getBrillante());
-        if (motorSvg != null)
-            motorSvg.actualizarFondo(paleta, portada);
+
+        if (motorSvg != null) {
+            boolean isPlaying = (reproductor.estadoProperty().get() == MediaPlayer.Status.PLAYING);
+            // Ya no le pasamos el BPM, solo isPlaying
+            motorSvg.actualizarFondo(paleta, portada, isPlaying);
+        }
     }
 
     private void reordenarVista() {
@@ -243,13 +257,11 @@ public class MainController implements ReproductorListener {
         int seleccionada = lvListSong.getSelectionModel().getSelectedIndex();
         if (seleccionada < 0 || listaCancion.estaVacia()) return;
         listaCancion.eliminar(seleccionada);
-        // Si se eliminó la que estaba sonando, detenemos
         if (seleccionada == actualPos) {
             onStopSong();
             cancionActual = null;
             actualPos = -1;
         } else if (seleccionada < actualPos) {
-            // La posición actual se desplazó un lugar
             actualPos--;
         }
         if (controlesController.isShuffle())
