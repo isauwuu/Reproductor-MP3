@@ -11,11 +11,12 @@ public class ControlesController {
     @FXML private Button btnPlayPause;
     @FXML private Button btnShuffle;
     @FXML private Button btnLoop;
+    @FXML private Button btnStop;
     @FXML private Label lblSongTitle;
     @FXML private Label lblSongArtist;
     @FXML private Label lblTimeCurrent;
     @FXML private Label lblTimeTotal;
-    @FXML public Slider progressSlider;
+    @FXML private Slider progressSlider;
 
     private ReproductorListener listener;
     private boolean shuffle = false;
@@ -31,20 +32,41 @@ public class ControlesController {
 
     @FXML void onShuffle(ActionEvent event) {
         shuffle = !shuffle;
-        loop = false;
+        if (shuffle && loop) {
+            loop = false; // Apaga el loop
+            actualizarEstiloBoton(btnLoop, false);
+            listener.onLoopToggled(false);
+        }
         actualizarEstiloBoton(btnShuffle, shuffle);
-        actualizarEstiloBoton(btnLoop, false);
         listener.onShuffleToggled(shuffle);
     }
 
     @FXML void onLoop(ActionEvent event) {
         loop = !loop;
-        shuffle = false;
+        if (loop && shuffle) {
+            shuffle = false; // Apaga el shuffle
+            actualizarEstiloBoton(btnShuffle, false);
+            listener.onShuffleToggled(false);
+        }
         actualizarEstiloBoton(btnLoop, loop);
-        actualizarEstiloBoton(btnShuffle, false);
         listener.onLoopToggled(loop);
     }
 
+    public void resetearProgreso() {
+        progressSlider.setValue(0);
+    }
+
+    public boolean isSliderCambiando() {
+        return progressSlider.isValueChanging();
+    }
+
+    public void setProgreso(double porcentaje) {
+        progressSlider.setValue(porcentaje);
+    }
+
+    public void setOnProgresoSoltado(Runnable accion) {
+        progressSlider.setOnMouseReleased(e -> accion.run());
+    }
     private void actualizarEstiloBoton(Button btn, boolean activo) {
         if (btn == null) return;
         if (activo) {
@@ -68,12 +90,10 @@ public class ControlesController {
     }
 
     @FXML
-    void onRebootSong(ActionEvent event) {
-
+    void onStopSong(ActionEvent event) {
+        if (listener != null) listener.onStopSong();
     }
-
-    @FXML
-    void onLoopSongs(ActionEvent event) {
-
+    public double getProgreso() {
+        return progressSlider.getValue();
     }
 }

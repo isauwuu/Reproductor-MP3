@@ -81,6 +81,13 @@ public class ReproductorDeAudio {
             tiempoTotal.set(Duration.ZERO);
         }
     }
+    public void detener() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.seek(Duration.ZERO);
+            tiempoActual.set(Duration.ZERO);
+        }
+    }
     public ObjectProperty<Duration> tiempoActualProperty() {
         return this.tiempoActual;
     }
