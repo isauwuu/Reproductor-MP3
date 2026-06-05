@@ -16,11 +16,9 @@
 }
 
 .display-panel {
-    -fx-background-color: -panel;
-
-    -fx-border-color: -borde;
-    -fx-border-width: 3px;
-
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0px;
     -fx-padding: 10px;
 }
 

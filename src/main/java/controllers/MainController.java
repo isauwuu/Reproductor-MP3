@@ -5,7 +5,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -40,7 +46,7 @@ public class MainController implements ReproductorListener {
     @FXML private MenuItem btnOrdenarPorAnio;
     @FXML private MenuItem btnOrdenarPorArtista;
     @FXML private MenuItem btnOrdenarPorNombre;
-    @FXML private ListView<String> lvListSong;
+    @FXML private ListView<Cancion> lvListSong;
     @FXML private StackPane mainStackPane;
     @FXML private StackPane tocadiscos;
     @FXML private Button btnAddSong;
@@ -70,6 +76,60 @@ public class MainController implements ReproductorListener {
         mainStackPane.widthProperty().addListener((obs, oldVal, newVal) -> reposicionarTocadiscos());
         mainStackPane.heightProperty().addListener((obs, oldVal, newVal) -> reposicionarTocadiscos());
         Platform.runLater(this::reposicionarTocadiscos);
+
+        lvListSong.setCellFactory(param -> new ListCell<Cancion>() {
+            private final ImageView imageView = new ImageView();
+            private final Label titleLabel = new Label();
+            private final Label artistLabel = new Label();
+            private final HBox hbox = new HBox(10);
+            private final VBox vbox = new VBox(2);
+
+            {
+                imageView.setFitWidth(32);
+                imageView.setFitHeight(32);
+                imageView.setPreserveRatio(true);
+                imageView.setSmooth(false);
+
+                titleLabel.setStyle("-fx-text-fill: inherit; -fx-font-family: 'Press Start 2P'; -fx-font-size: 10px; -fx-font-weight: bold;");
+                artistLabel.setStyle("-fx-text-fill: inherit; -fx-font-family: 'Press Start 2P'; -fx-font-size: 8px; -fx-opacity: 0.7;");
+                
+                vbox.getChildren().addAll(titleLabel, artistLabel);
+                vbox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+                hbox.getChildren().addAll(imageView, vbox);
+                hbox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+                hbox.setPadding(new javafx.geometry.Insets(4, 4, 4, 4));
+            }
+
+            @Override
+            protected void updateItem(Cancion cancion, boolean empty) {
+                super.updateItem(cancion, empty);
+                if (empty || cancion == null) {
+                    setText(null);
+                    setGraphic(null);
+                    getStyleClass().remove("list-cell-active");
+                } else {
+                    titleLabel.setText(cancion.getTitulo());
+                    artistLabel.setText(cancion.getArtista());
+
+                    Image portada = cancion.getPortada();
+                    if (portada != null) {
+                        imageView.setImage(portada);
+                    } else {
+                        imageView.setImage(crearPlaceholder8Bit(cancion));
+                    }
+                    setGraphic(hbox);
+
+                    if (getIndex() == actualPos) {
+                        if (!getStyleClass().contains("list-cell-active")) {
+                            getStyleClass().add("list-cell-active");
+                        }
+                    } else {
+                        getStyleClass().remove("list-cell-active");
+                    }
+                }
+            }
+        });
 
         lvListSong.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
@@ -167,11 +227,12 @@ public class MainController implements ReproductorListener {
         listaCancion.insertar(cancion, listaCancion.tam());
         listaVista = listaCancion;
         btnMenuOrdenamiento.setText("ordenar");
-        lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
+        lvListSong.getItems().add(cancion);
         if (listaCancion.tam() == 1) actualPos = 0;
 
         if (controlesController != null && controlesController.isShuffle())
             shuffleManager.generarCola(listaCancion.tam(), actualPos);
+        lvListSong.refresh();
     }
 
     private void actualizaListaView(ListaCancionOrdenada l) {
@@ -183,8 +244,9 @@ public class MainController implements ReproductorListener {
         for (int i = 0; i < l.tam(); i++) {
             Cancion cancion = (Cancion) l.devolver(i);
             listaVista.insertar(cancion, i);
-            lvListSong.getItems().add("♪ " + cancion.getTitulo() + " - " + cancion.getArtista());
+            lvListSong.getItems().add(cancion);
         }
+        lvListSong.refresh();
     }
 
     private void cargarDesdeNodo(NodoDoble nodo, int posLista) {
@@ -199,6 +261,7 @@ public class MainController implements ReproductorListener {
 
         reproductor.reproducirNueva(cancion);
         lvListSong.getSelectionModel().select(actualPos);
+        lvListSong.refresh();
     }
 
     private void actualizaCancionPorIndice(int pos) {
@@ -227,9 +290,10 @@ public class MainController implements ReproductorListener {
             listaVista = listaCancion;
             for (int i = 0; i < listaCancion.tam(); i++) {
                 Cancion c = (Cancion) listaCancion.devolver(i);
-                lvListSong.getItems().add("♪ " + c.getTitulo() + " - " + c.getArtista());
+                lvListSong.getItems().add(c);
             }
             lvListSong.getSelectionModel().select(actualPos);
+            lvListSong.refresh();
         });
     }
 
@@ -365,7 +429,7 @@ public class MainController implements ReproductorListener {
         // Subimos considerablemente el anclaje virtual (de 515 a 492)
         // Esto compensa el redimensionado y sube la base del aparato sobre la madera.
         double x_v = 675.0;
-        double y_v = 475.0;
+        double y_v = 490.0;
 
         double x_real = x_v * S - X_offset;
         double y_real = y_v * S - Y_offset;
@@ -392,5 +456,52 @@ public class MainController implements ReproductorListener {
             // Esto le quita el aspecto de bloque alto y le da la perspectiva correcta de la mesa
             tocadiscos.setScaleY(factorEscalaBase * 0.50);
         }
+    }
+
+    private Image crearPlaceholder8Bit(Cancion cancion) {
+        int w = 32, h = 32;
+        WritableImage img = new WritableImage(w, h);
+        PixelWriter pw = img.getPixelWriter();
+        
+        int hash = cancion.getTitulo().hashCode() + cancion.getArtista().hashCode();
+        Color bgColor = Color.rgb(
+            Math.abs((hash) % 100) + 20,
+            Math.abs((hash >> 8) % 100) + 20,
+            Math.abs((hash >> 16) % 100) + 20
+        );
+        
+        Color fgColor = Color.rgb(
+            Math.abs((hash >> 4) % 120) + 130,
+            Math.abs((hash >> 12) % 120) + 130,
+            Math.abs((hash >> 20) % 120) + 130
+        );
+
+        int[][] note = {
+            {0,0,0,0,0,0,0,0},
+            {0,0,0,1,1,1,1,0},
+            {0,0,0,1,0,0,1,0},
+            {0,0,0,1,0,0,1,0},
+            {0,0,1,1,0,1,1,0},
+            {0,1,1,1,0,1,1,1},
+            {0,1,1,1,0,1,1,1},
+            {0,0,1,1,0,0,1,1}
+        };
+
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                if (x < 2 || x >= w - 2 || y < 2 || y >= h - 2) {
+                    pw.setColor(x, y, fgColor.darker());
+                } else {
+                    int nx = (x - 4) / 3;
+                    int ny = (y - 4) / 3;
+                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && note[ny][nx] == 1) {
+                        pw.setColor(x, y, fgColor);
+                    } else {
+                        pw.setColor(x, y, bgColor);
+                    }
+                }
+            }
+        }
+        return img;
     }
 }

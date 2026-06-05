@@ -22,6 +22,18 @@ public class ControlesController {
     private boolean shuffle = false;
     private boolean loop    = false;
 
+    @FXML
+    public void initialize() {
+        progressSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            double percentage = newVal.doubleValue();
+            javafx.scene.Node track = progressSlider.lookup(".track");
+            if (track != null) {
+                track.setStyle("-fx-background-color: linear-gradient(to right, -acento 0%, -acento " 
+                    + percentage + "%, -borde " + percentage + "%, -borde 100%);");
+            }
+        });
+    }
+
     public void setListener(ReproductorListener l) { this.listener = l; }
     public boolean isShuffle() { return shuffle; }
     public boolean isLoop()    { return loop; }

@@ -1,17 +1,12 @@
 .playlist-container {
-
-    -fx-background-color: -panel;
-
+    -fx-background-color: rgba(16, 24, 32, 0.65); /* Semi-transparent panel background */
     -fx-border-color: -borde;
     -fx-border-width: 4px;
 }
 
 .pixel-text-header {
-
     -fx-text-fill: -brillante;
-
     -fx-font-size: 14px;
-
     -fx-font-weight: bold;
 }
 
@@ -20,94 +15,73 @@
    ================================== */
 
 .pixel-playlist {
-
-    -fx-background-color: -panel;
-
+    -fx-background-color: transparent;
     -fx-border-color: -borde;
     -fx-border-width: 3px;
-
     -fx-padding: 2px;
-
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
 }
 
 /* Fondo interno */
-
 .pixel-playlist .viewport {
-
-    -fx-background-color: -panel;
+    -fx-background-color: transparent;
 }
 
 /* Cada canción */
-
 .pixel-playlist .list-cell {
-
-    -fx-background-color: -panel;
-
+    -fx-background-color: transparent;
     -fx-text-fill: -texto;
-
-    -fx-font-size: 12px;
-
-    -fx-padding: 8px;
-
-    -fx-border-color: transparent transparent -borde transparent;
-    -fx-border-width: 0 0 1 0;
+    -fx-font-size: 10px;
+    -fx-font-family: 'Press Start 2P';
+    -fx-padding: 6px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
 /* Hover */
-
 .pixel-playlist .list-cell:hover {
-
-    -fx-background-color: derive(-acento, -40%);
+    -fx-background-color: rgba(26, 58, 74, 0.4);
 }
 
 /* Canción seleccionada */
-
 .pixel-playlist .list-cell:selected {
-
-    -fx-background-color: -acento;
-
-    -fx-text-fill: -fondo;
-
+    -fx-background-color: rgba(32, 168, 192, 0.35);
+    -fx-text-fill: -brillante;
     -fx-font-weight: bold;
 }
 
 /* Scrollbar */
-
 .pixel-playlist .scroll-bar {
-
-    -fx-background-color: -panel;
+    -fx-background-color: transparent;
 }
 
 .pixel-playlist .scroll-bar .track {
-
-    -fx-background-color: -panel;
+    -fx-background-color: rgba(16, 24, 32, 0.3);
 }
 
 .pixel-playlist .scroll-bar .thumb {
-
     -fx-background-color: -acento;
-
     -fx-background-radius: 0;
 }
 
 /* Eliminar esquinas redondeadas */
-
 .pixel-playlist .thumb,
 .pixel-playlist .track {
-
     -fx-background-radius: 0;
 }
+
 /* Canción activa en la playlist */
 .list-cell-active {
-    -fx-background-color: -acento;
-    -fx-text-fill: -fondo;
+    -fx-background-color: rgba(32, 168, 192, 0.2); /* Highlight active song background */
+    -fx-text-fill: -brillante;
     -fx-font-family: 'Press Start 2P';
+    -fx-border-color: rgba(192, 232, 240, 0.4);
+    -fx-border-width: 1px;
 }
 
 .list-cell-active:hover {
-    -fx-background-color: -brillante;
+    -fx-background-color: rgba(192, 232, 240, 0.3);
 }
 .pixel-button-small .arrow-button {
     -fx-background-color: transparent;
