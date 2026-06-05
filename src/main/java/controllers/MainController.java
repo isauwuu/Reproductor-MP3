@@ -42,6 +42,7 @@ public class MainController implements ReproductorListener {
     @FXML private MenuItem btnOrdenarPorNombre;
     @FXML private ListView<String> lvListSong;
     @FXML private StackPane mainStackPane;
+    @FXML private StackPane tocadiscos;
     @FXML private Button btnAddSong;
     @FXML private Button btnAddFolder;
 
@@ -65,6 +66,11 @@ public class MainController implements ReproductorListener {
         motorSvg = new SvgController(bgWebView);
         motorSvg.actualizarFondo(ExtractorPaleta.PALETA_BASE, null, false);
         configurarEventosReproductor();
+        
+        mainStackPane.widthProperty().addListener((obs, oldVal, newVal) -> reposicionarTocadiscos());
+        mainStackPane.heightProperty().addListener((obs, oldVal, newVal) -> reposicionarTocadiscos());
+        Platform.runLater(this::reposicionarTocadiscos);
+
         lvListSong.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2) {
                 int seleccionada = lvListSong.getSelectionModel().getSelectedIndex();
@@ -329,5 +335,62 @@ public class MainController implements ReproductorListener {
             if (tocadiscosController != null)
                 tocadiscosController.pausarAnimacion();
         });
+    }
+
+    private void reposicionarTocadiscos() {
+        double W = mainStackPane.getWidth();
+        double H = mainStackPane.getHeight();
+        if (W <= 0 || H <= 0) return;
+
+        double V_w = 1200.0;
+        double V_h = 700.0;
+        double R_v = V_w / V_h;
+        double R_a = W / H;
+
+        double S;
+        double Y_offset = 0;
+        double X_offset = 0;
+
+        if (R_a > R_v) {
+            S = W / V_w;
+            double H_scaled = V_h * S;
+            Y_offset = (H_scaled - H) / 2.0;
+        } else {
+            S = H / V_h;
+            double W_scaled = V_w * S;
+            X_offset = (W_scaled - W) / 2.0;
+        }
+
+        // --- POSICIONAMIENTO CORREGIDO ---
+        // Subimos considerablemente el anclaje virtual (de 515 a 492)
+        // Esto compensa el redimensionado y sube la base del aparato sobre la madera.
+        double x_v = 675.0;
+        double y_v = 475.0;
+
+        double x_real = x_v * S - X_offset;
+        double y_real = y_v * S - Y_offset;
+
+        double transX = x_real - (W / 2.0);
+        double transY = y_real - (H / 2.0);
+
+        if (tocadiscos != null) {
+            tocadiscos.setTranslateX(transX);
+            tocadiscos.setTranslateY(transY);
+
+            // --- ESCALA ASIMÉTRICA OPTIMIZADA ---
+            // Usamos una escala base de 0.65 para que conserve buena presencia horizontal
+            double escalaBaseSvg = 0.65;
+            double factorEscalaBase = S / escalaBaseSvg;
+
+            // Limitadores de seguridad comunes
+            factorEscalaBase = Math.max(0.35, Math.min(factorEscalaBase, 1.8));
+
+            // El ancho (X) se mantiene generoso para que sea más ancho que el monitor de la derecha
+            tocadiscos.setScaleX(factorEscalaBase * 0.55);
+
+            // La altura (Y) se "aplasta" multiplicándola por un factor menor (0.62)
+            // Esto le quita el aspecto de bloque alto y le da la perspectiva correcta de la mesa
+            tocadiscos.setScaleY(factorEscalaBase * 0.50);
+        }
     }
 }
