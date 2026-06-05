@@ -1,6 +1,7 @@
 package controllers;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -25,6 +26,8 @@ import services.ShuffleManager;
 import services.ReproductorDeAudio;
 import ui.ThemeManager;
 import java.io.File;
+import java.util.Optional;
+
 import javafx.scene.layout.StackPane;
 
 public class MainController implements ReproductorListener {
@@ -313,19 +316,31 @@ public class MainController implements ReproductorListener {
     }
 
     @FXML void removeSongEvent(ActionEvent event) {
-        int seleccionada = lvListSong.getSelectionModel().getSelectedIndex();
-        if (seleccionada < 0 || listaCancion.estaVacia()) return;
-        listaCancion.eliminar(seleccionada);
-        if (seleccionada == actualPos) {
-            onStopSong();
-            cancionActual = null;
-            actualPos = -1;
-        } else if (seleccionada < actualPos) {
-            actualPos--;
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Eliminar canciones");
+
+        ListView<String> lista = new ListView<>();
+        lista.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        for (int i = 0; i < listaCancion.tam(); i++)
+            lista.getItems().add(String.valueOf(lvListSong.getItems().get(i)));
+
+        dialog.getDialogPane().setContent(lista);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        Optional<ButtonType> resultado = dialog.showAndWait();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            ObservableList<Integer> seleccionados = lista.getSelectionModel().getSelectedIndices();     //preguntar si se pueda
+
+            ListaIndices indices = new ListaIndices();
+            for (int i = 0; i < seleccionados.size(); i++)
+                indices.insertar(seleccionados.get(i), i);
+
+            for (int i = indices.tam() - 1; i >= 0; i--) {
+                int idx = (Integer) indices.devolver(i);
+                listaCancion.eliminar(idx);
+                lvListSong.getItems().remove(idx);
+            }
         }
-        if (controlesController.isShuffle())
-            shuffleManager.generarCola(listaCancion.tam(), actualPos);
-        reordenarVista();
     }
 
     @Override
