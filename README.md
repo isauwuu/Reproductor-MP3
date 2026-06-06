@@ -198,27 +198,40 @@ src/
 
 ## Cómo ejecutar
 
-### Requisitos previos
+### Método Automático (Recomendado — Instala dependencias de forma local y automática)
 
+Hemos incluido scripts portables que detectan si tienes Java 21 instalado en el sistema. En caso de no ser así, **descargan una copia local portable de JDK 21** y configuran un wrapper autónomo de Maven. **No necesitas instalar Java ni Maven en tu equipo manualmente.**
+
+#### En Linux y macOS:
+1. Abre tu terminal en la carpeta del proyecto.
+2. Ejecuta el launcher:
+   ```bash
+   ./run.sh
+   ```
+
+#### En Windows:
+1. Abre la carpeta del proyecto.
+2. Haz doble clic en el archivo `run.bat` (o ejecútalo desde CMD/PowerShell escribiendo `run.bat`).
+
+---
+
+### Método Manual (Si prefieres usar tus propias herramientas del sistema)
+
+#### Requisitos previos:
 - JDK 21 o superior → [descargar](https://adoptium.net/)
 - Maven 3.9+ → [descargar](https://maven.apache.org/download.cgi)
 
-### IntelliJ IDEA (recomendado)
-
-1. Clonar el repositorio
-2. `File → Open` y seleccionar la carpeta del proyecto
-3. Esperar que IntelliJ detecte el `pom.xml` y descargue las dependencias
-4. Ejecutar `reproductor.Main` con el botón Run
-
-### Desde terminal
-
+#### Desde terminal:
 ```bash
 git clone https://github.com/isauwuu/Reproductor-MP3.git
 cd Reproductor-MP3
 mvn clean javafx:run
 ```
 
-Las dependencias se descargan automáticamente en el primer build.
+#### En IntelliJ IDEA:
+1. Abre el IDE, ve a `File → Open` y selecciona la carpeta del proyecto.
+2. Deja que el IDE detecte el `pom.xml` y descargue las dependencias.
+3. Ejecuta la clase `reproductor.Main`.
 
 ---
 
