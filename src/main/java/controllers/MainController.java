@@ -410,7 +410,7 @@ public class MainController implements ReproductorListener {
 
     @Override
     public void onPlay() {
-        if (cancionActual == null && actualPos != -1)
+        if ((cancionActual == null && actualPos != -1) || (cancionActual != null && !reproductor.tieneMedia()))
             actualizaCancionPorIndice(actualPos);
         else
             reproductor.alternarPausaReproduccion();

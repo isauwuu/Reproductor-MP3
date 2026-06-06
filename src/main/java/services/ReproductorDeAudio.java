@@ -92,6 +92,9 @@ public class ReproductorDeAudio {
         limpiarMotor();
         mediaPlayer = null;
     }
+    public boolean tieneMedia() {
+        return mediaPlayer != null;
+    }
     public ObjectProperty<Duration> tiempoActualProperty() {
         return this.tiempoActual;
     }
