@@ -321,7 +321,7 @@ public class MainController implements ReproductorListener {
 
         ListView<String> lista = new ListView<>();
         lista.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        for (int i = 0; i < listaCancion.tam(); i++)
+        for (int i = 0; i < lvListSong.getItems().size(); i++)
             lista.getItems().add(String.valueOf(lvListSong.getItems().get(i)));
 
         dialog.getDialogPane().setContent(lista);
@@ -337,9 +337,44 @@ public class MainController implements ReproductorListener {
 
             for (int i = indices.tam() - 1; i >= 0; i--) {
                 int idx = (Integer) indices.devolver(i);
-                listaCancion.eliminar(idx);
+                
+                // Obtener la canción a eliminar desde el índice visual
+                Cancion cancionAEliminar = lvListSong.getItems().get(idx);
+                
+                // Eliminar de listaCancion (siempre y cuando se encuentre)
+                int idxEnCancion = listaCancion.buscar(cancionAEliminar);
+                if (idxEnCancion != -1) {
+                    listaCancion.eliminar(idxEnCancion);
+                }
+                
+                // Eliminar de listaVista (si es una instancia diferente a listaCancion, por ejemplo al ordenar)
+                if (listaVista != listaCancion) {
+                    int idxEnVista = listaVista.buscar(cancionAEliminar);
+                    if (idxEnVista != -1) {
+                        listaVista.eliminar(idxEnVista);
+                    }
+                }
+                
+                // Eliminar de la ListView visual
                 lvListSong.getItems().remove(idx);
+                
+                // Actualizar la posición de reproducción actual
+                if (idx < actualPos) {
+                    actualPos--;
+                } else if (idx == actualPos) {
+                    onStopSong();
+                    cancionActual = null;
+                    actualPos = -1;
+                }
             }
+            
+            // Re-seleccionar el item activo si corresponde
+            if (actualPos >= 0 && actualPos < lvListSong.getItems().size()) {
+                lvListSong.getSelectionModel().select(actualPos);
+            } else {
+                lvListSong.getSelectionModel().clearSelection();
+            }
+            lvListSong.refresh();
         }
     }
 
