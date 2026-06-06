@@ -88,6 +88,10 @@ public class ReproductorDeAudio {
             tiempoActual.set(Duration.ZERO);
         }
     }
+    public void liberar() {
+        limpiarMotor();
+        mediaPlayer = null;
+    }
     public ObjectProperty<Duration> tiempoActualProperty() {
         return this.tiempoActual;
     }

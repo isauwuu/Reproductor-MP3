@@ -335,6 +335,9 @@ public class MainController implements ReproductorListener {
             for (int i = 0; i < seleccionados.size(); i++)
                 indices.insertar(seleccionados.get(i), i);
 
+            int originalPlayingPos = actualPos;
+            boolean playingSongDeleted = false;
+
             for (int i = indices.tam() - 1; i >= 0; i--) {
                 int idx = (Integer) indices.devolver(i);
                 
@@ -362,12 +365,39 @@ public class MainController implements ReproductorListener {
                 if (idx < actualPos) {
                     actualPos--;
                 } else if (idx == actualPos) {
+                    playingSongDeleted = true;
                     onStopSong();
+                    reproductor.liberar();
                     cancionActual = null;
                     actualPos = -1;
                 }
             }
             
+            // Si se eliminó la canción que estaba sonando, ajustamos punteros y controles
+            if (playingSongDeleted) {
+                if (!lvListSong.getItems().isEmpty()) {
+                    int nuevoIndice = originalPlayingPos;
+                    if (nuevoIndice >= lvListSong.getItems().size()) {
+                        nuevoIndice = lvListSong.getItems().size() - 1;
+                    }
+                    actualPos = nuevoIndice;
+                    cancionActual = listaVista.obtenerNodo(actualPos);
+                    
+                    Cancion nuevaCancion = (Cancion) cancionActual.getNodoInfo();
+                    if (controlesController != null) {
+                        controlesController.actualizarTextos(nuevaCancion.getTitulo(), nuevaCancion.getArtista());
+                        controlesController.resetearProgreso();
+                    }
+                } else {
+                    actualPos = -1;
+                    cancionActual = null;
+                    if (controlesController != null) {
+                        controlesController.actualizarTextos("Sin canción", "Desconocido");
+                        controlesController.resetearProgreso();
+                    }
+                }
+            }
+
             // Re-seleccionar el item activo si corresponde
             if (actualPos >= 0 && actualPos < lvListSong.getItems().size()) {
                 lvListSong.getSelectionModel().select(actualPos);
