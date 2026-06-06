@@ -203,15 +203,30 @@ src/
 Hemos incluido scripts portables que detectan si tienes Java 21 instalado en el sistema. En caso de no ser así, **descargan una copia local portable de JDK 21** y configuran un wrapper autónomo de Maven. **No necesitas instalar Java ni Maven en tu equipo manualmente.**
 
 #### En Linux y macOS:
-1. Abre tu terminal en la carpeta del proyecto.
-2. Ejecuta el launcher:
+1. Abre tu terminal.
+2. Clona el repositorio y entra a la carpeta:
    ```bash
+   git clone https://github.com/isauwuu/Reproductor-MP3.git
+   cd Reproductor-MP3
+   ```
+3. Asigna permisos de ejecución y lanza el script:
+   ```bash
+   chmod +x run.sh
    ./run.sh
    ```
 
 #### En Windows:
-1. Abre la carpeta del proyecto.
-2. Haz doble clic en el archivo `run.bat` (o ejecútalo desde CMD/PowerShell escribiendo `run.bat`).
+1. Abre tu terminal (CMD o PowerShell).
+2. Clona el repositorio y entra a la carpeta:
+   ```cmd
+   git clone https://github.com/isauwuu/Reproductor-MP3.git
+   cd Reproductor-MP3
+   ```
+3. Ejecuta el launcher:
+   ```cmd
+   run.bat
+   ```
+   *(También puedes abrir la carpeta del proyecto desde el Explorador de Archivos y hacer doble clic sobre `run.bat`)*
 
 ---
 
