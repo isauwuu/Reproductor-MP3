@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.SVGPath?>
 
 <BorderPane id="root-pane"
             prefHeight="650.0" prefWidth="950.0"
@@ -39,12 +40,31 @@
                 <Insets bottom="20.0" left="15.0" right="20.0" top="20.0" />
             </padding>
             <Label styleClass="pixel-text-header" text="LISTA DE CANCIONES" />
-            <HBox spacing="8.0">
-                <Button fx:id="btnAddSong" mnemonicParsing="false" onAction="#abrirArchivosEvent" styleClass="pixel-button-small" text="✚" />
-                <Button fx:id="btnRemoveSong" mnemonicParsing="false" onAction="#removeSongEvent" styleClass="pixel-button-small" text="✖" />
-                <Button fx:id="btnAddFolder" mnemonicParsing="false" onAction="#abrirCarpetaEvent" styleClass="pixel-button-small" text="📁" />
+            <HBox spacing="8.0" alignment="CENTER_LEFT">
+                <Button fx:id="btnAddSong" mnemonicParsing="false" onAction="#abrirArchivosEvent" styleClass="pixel-button-small">
+                    <graphic>
+                        <SVGPath content="M 3,2 H 10 L 13,5 V 14 H 3 Z M 10,2 V 5 H 13 M 6,9 H 10 M 8,7 V 11" 
+                                 strokeWidth="2.0" strokeLineCap="ROUND" strokeLineJoin="ROUND" fill="TRANSPARENT" styleClass="pixel-svg-icon" />
+                    </graphic>
+                </Button>
+                <Button fx:id="btnRemoveSong" mnemonicParsing="false" onAction="#removeSongEvent" styleClass="pixel-button-small">
+                    <graphic>
+                        <SVGPath content="M 3,2 H 10 L 13,5 V 14 H 3 Z M 10,2 V 5 H 13 M 6,7 L 10,11 M 10,7 L 6,11" 
+                                 strokeWidth="2.0" strokeLineCap="ROUND" strokeLineJoin="ROUND" fill="TRANSPARENT" styleClass="pixel-svg-icon" />
+                    </graphic>
+                </Button>
+                <Button fx:id="btnAddFolder" mnemonicParsing="false" onAction="#abrirCarpetaEvent" styleClass="pixel-button-small">
+                    <graphic>
+                        <SVGPath content="M 2,4 V 2 H 6 V 4 H 14 V 13 H 2 Z M 6,9 H 10 M 8,7 V 11" 
+                                 strokeWidth="2.0" strokeLineCap="ROUND" strokeLineJoin="ROUND" fill="TRANSPARENT" styleClass="pixel-svg-icon" />
+                    </graphic>
+                </Button>
 
-                <MenuButton fx:id="btnMenuOrdenamiento" mnemonicParsing="false" styleClass="pixel-button-small" text="ordenar">
+                <MenuButton fx:id="btnMenuOrdenamiento" mnemonicParsing="false" styleClass="pixel-button-small" text="ordenar" graphicTextGap="6">
+                    <graphic>
+                        <SVGPath content="M 3,5 H 9 M 3,9 H 7 M 3,13 H 5 M 12,5 V 13 M 10,11 L 12,13 L 14,11" 
+                                 strokeWidth="2.0" strokeLineCap="ROUND" strokeLineJoin="ROUND" fill="TRANSPARENT" styleClass="pixel-svg-icon" />
+                    </graphic>
                     <items>
                         <MenuItem fx:id="btnordenarPorAnio" mnemonicParsing="false" onAction="#ordenarPorAnioEvent" text="ordenar por año" />
                         <MenuItem fx:id="btnOrdenarPorArtista" mnemonicParsing="false" onAction="#ordenarPorArtistaEvent" text="ordenar por artista" />

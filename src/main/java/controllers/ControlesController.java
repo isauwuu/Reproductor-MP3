@@ -21,6 +21,7 @@ public class ControlesController {
     private ReproductorListener listener;
     private boolean shuffle = false;
     private boolean loop    = false;
+    private boolean userIsInteracting = false;
 
     @FXML
     public void initialize() {
@@ -32,6 +33,28 @@ public class ControlesController {
                     + percentage + "%, -borde " + percentage + "%, -borde 100%);");
             }
         });
+
+        // Click on track immediately jumps to value
+        progressSlider.setOnMousePressed(event -> {
+            userIsInteracting = true;
+            actualizarValorPorCoordenada(event.getX());
+        });
+
+        // Dragging mouse continues updating value
+        progressSlider.setOnMouseDragged(event -> {
+            actualizarValorPorCoordenada(event.getX());
+        });
+    }
+
+    private void actualizarValorPorCoordenada(double x) {
+        double width = progressSlider.getWidth();
+        if (width <= 0) return;
+        double min = progressSlider.getMin();
+        double max = progressSlider.getMax();
+        double newValue = (x / width) * (max - min) + min;
+        if (newValue < min) newValue = min;
+        if (newValue > max) newValue = max;
+        progressSlider.setValue(newValue);
     }
 
     public void setListener(ReproductorListener l) { this.listener = l; }
@@ -69,7 +92,7 @@ public class ControlesController {
     }
 
     public boolean isSliderCambiando() {
-        return progressSlider.isValueChanging();
+        return progressSlider.isValueChanging() || userIsInteracting;
     }
 
     public void setProgreso(double porcentaje) {
@@ -77,7 +100,11 @@ public class ControlesController {
     }
 
     public void setOnProgresoSoltado(Runnable accion) {
-        progressSlider.setOnMouseReleased(e -> accion.run());
+        progressSlider.setOnMouseReleased(e -> {
+            actualizarValorPorCoordenada(e.getX());
+            accion.run();
+            userIsInteracting = false;
+        });
     }
     private void actualizarEstiloBoton(Button btn, boolean activo) {
         if (btn == null) return;

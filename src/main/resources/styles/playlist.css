@@ -83,71 +83,50 @@
 .list-cell-active:hover {
     -fx-background-color: rgba(192, 232, 240, 0.3);
 }
+.pixel-button-small .label-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
 .pixel-button-small .arrow-button {
     -fx-background-color: transparent;
-    -fx-padding: 0 4px 0 4px;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0 8px 0 8px;
+    -fx-border-color: transparent transparent transparent -borde;
+    -fx-border-width: 0 0 0 1px;
 }
 
 .pixel-button-small .arrow-button .arrow {
-    -fx-background-color: -fondo;
+    -fx-background-color: -texto;
 }
 
 .pixel-button-small:hover .arrow-button .arrow {
     -fx-background-color: -fondo;
 }
 
-.pixel-button-small:showing {
-    -fx-background-color: -brillante;
-    -fx-text-fill: -fondo;
-    -fx-border-color: -texto;
+.pixel-button-small:pressed .arrow-button .arrow {
+    -fx-background-color: -fondo;
 }
+
+.pixel-button-small:showing {
+    -fx-background-color: -borde;
+    -fx-text-fill: -fondo;
+    /* Inverted borders for showing/open state */
+    -fx-border-color: -borde -brillante -brillante -borde;
+    -fx-translate-y: 1px;
+}
+
+.pixel-button-small:showing .pixel-svg-icon {
+    -fx-stroke: -fondo;
+}
+
+.pixel-button-small:showing .arrow-button .arrow {
+    -fx-background-color: -fondo;
+}
+
 .list-cell:selected {
     -fx-background-color: -acento;
     -fx-text-fill: -fondo;
-}
-.pixel-button-small {
-    -fx-background-color: -acento;
-    -fx-text-fill: -fondo;
-    -fx-background-radius: 0;
-    -fx-border-color: -borde;
-    -fx-border-width: 2px;
-    -fx-font-size: 11px;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-    -fx-background-insets: 0;
-}
-
-.pixel-button-small:hover {
-    -fx-background-color: -brillante;
-    -fx-text-fill: -fondo;
-    -fx-background-insets: 0;
-}
-
-.pixel-button-small .label-button {
-    -fx-background-color: -acento;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-}
-
-.pixel-button-small:hover .label-button {
-    -fx-background-color: -brillante;
-    -fx-background-insets: 0;
-}
-
-.pixel-button-small .arrow-button {
-    -fx-background-color: -acento;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 0 6px 0 6px;
-    -fx-border-color: transparent transparent transparent -borde;
-    -fx-border-width: 0 0 0 1px;
-}
-
-.pixel-button-small:hover .arrow-button {
-    -fx-background-color: -brillante;
-    -fx-background-insets: 0;
-}
-
-.pixel-button-small .arrow-button .arrow {
-    -fx-background-color: -fondo;
 }

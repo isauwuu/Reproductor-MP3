@@ -172,7 +172,7 @@ public class MainController implements ReproductorListener {
             Platform.runLater(() -> {
                 if (estado == MediaPlayer.Status.PLAYING) {
                     if (tocadiscosController != null) tocadiscosController.reproducirAnimacion();
-                    if (controlesController != null) controlesController.cambiarTextoBotonPlay("▐▐");
+                    if (controlesController != null) controlesController.cambiarTextoBotonPlay("||");
 
                     // PRENDER NOTAS MUSICALES
                     if (motorSvg != null) motorSvg.alternarNotasAnimadas(true);
