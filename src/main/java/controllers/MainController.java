@@ -27,20 +27,23 @@ import services.ReproductorDeAudio;
 import ui.ThemeManager;
 import java.io.File;
 import java.util.Optional;
-
 import javafx.scene.layout.StackPane;
 
+/**
+ * Controlador principal de la interfaz de usuario del reproductor de MP3.
+ * Implementa la interfaz {@link ReproductorListener} para responder a los eventos de la reproducción.
+ */
 public class MainController implements ReproductorListener {
 
     private NodoDoble cancionActual;
     private File ultimaCarpeta;
     private ListaCancion listaCancion;
     private int actualPos;
-    private ListaCancion listaVista; // refleja el orden actual de la vista
     private String tiempoTotalStr;
     private SvgController motorSvg;
     private ReproductorDeAudio reproductor;
     private ShuffleManager shuffleManager;
+    boolean playingSongDeleted;
 
     @FXML private TocadiscosController tocadiscosController;
     @FXML private ControlesController controlesController;
@@ -55,111 +58,89 @@ public class MainController implements ReproductorListener {
     @FXML private Button btnAddSong;
     @FXML private Button btnAddFolder;
 
+    /**
+     * Constructor del controlador principal.
+     * Inicializa las estructuras de datos y servicios.
+     */
     public MainController() {
         this.listaCancion = new ListaCancion();
         this.reproductor = new ReproductorDeAudio();
         this.shuffleManager = new ShuffleManager();
         this.actualPos = -1;
-        this.tiempoTotalStr="0:00";
-        this.listaVista = listaCancion;
+        this.tiempoTotalStr = "0:00";
+        this.playingSongDeleted = false;
     }
 
+    /**
+     * Método de inicialización llamado automáticamente por JavaFX después de cargar el FXML.
+     */
     @FXML
     public void initialize() {
-        if (controlesController != null)
+        if (controlesController != null) {
             controlesController.setListener(this);
+        }
+        configuraFondo();
+        configurarEventosReproductor();
+        tocadiscoResponsive();
 
+        lvListSong.setCellFactory(param -> new CancionListCell(this));
+
+        lvListSong.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                actualPos = lvListSong.getSelectionModel().getSelectedIndex();
+                onPlay();
+            }
+        });
+    }
+
+    /**
+     * Configura los listeners de redimensionamiento para hacer que el tocadiscos sea responsivo.
+     */
+    private void tocadiscoResponsive() {
+        mainStackPane.widthProperty().addListener((obs, oldVal, newVal) -> reposicionarTocadiscos());
+        mainStackPane.heightProperty().addListener((obs, oldVal, newVal) -> reposicionarTocadiscos());
+        Platform.runLater(this::reposicionarTocadiscos);
+    }
+
+    /**
+     * Inicializa y configura el fondo animado con el motor SVG.
+     */
+    private void configuraFondo() {
         WebView bgWebView = new WebView();
         bgWebView.setMouseTransparent(true);
         mainStackPane.getChildren().add(0, bgWebView);
         motorSvg = new SvgController(bgWebView);
         motorSvg.actualizarFondo(ExtractorPaleta.PALETA_BASE, null, false);
-        configurarEventosReproductor();
-        
-        mainStackPane.widthProperty().addListener((obs, oldVal, newVal) -> reposicionarTocadiscos());
-        mainStackPane.heightProperty().addListener((obs, oldVal, newVal) -> reposicionarTocadiscos());
-        Platform.runLater(this::reposicionarTocadiscos);
-
-        lvListSong.setCellFactory(param -> new ListCell<Cancion>() {
-            private final ImageView imageView = new ImageView();
-            private final Label titleLabel = new Label();
-            private final Label artistLabel = new Label();
-            private final HBox hbox = new HBox(10);
-            private final VBox vbox = new VBox(2);
-
-            {
-                imageView.setFitWidth(32);
-                imageView.setFitHeight(32);
-                imageView.setPreserveRatio(true);
-                imageView.setSmooth(false);
-
-                titleLabel.setStyle("-fx-text-fill: inherit; -fx-font-family: 'Press Start 2P'; -fx-font-size: 10px; -fx-font-weight: bold;");
-                artistLabel.setStyle("-fx-text-fill: inherit; -fx-font-family: 'Press Start 2P'; -fx-font-size: 8px; -fx-opacity: 0.7;");
-                
-                vbox.getChildren().addAll(titleLabel, artistLabel);
-                vbox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-
-                hbox.getChildren().addAll(imageView, vbox);
-                hbox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-                hbox.setPadding(new javafx.geometry.Insets(4, 4, 4, 4));
-            }
-
-            @Override
-            protected void updateItem(Cancion cancion, boolean empty) {
-                super.updateItem(cancion, empty);
-                if (empty || cancion == null) {
-                    setText(null);
-                    setGraphic(null);
-                    getStyleClass().remove("list-cell-active");
-                } else {
-                    titleLabel.setText(cancion.getTitulo());
-                    artistLabel.setText(cancion.getArtista());
-
-                    Image portada = cancion.getPortada();
-                    if (portada != null) {
-                        imageView.setImage(portada);
-                    } else {
-                        imageView.setImage(crearPlaceholder8Bit(cancion));
-                    }
-                    setGraphic(hbox);
-
-                    if (getIndex() == actualPos) {
-                        if (!getStyleClass().contains("list-cell-active")) {
-                            getStyleClass().add("list-cell-active");
-                        }
-                    } else {
-                        getStyleClass().remove("list-cell-active");
-                    }
-                }
-            }
-        });
-
-        lvListSong.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 2) {
-                int seleccionada = lvListSong.getSelectionModel().getSelectedIndex();
-                if (seleccionada >= 0)
-                    actualizaCancionPorIndice(seleccionada);
-            }
-        });
     }
 
-    private void configurarEventosReproductor() {
-        reproductor.setFinalizaCancion(() -> Platform.runLater(this::onNext));
-
+    /**
+     * Configura el listener del slider de progreso para el reproductor de audio.
+     * 
+     * @param reproductor Instancia del reproductor de audio.
+     */
+    private void configuraEventoSlider(ReproductorDeAudio reproductor) {
         reproductor.tiempoActualProperty().addListener((obs, viejo, nuevo) ->
                 Platform.runLater(() -> {
                     var total = reproductor.tiempoTotalProperty().get();
                     if (total != null && total.toSeconds() > 0) {
                         double porcentaje = (nuevo.toSeconds() / total.toSeconds()) * 100;
-                        if (!controlesController.isSliderCambiando())
+                        if (!controlesController.isSliderCambiando()) {
                             controlesController.setProgreso(porcentaje);
+                        }
                         int segs = (int) nuevo.toSeconds();
                         controlesController.actualizarTiempos(
                                 String.format("%d:%02d", segs / 60, segs % 60), tiempoTotalStr);
                     }
                 })
         );
+    }
 
+    /**
+     * Configura el listener para obtener la duración total de la canción y actualizar las etiquetas.
+     * 
+     * @param reproductor Instancia del reproductor de audio.
+     */
+    private void configuraTiempoCancion(ReproductorDeAudio reproductor) {
         reproductor.tiempoTotalProperty().addListener((obs, viejo, nuevo) ->
                 Platform.runLater(() -> {
                     int totalSecs = (int) nuevo.toSeconds();
@@ -167,50 +148,75 @@ public class MainController implements ReproductorListener {
                     controlesController.actualizarTiempos("0:00", tiempoTotalStr);
                 })
         );
+    }
 
+    /**
+     * Configura las animaciones del tocadiscos y el fondo en base al estado del reproductor.
+     * 
+     * @param reproductor Instancia del reproductor de audio.
+     */
+    private void configuraTocadiscoAnimaciones(ReproductorDeAudio reproductor) {
         reproductor.estadoProperty().addListener((obs, viejo, estado) -> {
             Platform.runLater(() -> {
                 if (estado == MediaPlayer.Status.PLAYING) {
                     if (tocadiscosController != null) tocadiscosController.reproducirAnimacion();
                     if (controlesController != null) controlesController.cambiarTextoBotonPlay("||");
-
-                    // PRENDER NOTAS MUSICALES
                     if (motorSvg != null) motorSvg.alternarNotasAnimadas(true);
-
                 } else {
                     if (tocadiscosController != null) tocadiscosController.pausarAnimacion();
                     if (controlesController != null) controlesController.cambiarTextoBotonPlay("▶");
-
-                    // APAGAR NOTAS MUSICALES
                     if (motorSvg != null) motorSvg.alternarNotasAnimadas(false);
                 }
             });
         });
-
-        controlesController.setOnProgresoSoltado(() ->
-                reproductor.adelantar(controlesController.getProgreso() / 100.0));
     }
 
+    /**
+     * Vincula todos los listeners y propiedades del reproductor al controlador y la UI.
+     */
+    private void configurarEventosReproductor() {
+        reproductor.setFinalizaCancion(() -> Platform.runLater(this::onNext));
+        configuraEventoSlider(reproductor);
+        configuraTiempoCancion(reproductor);
+        configuraTocadiscoAnimaciones(reproductor);
+        controlesController.setOnProgresoSoltado(() -> reproductor.adelantar(controlesController.getProgreso() / 100.0));
+    }
+
+    /**
+     * Evento al pulsar el botón de añadir archivos individuales.
+     * 
+     * @param event Evento de acción de la interfaz.
+     */
     @FXML
     void abrirArchivosEvent(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar canciones");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3"));
-        if (ultimaCarpeta != null)
+        if (ultimaCarpeta != null) {
             fileChooser.setInitialDirectory(ultimaCarpeta);
+        }
 
         java.util.List<File> archivos = fileChooser.showOpenMultipleDialog(btnAddSong.getScene().getWindow());
         if (archivos != null && !archivos.isEmpty()) {
             ultimaCarpeta = archivos.get(0).getParentFile();
-            for (File archivo : archivos) creaCancion(archivo);
+            for (File archivo : archivos) {
+                creaCancion(archivo);
+            }
         }
     }
+
+    /**
+     * Evento al pulsar el botón de añadir una carpeta completa de música.
+     * 
+     * @param event Evento de acción de la interfaz.
+     */
     @FXML
     void abrirCarpetaEvent(ActionEvent event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Seleccionar carpeta de música");
-        if (ultimaCarpeta != null)
+        if (ultimaCarpeta != null) {
             directoryChooser.setInitialDirectory(ultimaCarpeta);
+        }
 
         File carpeta = directoryChooser.showDialog(btnAddSong.getScene().getWindow());
         if (carpeta == null) return;
@@ -220,253 +226,377 @@ public class MainController implements ReproductorListener {
         if (archivos == null) return;
 
         for (File archivo : archivos) {
-            if (archivo.getName().toLowerCase().endsWith(".mp3"))
+            if (archivo.getName().toLowerCase().endsWith(".mp3")) {
                 creaCancion(archivo);
+            }
         }
     }
 
+    /**
+     * Instancia una canción a partir de un archivo en disco y la añade a la lista.
+     * 
+     * @param file Archivo MP3.
+     */
     private void creaCancion(File file) {
         Cancion cancion = new Cancion(file.getAbsolutePath(), listaCancion.tam());
         listaCancion.insertar(cancion, listaCancion.tam());
-        listaVista = listaCancion;
         btnMenuOrdenamiento.setText("ordenar");
         lvListSong.getItems().add(cancion);
-        if (listaCancion.tam() == 1) actualPos = 0;
-
-        if (controlesController != null && controlesController.isShuffle())
+        if (listaCancion.tam() == 1) {
+            actualPos = 0;
+        }
+        if (controlesController != null && controlesController.isShuffle()) {
             shuffleManager.generarCola(listaCancion.tam(), actualPos);
+        }
         lvListSong.refresh();
     }
 
-    private void actualizaListaView(ListaCancionOrdenada l) {
-        if (listaCancion.estaVacia()) return;
-        for (int i = 0; i < listaCancion.tam(); i++)
-            l.insertar(listaCancion.devolver(i));
-        listaVista = new ListaCancion();
+    /**
+     * Refresca la lista visual en la interfaz de usuario en base al orden de listaCancion.
+     */
+    private void actualizaListaView() {
         lvListSong.getItems().clear();
-        for (int i = 0; i < l.tam(); i++) {
-            Cancion cancion = (Cancion) l.devolver(i);
-            listaVista.insertar(cancion, i);
+        for (int i = 0; i < listaCancion.tam(); i++) {
+            Cancion cancion = (Cancion) listaCancion.devolver(i);
             lvListSong.getItems().add(cancion);
         }
         lvListSong.refresh();
     }
 
+    /**
+     * Carga una canción en los controladores de la aplicación partiendo de su NodoDoble de la lista física.
+     * 
+     * @param nodo     NodoDoble que contiene la información de la canción.
+     * @param posLista Posición en la que se encuentra en la playlist.
+     */
     private void cargarDesdeNodo(NodoDoble nodo, int posLista) {
         if (nodo == null) return;
         this.cancionActual = nodo;
         this.actualPos = posLista;
         Cancion cancion = (Cancion) nodo.getNodoInfo();
-        if (controlesController != null)
+        if (controlesController != null) {
             controlesController.actualizarTextos(cancion.getTitulo(), cancion.getArtista());
+        }
 
         actualizarTema(cancion);
-
         reproductor.reproducirNueva(cancion);
         lvListSong.getSelectionModel().select(actualPos);
         lvListSong.refresh();
     }
 
+    /**
+     * Carga y reproduce la canción según el índice indicado.
+     * 
+     * @param pos Índice de la canción.
+     */
     private void actualizaCancionPorIndice(int pos) {
-        if (pos >= 0 && pos < listaVista.tam())
-            cargarDesdeNodo(listaVista.obtenerNodo(pos), pos);
+        if (pos >= 0 && pos < listaCancion.tam()) {
+            cargarDesdeNodo(listaCancion.obtenerNodo(pos), pos);
+        }
     }
 
+    /**
+     * Actualiza el tema de colores y visualizaciones en base a la paleta de la portada del tema actual.
+     * 
+     * @param cancion Canción actual para extraer metadatos.
+     */
     private void actualizarTema(Cancion cancion) {
         Image portada = cancion.getPortada();
         Paleta paleta = ExtractorPaleta.extraerDe(portada);
         ThemeManager.aplicarPaleta(lvListSong.getScene(), paleta);
 
-        if (tocadiscosController != null)
+        if (tocadiscosController != null) {
             tocadiscosController.actualizarColoresDinamicos(paleta.getAcento(), paleta.getBrillante());
+        }
 
         if (motorSvg != null) {
             boolean isPlaying = (reproductor.estadoProperty().get() == MediaPlayer.Status.PLAYING);
-            // Ya no le pasamos el BPM, solo isPlaying
             motorSvg.actualizarFondo(paleta, portada, isPlaying);
         }
     }
 
-    private void reordenarVista() {
-        Platform.runLater(() -> {
-            lvListSong.getItems().clear();
-            listaVista = listaCancion;
-            for (int i = 0; i < listaCancion.tam(); i++) {
-                Cancion c = (Cancion) listaCancion.devolver(i);
-                lvListSong.getItems().add(c);
+    /**
+     * Sincroniza la posición lógica y el nodo actual después de cambiar el orden de la colección física.
+     */
+    private void actualizarPosicionTrasOrdenamiento() {
+        if (cancionActual != null) {
+            Cancion song = (Cancion) cancionActual.getNodoInfo();
+            int idx = listaCancion.buscar(song);
+            if (idx != -1) {
+                cancionActual = listaCancion.obtenerNodo(idx);
+                actualPos = idx;
             }
-            lvListSong.getSelectionModel().select(actualPos);
-            lvListSong.refresh();
-        });
-    }
-
-    @FXML void ordenarPorAnioEvent(ActionEvent event) {
-        actualizaListaView(new ListaCancionOrdenada(new PorAnio()));
-        btnMenuOrdenamiento.setText("ordenar");
-    }
-
-    @FXML void ordenarPorNombreEvent(ActionEvent event) {
-        actualizaListaView(new ListaCancionOrdenada(new PorNombre()));
-        btnMenuOrdenamiento.setText("ordenar");
-    }
-
-    @FXML void ordenarPorArtistaEvent(ActionEvent event) {
-        actualizaListaView(new ListaCancionOrdenada(new PorArtista()));
-        btnMenuOrdenamiento.setText("ordenar");
-    }
-
-    @FXML void removeSongEvent(ActionEvent event) {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Eliminar canciones");
-
-        ListView<String> lista = new ListView<>();
-        lista.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        for (int i = 0; i < lvListSong.getItems().size(); i++)
-            lista.getItems().add(String.valueOf(lvListSong.getItems().get(i)));
-
-        dialog.getDialogPane().setContent(lista);
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-        Optional<ButtonType> resultado = dialog.showAndWait();
-        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
-            ObservableList<Integer> seleccionados = lista.getSelectionModel().getSelectedIndices();     //preguntar si se pueda
-
-            ListaIndices indices = new ListaIndices();
-            for (int i = 0; i < seleccionados.size(); i++)
-                indices.insertar(seleccionados.get(i), i);
-
-            int originalPlayingPos = actualPos;
-            boolean playingSongDeleted = false;
-
-            for (int i = indices.tam() - 1; i >= 0; i--) {
-                int idx = (Integer) indices.devolver(i);
-                
-                // Obtener la canción a eliminar desde el índice visual
-                Cancion cancionAEliminar = lvListSong.getItems().get(idx);
-                
-                // Eliminar de listaCancion (siempre y cuando se encuentre)
-                int idxEnCancion = listaCancion.buscar(cancionAEliminar);
-                if (idxEnCancion != -1) {
-                    listaCancion.eliminar(idxEnCancion);
-                }
-                
-                // Eliminar de listaVista (si es una instancia diferente a listaCancion, por ejemplo al ordenar)
-                if (listaVista != listaCancion) {
-                    int idxEnVista = listaVista.buscar(cancionAEliminar);
-                    if (idxEnVista != -1) {
-                        listaVista.eliminar(idxEnVista);
-                    }
-                }
-                
-                // Eliminar de la ListView visual
-                lvListSong.getItems().remove(idx);
-                
-                // Actualizar la posición de reproducción actual
-                if (idx < actualPos) {
-                    actualPos--;
-                } else if (idx == actualPos) {
-                    playingSongDeleted = true;
-                    onStopSong();
-                    reproductor.liberar();
-                    cancionActual = null;
-                    actualPos = -1;
-                }
-            }
-            
-            // Si se eliminó la canción que estaba sonando, ajustamos punteros y controles
-            if (playingSongDeleted) {
-                if (!lvListSong.getItems().isEmpty()) {
-                    int nuevoIndice = originalPlayingPos;
-                    if (nuevoIndice >= lvListSong.getItems().size()) {
-                        nuevoIndice = lvListSong.getItems().size() - 1;
-                    }
-                    actualPos = nuevoIndice;
-                    cancionActual = listaVista.obtenerNodo(actualPos);
-                    
-                    Cancion nuevaCancion = (Cancion) cancionActual.getNodoInfo();
-                    if (controlesController != null) {
-                        controlesController.actualizarTextos(nuevaCancion.getTitulo(), nuevaCancion.getArtista());
-                        controlesController.resetearProgreso();
-                    }
-                } else {
-                    actualPos = -1;
-                    cancionActual = null;
-                    if (controlesController != null) {
-                        controlesController.actualizarTextos("Sin canción", "Desconocido");
-                        controlesController.resetearProgreso();
-                    }
-                }
-            }
-
-            // Re-seleccionar el item activo si corresponde
-            if (actualPos >= 0 && actualPos < lvListSong.getItems().size()) {
-                lvListSong.getSelectionModel().select(actualPos);
-            } else {
-                lvListSong.getSelectionModel().clearSelection();
-            }
-            lvListSong.refresh();
+        }
+        if (controlesController != null && controlesController.isShuffle()) {
+            shuffleManager.generarCola(listaCancion.tam(), actualPos);
         }
     }
 
-    @Override
-    public void onPlay() {
-        if ((cancionActual == null && actualPos != -1) || (cancionActual != null && !reproductor.tieneMedia()))
-            actualizaCancionPorIndice(actualPos);
-        else
-            reproductor.alternarPausaReproduccion();
+    /**
+     * Evento para ordenar la lista física de canciones por año.
+     * 
+     * @param event Evento de JavaFX.
+     */
+    @FXML
+    void ordenarPorAnioEvent(ActionEvent event) {
+        listaCancion.ordenar(new PorAnio());
+        actualizarPosicionTrasOrdenamiento();
+        actualizaListaView();
+        btnMenuOrdenamiento.setText("año");
     }
 
+    /**
+     * Evento para ordenar la lista física de canciones por nombre.
+     * 
+     * @param event Evento de JavaFX.
+     */
+    @FXML
+    void ordenarPorNombreEvent(ActionEvent event) {
+        listaCancion.ordenar(new PorNombre());
+        actualizarPosicionTrasOrdenamiento();
+        actualizaListaView();
+        btnMenuOrdenamiento.setText("nombre");
+    }
+
+    /**
+     * Evento para ordenar la lista física de canciones por artista.
+     * 
+     * @param event Evento de JavaFX.
+     */
+    @FXML
+    void ordenarPorArtistaEvent(ActionEvent event) {
+        listaCancion.ordenar(new PorArtista());
+        actualizarPosicionTrasOrdenamiento();
+        actualizaListaView();
+        btnMenuOrdenamiento.setText("artista");
+    }
+
+    /**
+     * Configura el cuadro de diálogo para la selección múltiple de canciones a eliminar.
+     * 
+     * @param dialog Cuadro de diálogo de confirmación.
+     * @param lista  Lista de cadenas en pantalla.
+     */
+    private void createDialogError(Dialog<ButtonType> dialog, ListView<String> lista) {
+        dialog.setTitle("Eliminar canciones");
+        lista.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        for (int i = 0; i < lvListSong.getItems().size(); i++) {
+            lista.getItems().add(String.valueOf(lvListSong.getItems().get(i)));
+        }
+        dialog.getDialogPane().setContent(lista);
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+    }
+
+    /**
+     * Copia los índices seleccionados de la ListView visual a una estructura de ListaIndices propia.
+     * 
+     * @param seleccionados Lista observable de índices de JavaFX.
+     * @return Una ListaIndices que contiene los índices seleccionados.
+     */
+    private ListaIndices copiarIndicesSeleccionados(ObservableList<Integer> seleccionados) {
+        ListaIndices indices = new ListaIndices();
+        for (Integer indice : seleccionados) {
+            indices.insertar(indice);
+        }
+        return indices;
+    }
+
+    /**
+     * Desplaza la referencia de la canción actual a la siguiente o anterior disponible.
+     */
+    private void desplazarCancionActualTrasEliminacion() {
+        if (cancionActual.getNextNodo() != null) {
+            cancionActual = cancionActual.getNextNodo();
+        } else if (cancionActual.getPrevNodo() != null) {
+            cancionActual = cancionActual.getPrevNodo();
+        } else {
+            cancionActual = null;
+        }
+    }
+
+    /**
+     * Elimina las canciones de la lista física en los índices indicados, ajustando la canción
+     * actualmente en reproducción y liberando el reproductor si esta es eliminada.
+     * 
+     * @param indices Estructura ListaIndices con los índices de las canciones a eliminar.
+     */
+    private void eliminarCancionesFisicas(ListaIndices indices) {
+        int posActual = cancionActual != null ? listaCancion.buscar(cancionActual.getNodoInfo()) : -1;
+
+        // Iterar en orden inverso para evitar desfase de índices
+        for (int i = indices.tam() - 1; i >= 0; i--) {
+            int targetIdx = (Integer) indices.devolver(i);
+            
+            if (posActual != -1 && targetIdx == posActual) {
+                reproductor.liberar();
+                desplazarCancionActualTrasEliminacion();
+            }
+            
+            if (posActual != -1 && targetIdx < posActual) {
+                posActual--;
+            }
+            
+            listaCancion.eliminar(targetIdx);
+        }
+    }
+
+    /**
+     * Sincroniza y actualiza la interfaz gráfica y los metadatos de la canción actual
+     * después de que se haya realizado una eliminación de pistas.
+     */
+    private void actualizarUIPostEliminacion() {
+        if (cancionActual != null) {
+            int newIdx = listaCancion.buscar(cancionActual.getNodoInfo());
+            if (newIdx != -1) {
+                actualPos = newIdx;
+                Cancion cancion = (Cancion) cancionActual.getNodoInfo();
+                if (controlesController != null) {
+                    controlesController.actualizarTextos(cancion.getTitulo(), cancion.getArtista());
+                }
+                actualizarTema(cancion);
+                lvListSong.getSelectionModel().select(actualPos);
+            }
+        } else {
+            actualPos = -1;
+            if (controlesController != null) {
+                controlesController.actualizarTextos("Sin canción", "Desconocido");
+                controlesController.resetearProgreso();
+                controlesController.actualizarTiempos("0:00", "0:00");
+            }
+            if (tocadiscosController != null) {
+                tocadiscosController.pausarAnimacion();
+            }
+        }
+    }
+
+    /**
+     * Evento al pulsar el botón de eliminar canciones. Abre un modal con opciones de selección múltiple.
+     * 
+     * @param event Evento de acción de la interfaz.
+     */
+    @FXML
+    void removeSongEvent(ActionEvent event) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        ListView<String> lista = new ListView<>();
+        createDialogError(dialog, lista);
+
+        Optional<ButtonType> resultado = dialog.showAndWait();
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            ObservableList<Integer> seleccionados = lista.getSelectionModel().getSelectedIndices();
+            
+            ListaIndices indices = copiarIndicesSeleccionados(seleccionados);
+            eliminarCancionesFisicas(indices);
+            actualizarUIPostEliminacion();
+            
+            if (controlesController != null && controlesController.isShuffle()) {
+                shuffleManager.generarCola(listaCancion.tam(), actualPos);
+            }
+            
+            actualizaListaView();
+        }
+    }
+
+    /**
+     * Callback de reproducción y pausa.
+     */
+    @Override
+    public void onPlay() {
+        if (listaCancion.estaVacia()) return;
+        
+        int posDeLaActual = cancionActual != null ? listaCancion.buscar(cancionActual.getNodoInfo()) : -1;
+        
+        if (cancionActual == null || posDeLaActual != actualPos || !reproductor.tieneMedia()) {
+            actualizaCancionPorIndice(actualPos);
+        } else {
+            reproductor.alternarPausaReproduccion();
+        }
+    }
+
+    /**
+     * Callback para saltar a la siguiente canción en la cola de reproducción.
+     */
     @Override
     public void onNext() {
         if (listaCancion.estaVacia()) return;
 
         if (controlesController.isShuffle()) {
-            actualizaCancionPorIndice(
-                    shuffleManager.siguiente(listaCancion.tam(), actualPos));
-        } else if (controlesController.isLoop()) {
-            if (cancionActual != null && cancionActual.getNextNodo() != null)
-                cargarDesdeNodo(cancionActual.getNextNodo(), ++actualPos);
-            else
-                actualizaCancionPorIndice(0);
+            int pos = shuffleManager.siguiente(listaCancion.tam(), actualPos);
+            actualizaCancionPorIndice(pos);
         } else {
-            if (cancionActual != null && cancionActual.getNextNodo() != null)
-                cargarDesdeNodo(cancionActual.getNextNodo(), ++actualPos);
-            else
+            if (cancionActual == null) {
+                actualizaCancionPorIndice(0);
+                return;
+            }
+            NodoDoble siguiente = cancionActual.getNextNodo();
+            if (siguiente != null) {
+                cargarDesdeNodo(siguiente, actualPos + 1);
+            } else if (controlesController.isLoop()) {
+                actualizaCancionPorIndice(0);
+            } else {
                 onStopSong();
+            }
         }
     }
 
+    /**
+     * Callback para retroceder a la canción anterior en la cola de reproducción.
+     */
     @Override
     public void onPrevious() {
         if (listaCancion.estaVacia()) return;
 
         if (controlesController.isShuffle()) {
-            actualizaCancionPorIndice(shuffleManager.anterior(actualPos));
-        } else if (controlesController.isLoop()) {
-            if (cancionActual != null && cancionActual.getPrevNodo() != null)
-                cargarDesdeNodo(cancionActual.getPrevNodo(), --actualPos);
-            else
-                actualizaCancionPorIndice(listaCancion.tam() - 1);
+            int pos = shuffleManager.anterior(actualPos);
+            actualizaCancionPorIndice(pos);
         } else {
-            if (cancionActual != null && cancionActual.getPrevNodo() != null)
-                cargarDesdeNodo(cancionActual.getPrevNodo(), --actualPos);
-            else
+            if (cancionActual == null) {
                 actualizaCancionPorIndice(0);
+                return;
+            }
+            NodoDoble anterior = cancionActual.getPrevNodo();
+            if (anterior != null) {
+                cargarDesdeNodo(anterior, actualPos - 1);
+            } else if (controlesController.isLoop()) {
+                actualizaCancionPorIndice(listaCancion.tam() - 1);
+            } else {
+                actualizaCancionPorIndice(0);
+            }
         }
     }
 
+    /**
+     * Callback que se ejecuta cuando el modo shuffle es alternado.
+     * 
+     * @param activo Indica si el modo aleatorio está encendido.
+     */
     @Override
     public void onShuffleToggled(boolean activo) {
-        if (activo) shuffleManager.generarCola(listaCancion.tam(), actualPos);
-        else shuffleManager.limpiar();
+        if (activo) {
+            shuffleManager.generarCola(listaCancion.tam(), actualPos);
+        } else {
+            shuffleManager.limpiar();
+        }
     }
 
+    /**
+     * Callback para alternar modo bucle completo.
+     * 
+     * @param activo true si está activo.
+     */
     @Override
     public void onLoopToggled(boolean activo) { }
 
+    /**
+     * Callback para alternar el bucle de una pista individual.
+     * 
+     * @param activo true si está activo.
+     */
     @Override
     public void onLoopSongCircle(boolean activo) { }
 
+    /**
+     * Callback para detener la pista musical actual y resetear la aguja e interfaz gráfica.
+     */
     @Override
     public void onStopSong() {
         reproductor.detener();
@@ -476,11 +606,15 @@ public class MainController implements ReproductorListener {
                 controlesController.resetearProgreso();
                 controlesController.actualizarTiempos("0:00", tiempoTotalStr);
             }
-            if (tocadiscosController != null)
+            if (tocadiscosController != null) {
                 tocadiscosController.pausarAnimacion();
+            }
         });
     }
 
+    /**
+     * Reposiciona el panel del tocadiscos en la ventana en base a las relaciones de tamaño y escala asimétrica.
+     */
     private void reposicionarTocadiscos() {
         double W = mainStackPane.getWidth();
         double H = mainStackPane.getHeight();
@@ -505,9 +639,6 @@ public class MainController implements ReproductorListener {
             X_offset = (W_scaled - W) / 2.0;
         }
 
-        // --- POSICIONAMIENTO CORREGIDO ---
-        // Subimos considerablemente el anclaje virtual (de 515 a 492)
-        // Esto compensa el redimensionado y sube la base del aparato sobre la madera.
         double x_v = 675.0;
         double y_v = 490.0;
 
@@ -521,24 +652,31 @@ public class MainController implements ReproductorListener {
             tocadiscos.setTranslateX(transX);
             tocadiscos.setTranslateY(transY);
 
-            // --- ESCALA ASIMÉTRICA OPTIMIZADA ---
-            // Usamos una escala base de 0.65 para que conserve buena presencia horizontal
             double escalaBaseSvg = 0.65;
             double factorEscalaBase = S / escalaBaseSvg;
 
-            // Limitadores de seguridad comunes
             factorEscalaBase = Math.max(0.35, Math.min(factorEscalaBase, 1.8));
 
-            // El ancho (X) se mantiene generoso para que sea más ancho que el monitor de la derecha
             tocadiscos.setScaleX(factorEscalaBase * 0.55);
-
-            // La altura (Y) se "aplasta" multiplicándola por un factor menor (0.62)
-            // Esto le quita el aspecto de bloque alto y le da la perspectiva correcta de la mesa
             tocadiscos.setScaleY(factorEscalaBase * 0.50);
         }
     }
 
-    private Image crearPlaceholder8Bit(Cancion cancion) {
+    /**
+     * Devuelve el índice de la canción activa en el reproductor.
+     * 
+     * @return Entero con la posición.
+     */
+    public int getActualPos() { return actualPos; }
+
+    /**
+     * Genera una imagen pixelada de 8 bits a partir del título y artista de la canción.
+     * Funciona como portada provisional cuando no se dispone de metadatos integrados.
+     * 
+     * @param cancion Canción para la cual generar la portada.
+     * @return WritableImage que contiene la portada pixelada generada de 8 bits.
+     */
+    Image crearPlaceholder8Bit(Cancion cancion) {
         int w = 32, h = 32;
         WritableImage img = new WritableImage(w, h);
         PixelWriter pw = img.getPixelWriter();

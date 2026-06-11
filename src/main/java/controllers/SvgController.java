@@ -11,16 +11,31 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 
+/**
+ * Controlador para la visualización del fondo animado en base a gráficos SVG.
+ * Utiliza un {@link WebView} para renderizar un documento HTML interactivo que aloja
+ * el SVG adaptado cromáticamente y una animación JS de partículas (notas musicales flotantes).
+ */
 public class SvgController {
 
     private final WebView bgWebView;
     private final String svgTemplateOriginal;
 
+    /**
+     * Crea un nuevo controlador de SVG asociado al componente WebView de JavaFX.
+     * 
+     * @param bgWebView Componente WebView de la interfaz de usuario.
+     */
     public SvgController(WebView bgWebView) {
         this.bgWebView = bgWebView;
         this.svgTemplateOriginal = cargarPlantillaDesdeDisco();
     }
 
+    /**
+     * Lee el recurso de plantilla SVG original desde los assets del JAR.
+     * 
+     * @return El contenido textual del archivo SVG o cadena vacía si falla.
+     */
     private String cargarPlantillaDesdeDisco() {
         try {
             return new String(getClass().getResourceAsStream("/assets/FONOOO.svg").readAllBytes());
@@ -30,6 +45,14 @@ public class SvgController {
         }
     }
 
+    /**
+     * Actualiza el fondo HTML inyectando los colores cromáticos adaptados a la paleta
+     * de la canción activa y la imagen de portada codificada en formato 8 bits.
+     * 
+     * @param paletaActiva La paleta de colores activa de la canción.
+     * @param portada      La imagen de la portada.
+     * @param isPlaying    Indica si el reproductor está reproduciendo sonido.
+     */
     public void actualizarFondo(Paleta paletaActiva, Image portada, boolean isPlaying) {
         if (svgTemplateOriginal.isEmpty()) return;
 
@@ -133,6 +156,12 @@ public class SvgController {
         }
     }
 
+    /**
+     * Inyecta la ejecución del script JS en el WebView para encender o apagar la animación
+     * de las notas musicales de fondo en caliente.
+     * 
+     * @param reproduciendo true si está reproduciendo sonido.
+     */
     public void alternarNotasAnimadas(boolean reproduciendo) {
         try {
             if (bgWebView != null && bgWebView.getEngine() != null) {
@@ -143,6 +172,14 @@ public class SvgController {
         }
     }
 
+    /**
+     * Procesa y reduce la resolución de la portada original de la canción a un tamaño de
+     * 40x28 píxeles usando interpolación por vecindad (Nearest Neighbor) para dar un estilo visual
+     * retro pixel-art en formato base64.
+     * 
+     * @param imagenOriginal La portada original de JavaFX.
+     * @return Cadena Base64 conteniendo los bytes en formato PNG de la imagen pixelada.
+     */
     private String procesarPortada8Bits(Image imagenOriginal) {
         if (imagenOriginal == null) return "";
         try {
