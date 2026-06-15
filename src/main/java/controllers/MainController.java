@@ -6,11 +6,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
@@ -238,7 +235,7 @@ public class MainController implements ReproductorListener {
      * @param file Archivo MP3.
      */
     private void creaCancion(File file) {
-        Cancion cancion = new Cancion(file.getAbsolutePath(), listaCancion.tam());
+        Cancion cancion = new Cancion(file.getAbsolutePath());
         listaCancion.insertar(cancion, listaCancion.tam());
         btnMenuOrdenamiento.setText("ordenar");
         lvListSong.getItems().add(cancion);

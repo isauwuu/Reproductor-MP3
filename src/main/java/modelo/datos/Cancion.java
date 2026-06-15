@@ -20,15 +20,13 @@ public class Cancion {
     private Image portada;
     private boolean valida;
     private long duracionSegundos;
-    private int posEnLista;
 
     /**
-     * Crea una nueva canción a partir de la ruta del archivo MP3 y su posición inicial.
+     * Crea una nueva canción a partir de la ruta del archivo MP3
      * 
      * @param rutaArchivo Ruta absoluta del archivo MP3 en el disco.
-     * @param posEnLista Posición inicial de la canción.
      */
-    public Cancion(String rutaArchivo, int posEnLista) {
+    public Cancion(String rutaArchivo) {
         this.rutaArchivo = rutaArchivo;
         this.titulo = "Desconocido";
         this.artista = "Desconocido";
@@ -36,7 +34,6 @@ public class Cancion {
         this.duracionSegundos = 0;
         this.portada = null;
         this.valida = false;
-        this.posEnLista = posEnLista;
         cargaMetadatos();
     }
 

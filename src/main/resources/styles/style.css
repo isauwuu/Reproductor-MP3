@@ -19,3 +19,17 @@
 .decoration-pane {
     -fx-background-color: transparent;
 }
+/* Vincula la clase personalizada de la celda con la variable dinámica del ThemeManager */
+.list-view .list-cell.list-cell-active {
+    -fx-background-color: -acento;
+}
+/* Reemplaza el hover azul por defecto con un brillo sutil */
+.list-view .list-cell:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-text-fill: -texto;
+}
+
+/* IMPORTANTE: Mantenemos el color dinámico para la canción que SÍ está sonando */
+.list-view .list-cell.list-cell-active:hover {
+    -fx-background-color: derive(-acento, -10%);
+}
