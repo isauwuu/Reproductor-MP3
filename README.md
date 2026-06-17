@@ -25,11 +25,35 @@ El requisito académico central fue no usar ninguna colección de la librería e
 
 ---
 
-## Capturas
+## Capturas de Pantalla y Video Demostrativo
 
-> *Proximamente*
+### Capturas de la Interfaz
+A continuación se muestran capturas del reproductor MP3 adaptándose cromáticamente con sus diferentes tonos dinámicos según el álbum en reproducción:
+
+| Tocadiscos Retro (Vista General) | Diálogo de Selección Múltiple (Eliminación) |
+| :---: | :---: |
+| ![Captura 1](anexo/captura_1.jpeg) | ![Captura 2](anexo/captura_2.jpeg) |
+| **Tema Oscuro Dinámico** | **Tema Claro Dinámico** |
+| ![Captura 3](anexo/captura_3.jpeg) | ![Captura 4](anexo/captura_4.jpeg) |
+| **Paleta Cálida Adaptada** | **Paleta Fría Adaptada** |
+| ![Captura 5](anexo/captura_5.jpeg) | ![Captura 6](anexo/captura_6.jpeg) |
+
+#### Detalle del Tocadiscos
+Aquí se observa los criterios de ordenamiento:
+
+<div align="center">
+  <img src="anexo/captura_7.jpeg" width="750" alt="Detalle del Tocadiscos"/>
+</div>
+
+### Video Demostrativo
+Puedes observar las animaciones fluidas del vinilo, el movimiento del brazo mecánico de la aguja, el cambio dinámico de colores y el modo shuffle en acción en el siguiente video:
+
+<div align="center">
+  <video src="anexo/video_demostrativo.mp4" width="800" controls></video>
+</div>
 
 ---
+
 
 ## Características
 
@@ -63,20 +87,28 @@ El proyecto sigue el patrón **MVC** con controladores especializados por respon
 
 ```
 controllers/
-├── MainController       → Orquesta toda la lógica: reproducción, lista, temas
-├── ControlesController  → Botones y slider de progreso; delega eventos al Main
-├── TocadiscosController → Animaciones del vinilo y brazo mecánico
-└── SvgController        → Motor de renderizado del fondo SVG animado
+├── MainController       → Orquestador central: reproducción, animaciones, tema
+├── ControlesController  → Barra de reproducción: botones, slider, tiempos
+├── TocadiscosController → Animaciones físicas: vinilo, brazo y aguja
+├── PlaylistController   → Panel derecho: lista de reproducción, eventos y ordenamiento
+└── SvgController        → Fondo dinámico: WebEngine SVG + notas animadas
 
 modelo/
 ├── datos/               → Entidades del dominio (Canción, Paleta, Listas)
-├── criterios/           → Estrategias de ordenamiento intercambiables
-├── estructuras/         → Implementaciones de listas enlazadas propias
-└── interfaces/          → Contratos que definen las operaciones de cada estructura
+├── criterios/           → Estrategias de ordenamiento (PorNombre, PorArtista, PorAnio)
+├── estructuras/         → Estructuras enlazadas personalizadas (sin colecciones de Java)
+└── interfaces/          → Interfaces operativas de estructuras y callbacks
+
+services/
+├── ReproductorDeAudio   → Envoltura reactiva de JavaFX MediaPlayer
+├── ShuffleManager       → Algoritmo Fisher-Yates sobre cola de reproducción
+├── FileImportService    → Servicio de selección de archivos y carpetas MP3
+└── OrdenamientoService  → Adaptador para inyección de CriterioOrdenacion
 
 ui/
-├── ThemeManager         → Aplicación de paletas CSS a la escena
-└── ShuffleManager       → Lógica de permutación aleatoria de la cola
+├── ThemeManager         → Inyección y propagación de variables CSS en escena
+├── PlaceholderGenerator → Generador 8-bit de portadas pixeladas
+└── DeleteSongsDialog    → Modal personalizado heredado de variables CSS
 ```
 
 ---
@@ -140,8 +172,10 @@ src/
 ├── main/
 │   ├── java/
 │   │   ├── controllers/
+│   │   │   ├── CancionListCell.java
 │   │   │   ├── ControlesController.java
 │   │   │   ├── MainController.java
+│   │   │   ├── PlaylistController.java
 │   │   │   ├── SvgController.java
 │   │   │   └── TocadiscosController.java
 │   │   ├── modelo/
@@ -171,9 +205,13 @@ src/
 │   │   ├── reproductor/
 │   │   │   └── Main.java
 │   │   ├── services/
-│   │   │   └── OrdenamientoService.java
+│   │   │   ├── FileImportService.java
+│   │   │   ├── OrdenamientoService.java
+│   │   │   ├── ReproductorDeAudio.java
+│   │   │   └── ShuffleManager.java
 │   │   └── ui/
-│   │       ├── ShuffleManager.java
+│   │       ├── DeleteSongsDialog.java
+│   │       ├── PlaceholderGenerator.java
 │   │       └── ThemeManager.java
 │   └── resources/
 │       ├── assets/
@@ -191,6 +229,7 @@ src/
 │       └── views/
 │           ├── controles-view.fxml
 │           ├── main-view.fxml
+│           ├── playlist-view.fxml
 │           └── tocadiscos-view.fxml
 ```
 
