@@ -157,6 +157,14 @@ public class Cancion {
     }
 
     /**
+     * Obtiene la ruta "path" del archivo de la cancion
+     * @return path de la cancion
+     */
+    public String getRutaArchivo() {
+        return rutaArchivo;
+    }
+
+    /**
      * Representación textual de la canción (usada por la lista de eliminación).
      * 
      * @return Cadena con el título y artista.
@@ -164,5 +172,13 @@ public class Cancion {
     @Override
     public String toString() {
         return titulo + " - " + artista;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Cancion)) return false;
+        Cancion other = (Cancion) o;
+        return titulo.equals(((Cancion) o).getTitulo()) && artista.equals(((Cancion) o).getArtista());
     }
 }

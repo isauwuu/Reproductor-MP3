@@ -75,15 +75,16 @@ public class CancionListCell extends ListCell<Cancion> {
         imageView.setImage(portada != null ? portada : PlaceholderGenerator.crearPlaceholder8Bit(cancion));
         setGraphic(hbox);
 
-        if (!modoEliminacion) {
-            // Comportamiento original: marcar canción que está sonando
-            if (getIndex() == controller.getActualPos()) {
-                if (!getStyleClass().contains("list-cell-active")) {
-                    getStyleClass().add("list-cell-active");
-                }
-            } else {
-                getStyleClass().remove("list-cell-active");
-            }
+        if (!modoEliminacion) markCurrentSong();
+    }
+
+    public void markCurrentSong() {
+        Cancion activa = controller.getCancionActual();
+        if (activa != null && activa.equals(getItem())) {
+            if (!getStyleClass().contains("list-cell-active"))
+                getStyleClass().add("list-cell-active");
+        } else {
+            getStyleClass().remove("list-cell-active");
         }
     }
 }

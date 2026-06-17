@@ -218,10 +218,11 @@ public class MainController implements ReproductorListener {
 
     /**
      * Sincroniza la posición lógica y el nodo actual después de cambiar el orden de la colección física.
+     * 
+     * @param song Canción activa antes del ordenamiento.
      */
-    public void actualizarPosicionTrasOrdenamiento() {
-        if (cancionActual != null) {
-            Cancion song = (Cancion) cancionActual.getNodoInfo();
+    public void actualizarPosicionTrasOrdenamiento(Cancion song) {
+        if (song != null) {
             int idx = playlistController.getListaCancion().buscar(song);
             if (idx != -1) {
                 cancionActual = playlistController.getListaCancion().obtenerNodo(idx);
@@ -471,4 +472,7 @@ public class MainController implements ReproductorListener {
      * @return Entero con la posición.
      */
     public int getActualPos() { return actualPos; }
+    public Cancion getCancionActual() {
+        return cancionActual != null ? (Cancion) cancionActual.getNodoInfo() : null;
+    }
 }

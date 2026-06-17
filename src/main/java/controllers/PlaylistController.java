@@ -4,6 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import modelo.criterios.CriterioOrdenacion;
 import modelo.criterios.PorAnio;
 import modelo.criterios.PorArtista;
 import modelo.criterios.PorNombre;
@@ -107,7 +108,8 @@ public class PlaylistController {
     public void selectIndex(int index) {
         if (index >= 0 && index < listaCancion.tam()) {
             lvListSong.getSelectionModel().select(index);
-            lvListSong.refresh();
+            lvListSong.scrollTo(index);  // también scrollea al elemento activo
+            lvListSong.refresh();        // fuerza updateItem en todas las celdas visibles
         }
     }
 
@@ -145,7 +147,12 @@ public class PlaylistController {
             Cancion cancion = (Cancion) listaCancion.devolver(i);
             lvListSong.getItems().add(cancion);
         }
-        lvListSong.refresh();
+
+        if (mainController != null && mainController.getActualPos() != -1) {
+            selectIndex(mainController.getActualPos());
+        } else {
+            lvListSong.refresh();
+        }
     }
 
     @FXML
@@ -166,33 +173,16 @@ public class PlaylistController {
         }
     }
 
-    @FXML
-    void ordenarPorAnioEvent(ActionEvent event) {
-        listaCancion.ordenar(new PorAnio());
-        if (mainController != null) {
-            mainController.actualizarPosicionTrasOrdenamiento();
-        }
+    private void ordenarYActualizar(CriterioOrdenacion criterio, String label) {
+        Cancion cancionActual = (mainController != null) ? mainController.getCancionActual() : null;
+        listaCancion.ordenar(criterio);
+        if (mainController != null)
+            mainController.actualizarPosicionTrasOrdenamiento(cancionActual);
         actualizaListaView();
-        btnMenuOrdenamiento.setText("año");
+        btnMenuOrdenamiento.setText(label);
     }
 
-    @FXML
-    void ordenarPorNombreEvent(ActionEvent event) {
-        listaCancion.ordenar(new PorNombre());
-        if (mainController != null) {
-            mainController.actualizarPosicionTrasOrdenamiento();
-        }
-        actualizaListaView();
-        btnMenuOrdenamiento.setText("nombre");
-    }
-
-    @FXML
-    void ordenarPorArtistaEvent(ActionEvent event) {
-        listaCancion.ordenar(new PorArtista());
-        if (mainController != null) {
-            mainController.actualizarPosicionTrasOrdenamiento();
-        }
-        actualizaListaView();
-        btnMenuOrdenamiento.setText("artista");
-    }
+    @FXML void ordenarPorAnioEvent(ActionEvent event)    { ordenarYActualizar(new PorAnio(),    "año"); }
+    @FXML void ordenarPorNombreEvent(ActionEvent event)  { ordenarYActualizar(new PorNombre(),  "nombre"); }
+    @FXML void ordenarPorArtistaEvent(ActionEvent event) { ordenarYActualizar(new PorArtista(), "artista"); }
 }
