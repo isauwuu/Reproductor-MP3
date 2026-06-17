@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
@@ -374,12 +376,10 @@ public class MainController implements ReproductorListener {
      * @param dialog Cuadro de diálogo de confirmación.
      * @param lista  Lista de cadenas en pantalla.
      */
-    private void createDialogError(Dialog<ButtonType> dialog, ListView<String> lista) {
+    private void createDialogError(Dialog<ButtonType> dialog, ListView<Cancion> lista) {
         dialog.setTitle("Eliminar canciones");
         lista.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        for (int i = 0; i < lvListSong.getItems().size(); i++) {
-            lista.getItems().add(String.valueOf(lvListSong.getItems().get(i)));
-        }
+        lista.getItems().addAll(lvListSong.getItems());
         dialog.getDialogPane().setContent(lista);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
     }
@@ -474,21 +474,28 @@ public class MainController implements ReproductorListener {
     @FXML
     void removeSongEvent(ActionEvent event) {
         Dialog<ButtonType> dialog = new Dialog<>();
-        ListView<String> lista = new ListView<>();
+        ListView<Cancion> lista = new ListView<>();
+
+        // Propagar hojas de estilo y estilo del root para heredar variables CSS dinámicas
+        dialog.getDialogPane().getStylesheets().addAll(
+                lvListSong.getScene().getStylesheets()
+        );
+        dialog.getDialogPane().setStyle(lvListSong.getScene().getRoot().getStyle());
+
+        lista.setCellFactory(lv -> new CancionListCell(this, true));
+
         createDialogError(dialog, lista);
 
         Optional<ButtonType> resultado = dialog.showAndWait();
         if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
             ObservableList<Integer> seleccionados = lista.getSelectionModel().getSelectedIndices();
-            
             ListaIndices indices = copiarIndicesSeleccionados(seleccionados);
             eliminarCancionesFisicas(indices);
             actualizarUIPostEliminacion();
-            
+
             if (controlesController != null && controlesController.isShuffle()) {
                 shuffleManager.generarCola(listaCancion.tam(), actualPos);
             }
-            
             actualizaListaView();
         }
     }
@@ -665,58 +672,4 @@ public class MainController implements ReproductorListener {
      * @return Entero con la posición.
      */
     public int getActualPos() { return actualPos; }
-
-    /**
-     * Genera una imagen pixelada de 8 bits a partir del título y artista de la canción.
-     * Funciona como portada provisional cuando no se dispone de metadatos integrados.
-     * 
-     * @param cancion Canción para la cual generar la portada.
-     * @return WritableImage que contiene la portada pixelada generada de 8 bits.
-     */
-    Image crearPlaceholder8Bit(Cancion cancion) {
-        int w = 32, h = 32;
-        WritableImage img = new WritableImage(w, h);
-        PixelWriter pw = img.getPixelWriter();
-        
-        int hash = cancion.getTitulo().hashCode() + cancion.getArtista().hashCode();
-        Color bgColor = Color.rgb(
-            Math.abs((hash) % 100) + 20,
-            Math.abs((hash >> 8) % 100) + 20,
-            Math.abs((hash >> 16) % 100) + 20
-        );
-        
-        Color fgColor = Color.rgb(
-            Math.abs((hash >> 4) % 120) + 130,
-            Math.abs((hash >> 12) % 120) + 130,
-            Math.abs((hash >> 20) % 120) + 130
-        );
-
-        int[][] note = {
-            {0,0,0,0,0,0,0,0},
-            {0,0,0,1,1,1,1,0},
-            {0,0,0,1,0,0,1,0},
-            {0,0,0,1,0,0,1,0},
-            {0,0,1,1,0,1,1,0},
-            {0,1,1,1,0,1,1,1},
-            {0,1,1,1,0,1,1,1},
-            {0,0,1,1,0,0,1,1}
-        };
-
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                if (x < 2 || x >= w - 2 || y < 2 || y >= h - 2) {
-                    pw.setColor(x, y, fgColor.darker());
-                } else {
-                    int nx = (x - 4) / 3;
-                    int ny = (y - 4) / 3;
-                    if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && note[ny][nx] == 1) {
-                        pw.setColor(x, y, fgColor);
-                    } else {
-                        pw.setColor(x, y, bgColor);
-                    }
-                }
-            }
-        }
-        return img;
-    }
 }

@@ -33,3 +33,55 @@
 .list-view .list-cell.list-cell-active:hover {
     -fx-background-color: derive(-acento, -10%);
 }
+
+/* Fondo del área de scroll del ListView */
+.list-view {
+    -fx-background-color: -fondo;
+    -fx-background: -fondo;
+}
+
+.list-view .virtual-flow {
+    -fx-background-color: -fondo;
+}
+
+.list-view .virtual-flow .clipped-container {
+    -fx-background-color: -fondo;
+}
+
+/* Celdas vacías al final de la lista */
+.list-view .list-cell:empty {
+    -fx-background-color: -fondo;
+}
+
+/* Scrollbar */
+.list-view .scroll-bar:vertical {
+    -fx-background-color: -panel;
+}
+
+.list-view .scroll-bar:vertical .thumb {
+    -fx-background-color: -borde;
+    -fx-background-radius: 4px;
+}
+
+.list-view .scroll-bar:vertical .track {
+    -fx-background-color: -fondo;
+}
+
+/* Scrollbar horizontal */
+.list-view .scroll-bar:horizontal {
+    -fx-background-color: -panel;
+}
+
+.list-view .scroll-bar:horizontal .thumb {
+    -fx-background-color: -borde;
+    -fx-background-radius: 4px;
+}
+
+.list-view .scroll-bar:horizontal .track {
+    -fx-background-color: -fondo;
+}
+
+/* Esquina entre ambos scrollbars */
+.list-view .corner {
+    -fx-background-color: -fondo;
+}

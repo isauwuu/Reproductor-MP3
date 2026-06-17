@@ -130,3 +130,85 @@
     -fx-background-color: -acento;
     -fx-text-fill: -fondo;
 }
+
+/* ==================================
+   CUSTOM CELL AND DIALOG STYLING
+   ================================== */
+
+/* Custom labels inside playlist cells */
+.cancion-titulo {
+    -fx-text-fill: inherit;
+    -fx-font-family: 'Press Start 2P';
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.cancion-artista {
+    -fx-text-fill: inherit;
+    -fx-font-family: 'Press Start 2P';
+    -fx-font-size: 8px;
+    -fx-opacity: 0.7;
+}
+
+/* Deletion dialog list cell styling */
+.cancion-cell-eliminacion {
+    -fx-background-color: transparent;
+    -fx-text-fill: -texto;
+}
+
+.cancion-cell-eliminacion:hover {
+    -fx-background-color: -borde;
+    -fx-text-fill: -brillante;
+}
+
+.cancion-cell-eliminacion:selected {
+    -fx-background-color: -acento !important;
+    -fx-text-fill: -fondo !important;
+    -fx-font-weight: bold;
+}
+
+/* Dialog Pane component styles */
+.dialog-pane {
+    -fx-background-color: -panel;
+    -fx-pref-width: 800px;
+    -fx-pref-height: 700px;
+}
+
+.dialog-pane > .content.label {
+    -fx-text-fill: -texto;
+}
+
+.dialog-pane .button-bar {
+    -fx-background-color: -fondo;
+    -fx-padding: 8px 16px;
+}
+
+.dialog-pane .button {
+    -fx-background-color: -acento;
+    -fx-text-fill: -fondo;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4px;
+    -fx-padding: 6px 18px;
+    -fx-cursor: hand;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: derive(-acento, 10%);
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: -panel;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: -brillante;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .list-view {
+    -fx-background-color: -fondo;
+    -fx-border-color: -borde;
+    -fx-border-width: 1px;
+    -fx-control-inner-background: -fondo;
+}
