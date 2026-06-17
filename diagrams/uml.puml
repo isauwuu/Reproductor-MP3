@@ -1,8 +1,5 @@
 @startuml
-"""
-Diagrama PlantUML generado automáticamente desde src/main/java
-Incluye paquetes, clases, campos principales, métodos públicos y relaciones extends/implements.
-"""
+
 skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 

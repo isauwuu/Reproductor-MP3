@@ -301,7 +301,7 @@
     <rect x="355" y="500" width="3" height="8" fill="#00c8c8" class="cursor-blink"/>
     <rect x="337" y="489" width="54" height="3" fill="#00c8c8" opacity="0.2"/>
 
-    <g transform="translate(0,-13)">
+    <g transform="translate(-10,-13)">
     <rect x="930" y="485" width="40" height="38" fill="#1a1e2c" rx="2"/>
     <rect x="930" y="481" width="40" height="8" fill="#22263a" rx="2"/>
     <rect x="970" y="491" width="10" height="4" fill="#1a1e2c"/>
