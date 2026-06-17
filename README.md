@@ -33,23 +33,17 @@ A continuación se muestran capturas del reproductor MP3 adaptándose cromática
 | Tocadiscos Retro (Vista General) | Diálogo de Selección Múltiple (Eliminación) |
 | :---: | :---: |
 | ![Captura 1](anexo/captura_1.jpeg) | ![Captura 2](anexo/captura_2.jpeg) |
-| **Tema Oscuro Dinámico** | **Tema Claro Dinámico** |
+| **Tema Dinámico** | **Tema Dinámico** |
 | ![Captura 3](anexo/captura_3.jpeg) | ![Captura 4](anexo/captura_4.jpeg) |
-| **Paleta Cálida Adaptada** | **Paleta Fría Adaptada** |
+| **Panel de eliminacion de canciones** | **selector de carpetas o canciones** |
 | ![Captura 5](anexo/captura_5.jpeg) | ![Captura 6](anexo/captura_6.jpeg) |
 
-#### Detalle del Tocadiscos
-Aquí se observa los criterios de ordenamiento:
-
-<div align="center">
-  <img src="anexo/captura_7.jpeg" width="750" alt="Detalle del Tocadiscos"/>
-</div>
 
 ### Video Demostrativo
 Puedes observar las animaciones fluidas del vinilo, el movimiento del brazo mecánico de la aguja, el cambio dinámico de colores y el modo shuffle en acción en el siguiente video:
 
 <div align="center">
-  <video src="anexo/video_demostrativo.mp4" width="800" controls></video>
+  <video src="anexo/video_demostrativo.mp4" width="400" controls></video>
 </div>
 
 ---
