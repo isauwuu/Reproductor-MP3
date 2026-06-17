@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+@page {
+  size: A4;
+  margin: 2cm;
+  @bottom-center {
+    content: "Página " counter(page);
+  }
+}
+.page {
+  page-break-after: always;
+}
+</style>
+</head>
+<body>
+<div class="page"><h1>Primera página</h1></div>
+<div class="page"><h1>Segunda página</h1></div>
+</body>
+</html>

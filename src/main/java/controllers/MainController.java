@@ -636,8 +636,8 @@ public class MainController implements ReproductorListener {
             X_offset = (W_scaled - W) / 2.0;
         }
 
-        double x_v = 675.0;
-        double y_v = 490.0;
+        double x_v = 630.0;
+        double y_v = 450.0;
 
         double x_real = x_v * S - X_offset;
         double y_real = y_v * S - Y_offset;
