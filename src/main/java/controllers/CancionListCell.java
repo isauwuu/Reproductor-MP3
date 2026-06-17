@@ -40,6 +40,10 @@ public class CancionListCell extends ListCell<Cancion> {
         }
     }
 
+    /**
+     * Configura el tamaño y estilos CSS de los componentes visuales internos
+     * (imágenes y etiquetas) de la celda de la canción.
+     */
     private void inicializarComponentes() {
         imageView.setFitWidth(32);
         imageView.setFitHeight(32);
@@ -57,6 +61,12 @@ public class CancionListCell extends ListCell<Cancion> {
         hbox.setPadding(new javafx.geometry.Insets(4, 4, 4, 4));
     }
 
+    /**
+     * Actualiza el contenido gráfico de la celda de la lista de acuerdo a los datos de la canción.
+     * 
+     * @param cancion Canción a renderizar.
+     * @param empty   Indica si la celda debe estar vacía.
+     */
     @Override
     protected void updateItem(Cancion cancion, boolean empty) {
         super.updateItem(cancion, empty);
@@ -78,6 +88,10 @@ public class CancionListCell extends ListCell<Cancion> {
         if (!modoEliminacion) markCurrentSong();
     }
 
+    /**
+     * Aplica o remueve la clase CSS "list-cell-active" para destacar visualmente
+     * si la canción de esta celda es la que está sonando actualmente.
+     */
     public void markCurrentSong() {
         Cancion activa = controller.getCancionActual();
         if (activa != null && activa.equals(getItem())) {

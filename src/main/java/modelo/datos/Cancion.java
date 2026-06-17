@@ -174,6 +174,13 @@ public class Cancion {
         return titulo + " - " + artista;
     }
 
+    /**
+     * Compara esta canción con otro objeto para verificar la igualdad.
+     * Dos canciones se consideran iguales si tienen el mismo título y artista.
+     * 
+     * @param o Objeto a comparar con esta canción.
+     * @return true si el objeto es igual a esta canción, false en caso contrario.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -129,6 +129,12 @@ public class PlaylistController {
         }
     }
 
+    /**
+     * Crea un objeto Cancion a partir de un archivo, lo inserta en la lista física
+     * y lo agrega visualmente a la ListView.
+     * 
+     * @param file Archivo MP3 a cargar.
+     */
     private void creaCancion(File file) {
         Cancion cancion = new Cancion(file.getAbsolutePath());
         listaCancion.insertar(cancion, listaCancion.tam());
@@ -141,6 +147,10 @@ public class PlaylistController {
         lvListSong.refresh();
     }
 
+    /**
+     * Limpia y vuelve a cargar los elementos en la ListView basándose en el orden actual
+     * de la lista enlazada física. Si hay una canción sonando, mantiene su selección visual.
+     */
     public void actualizaListaView() {
         lvListSong.getItems().clear();
         for (int i = 0; i < listaCancion.tam(); i++) {
@@ -173,6 +183,13 @@ public class PlaylistController {
         }
     }
 
+    /**
+     * Ordena físicamente la lista según el criterio especificado, sincroniza la
+     * referencia/posición de la canción actual y refresca la vista visual.
+     * 
+     * @param criterio El criterio de ordenación (PorNombre, PorArtista, PorAnio).
+     * @param label    Texto descriptivo para mostrar en el menú de ordenamiento.
+     */
     private void ordenarYActualizar(CriterioOrdenacion criterio, String label) {
         Cancion cancionActual = (mainController != null) ? mainController.getCancionActual() : null;
         listaCancion.ordenar(criterio);

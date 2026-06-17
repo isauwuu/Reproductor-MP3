@@ -472,6 +472,11 @@ public class MainController implements ReproductorListener {
      * @return Entero con la posición.
      */
     public int getActualPos() { return actualPos; }
+    /**
+     * Obtiene el objeto de canción que se está reproduciendo actualmente.
+     * 
+     * @return El objeto {@link Cancion} activo, o null si no hay ninguno.
+     */
     public Cancion getCancionActual() {
         return cancionActual != null ? (Cancion) cancionActual.getNodoInfo() : null;
     }
