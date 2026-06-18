@@ -15,7 +15,6 @@ public class ControlesController {
     @FXML private Button btnPlayPause;
     @FXML private Button btnShuffle;
     @FXML private Button btnLoop;
-    @FXML private Button btnStop;
     @FXML private Label lblSongTitle;
     @FXML private Label lblSongArtist;
     @FXML private Label lblTimeCurrent;
