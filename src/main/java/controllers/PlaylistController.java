@@ -11,10 +11,10 @@ import modelo.criterios.PorNombre;
 import modelo.datos.Cancion;
 import modelo.datos.ListaCancion;
 import modelo.datos.ListaIndices;
+import modelo.datos.ListaArchivos;
 import services.FileImportService;
 import ui.DeleteSongsDialog;
 import java.io.File;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -115,16 +115,18 @@ public class PlaylistController {
 
     @FXML
     void abrirArchivosEvent(ActionEvent event) {
-        List<File> archivos = importService.seleccionarArchivosMp3(btnAddSong.getScene().getWindow());
-        for (File archivo : archivos) {
+        ListaArchivos archivos = importService.seleccionarArchivosMp3(btnAddSong.getScene().getWindow());
+        for (int i = 0; i < archivos.tam(); i++) {
+            File archivo = (File) archivos.devolver(i);
             creaCancion(archivo);
         }
     }
 
     @FXML
     void abrirCarpetaEvent(ActionEvent event) {
-        List<File> archivos = importService.seleccionarCarpetaMp3(btnAddSong.getScene().getWindow());
-        for (File archivo : archivos) {
+        ListaArchivos archivos = importService.seleccionarCarpetaMp3(btnAddSong.getScene().getWindow());
+        for (int i = 0; i < archivos.tam(); i++) {
+            File archivo = (File) archivos.devolver(i);
             creaCancion(archivo);
         }
     }

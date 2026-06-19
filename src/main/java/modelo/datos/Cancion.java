@@ -60,12 +60,8 @@ public class Cancion {
                 ID3v1 tag = mp3.getId3v1Tag();
                 asignarMetadatosBasicos(tag.getTitle(), tag.getArtist(), tag.getYear());
             }
-
             this.valida = true;
-
-        } catch (Exception e) {
-            // valida queda en false
-        }
+        } catch (Exception e) {}
     }
 
     /**

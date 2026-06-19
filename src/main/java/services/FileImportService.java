@@ -3,9 +3,8 @@ package services;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import modelo.datos.ListaArchivos;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Servicio encargado de gestionar los cuadros de diálogo de selección del sistema de archivos.
@@ -19,9 +18,9 @@ public class FileImportService {
      * Muestra un diálogo para seleccionar múltiples archivos MP3 de forma interactiva.
      * 
      * @param window Ventana padre para anclar el diálogo.
-     * @return Lista de archivos MP3 seleccionados.
+     * @return Lista de archivos MP3 seleccionados en una estructura de ListaArchivos.
      */
-    public List<File> seleccionarArchivosMp3(Window window) {
+    public ListaArchivos seleccionarArchivosMp3(Window window) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Seleccionar canciones");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos MP3", "*.mp3"));
@@ -29,21 +28,24 @@ public class FileImportService {
             fileChooser.setInitialDirectory(ultimaCarpeta);
         }
 
-        List<File> archivos = fileChooser.showOpenMultipleDialog(window);
+        var archivos = fileChooser.showOpenMultipleDialog(window);
+        ListaArchivos listaArchivos = new ListaArchivos();
         if (archivos != null && !archivos.isEmpty()) {
             ultimaCarpeta = archivos.get(0).getParentFile();
-            return archivos;
+            for (File archivo : archivos) {
+                listaArchivos.insertar(archivo);
+            }
         }
-        return new ArrayList<>();
+        return listaArchivos;
     }
 
     /**
      * Muestra un diálogo para seleccionar una carpeta completa y extrae todos los archivos MP3 de su interior.
      * 
      * @param window Ventana padre para anclar el diálogo.
-     * @return Lista de archivos MP3 encontrados.
+     * @return Lista de archivos MP3 encontrados en una estructura de ListaArchivos.
      */
-    public List<File> seleccionarCarpetaMp3(Window window) {
+    public ListaArchivos seleccionarCarpetaMp3(Window window) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Seleccionar carpeta de música");
         if (ultimaCarpeta != null) {
@@ -51,16 +53,16 @@ public class FileImportService {
         }
 
         File carpeta = directoryChooser.showDialog(window);
-        if (carpeta == null) return new ArrayList<>();
+        if (carpeta == null) return new ListaArchivos();
 
         ultimaCarpeta = carpeta;
         File[] archivos = carpeta.listFiles();
-        if (archivos == null) return new ArrayList<>();
+        if (archivos == null) return new ListaArchivos();
 
-        List<File> mp3Files = new ArrayList<>();
+        ListaArchivos mp3Files = new ListaArchivos();
         for (File archivo : archivos) {
             if (archivo.getName().toLowerCase().endsWith(".mp3")) {
-                mp3Files.add(archivo);
+                mp3Files.insertar(archivo);
             }
         }
         return mp3Files;
@@ -84,3 +86,4 @@ public class FileImportService {
         this.ultimaCarpeta = ultimaCarpeta;
     }
 }
+
