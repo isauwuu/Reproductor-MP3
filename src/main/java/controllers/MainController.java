@@ -33,7 +33,7 @@ public class MainController implements ReproductorListener {
 
     @FXML private TocadiscosController tocadiscosController;
     @FXML private ControlesController controlesController;
-    @FXML private PlaylistController playlistController; // FXML injected nested controller
+    @FXML private PlaylistController playlistController;
 
     @FXML private StackPane mainStackPane;
     @FXML private StackPane tocadiscos;
@@ -391,12 +391,6 @@ public class MainController implements ReproductorListener {
      */
     @Override
     public void onLoopToggled(boolean activo) { }
-
-    /**
-     * Callback para alternar el bucle de una pista individual.
-     */
-    @Override
-    public void onLoopSongCircle(boolean activo) { }
 
     /**
      * Callback para detener la pista musical actual y resetear la aguja e interfaz gráfica.

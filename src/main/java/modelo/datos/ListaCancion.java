@@ -32,18 +32,16 @@ public class ListaCancion extends Lista1DLinkedL {
     public void ordenar(CriterioOrdenacion criterio) {
         ListaCancionOrdenada cancionOrdenada = new ListaCancionOrdenada(criterio);
         NodoDoble act = this.ini;
-        
-        // Copiar las canciones a la lista que realiza inserción ordenada
+
         while (act != null) {
             cancionOrdenada.insertar(act.getNodoInfo());
             act = act.getNextNodo();
         }
-        
-        // Sobrescribir en orden físico los nodos de esta lista con las canciones ordenadas
+
         act = this.ini;
         for (int i = 0; i < tam(); i++) {
             if (act != null) {
-                act.setNodoInfo(cancionOrdenada.devolver(i));
+                reemplazar(cancionOrdenada.devolver(i),i);
                 act = act.getNextNodo();
             }
         }

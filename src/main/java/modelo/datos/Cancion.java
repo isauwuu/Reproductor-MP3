@@ -44,8 +44,6 @@ public class Cancion {
         try {
             File archivo = new File(this.rutaArchivo);
             if (!archivo.exists()) return;
-
-            // Si no hay metadatos, el nombre del archivo es mejor que "Desconocido"
             this.titulo = archivo.getName().replaceAll("(?i)\\.mp3$", "");
 
             Mp3File mp3 = new Mp3File(this.rutaArchivo);

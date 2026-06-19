@@ -9,7 +9,6 @@ public interface ReproductorListener {
      * Se ejecuta para alternar entre reproducir o pausar la pista actual.
      */
     void onPlay();
-
     /**
      * Se ejecuta para avanzar a la siguiente canción en la lista o cola de reproducción.
      */
@@ -33,14 +32,6 @@ public interface ReproductorListener {
      * @param activo true si el bucle general está activado.
      */
     void onLoopToggled(boolean activo);
-
-    /**
-     * Se ejecuta cuando se alterna el modo bucle de una única canción.
-     * 
-     * @param activo true si el bucle de canción individual está activado.
-     */
-    void onLoopSongCircle(boolean activo);
-
     /**
      * Se ejecuta para detener la reproducción actual por completo.
      */
