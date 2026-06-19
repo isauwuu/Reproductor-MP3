@@ -29,7 +29,7 @@ public class Cancion {
         this.rutaArchivo = rutaArchivo;
         this.titulo = "Desconocido";
         this.artista = "Desconocido";
-        this.anio = -1;
+        this.anio = Integer.MAX_VALUE;
         this.duracionSegundos = 0;
         this.portada = null;
         cargaMetadatos();
@@ -80,16 +80,16 @@ public class Cancion {
 
     /**
      * Convierte la cadena del año a entero.
-     * 
+     *
      * @param yearStr Cadena del año.
-     * @return El año como entero, o -1 si es inválido.
+     * @return El año como entero, o Integer.MAX_VALUE si es inválido.
      */
     private int parsearAnio(String yearStr) {
-        if (yearStr == null || yearStr.trim().isEmpty()) return -1;
+        if (yearStr == null || yearStr.trim().isEmpty()) return Integer.MAX_VALUE;
         try {
             return Integer.parseInt(yearStr.trim());
         } catch (NumberFormatException e) {
-            return -1;
+            return Integer.MAX_VALUE;
         }
     }
 
