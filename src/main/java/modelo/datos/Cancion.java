@@ -18,7 +18,6 @@ public class Cancion {
     private int anio;
     private String rutaArchivo;
     private Image portada;
-    private boolean valida;
     private long duracionSegundos;
 
     /**
@@ -33,7 +32,6 @@ public class Cancion {
         this.anio = -1;
         this.duracionSegundos = 0;
         this.portada = null;
-        this.valida = false;
         cargaMetadatos();
     }
 
@@ -60,7 +58,6 @@ public class Cancion {
                 ID3v1 tag = mp3.getId3v1Tag();
                 asignarMetadatosBasicos(tag.getTitle(), tag.getArtist(), tag.getYear());
             }
-            this.valida = true;
         } catch (Exception e) {}
     }
 
@@ -96,14 +93,6 @@ public class Cancion {
         }
     }
 
-    /**
-     * Obtiene si la canción ha sido cargada con metadatos válidos.
-     * 
-     * @return true si es válida.
-     */
-    public boolean isValida(){
-        return valida;
-    }
 
     /**
      * Obtiene la imagen de la portada de la canción (si existe).

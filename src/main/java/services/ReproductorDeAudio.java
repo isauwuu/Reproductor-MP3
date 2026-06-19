@@ -6,6 +6,10 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import modelo.datos.Cancion;
+import java.io.File;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 /**
  * Servicio encargado de gestionar el ciclo de reproducción de los archivos MP3.
@@ -42,26 +46,35 @@ public class ReproductorDeAudio {
      * @param cancion Canción a reproducir.
      */
     public void reproducirNueva(Cancion cancion) {
-        if (cancion == null || !cancion.isValida())
+        if (cancion == null || cancion.getRutaArchivo() == null) {
             return;
-        limpiarMotor();
-        Media media = new Media(cancion.getMediaURI());
-        mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setOnReady(() -> {
-            tiempoTotal.set(mediaPlayer.getTotalDuration());
-        });
-        mediaPlayer.currentTimeProperty().addListener((obs, viejo, nuevo) -> {
-            tiempoActual.set(nuevo);
-        });
-        mediaPlayer.statusProperty().addListener((obs, viejo, nuevo) -> {
-            estado.set(nuevo);
-        });
-        mediaPlayer.setOnEndOfMedia(() -> {
-            if (this.finalizaCancion != null) {
-                this.finalizaCancion.run();
-            }
-        });
-        mediaPlayer.play();
+        }
+
+        File archivo = new File(cancion.getRutaArchivo());
+        if (!archivo.exists() || !archivo.isFile()) {
+            return;
+        }
+
+        try {
+            limpiarMotor();
+            Media media = new Media(cancion.getMediaURI());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnReady(() -> {
+                tiempoTotal.set(mediaPlayer.getTotalDuration());
+            });
+            mediaPlayer.currentTimeProperty().addListener((obs, viejo, nuevo) -> {
+                tiempoActual.set(nuevo);
+            });
+            mediaPlayer.statusProperty().addListener((obs, viejo, nuevo) -> {
+                estado.set(nuevo);
+            });
+            mediaPlayer.setOnEndOfMedia(() -> {
+                if (this.finalizaCancion != null) {
+                    this.finalizaCancion.run();
+                }
+            });
+            mediaPlayer.play();
+        } catch (Exception e) {}
     }
 
     /**
