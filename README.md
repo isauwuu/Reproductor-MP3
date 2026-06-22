@@ -30,17 +30,17 @@ El requisito académico central fue no usar ninguna colección de la librería e
 ### Capturas de la Interfaz
 A continuación se muestran capturas del reproductor MP3 adaptándose cromáticamente con sus diferentes tonos dinámicos según el álbum en reproducción:
 
-| Vista General (Tema Azul) | Vista General (Tema Burgundy) |
+| Vista General | Vista General |
 | :---: | :---: |
 | ![Captura 1](anexo/captura_1.png) | ![Captura 2](anexo/captura_2.png) |
-| **Vista General (Tema Verde)** | **Panel de Eliminación** |
+| **Vista General** | **Vista General** |
 | ![Captura 3](anexo/captura_3.png) | ![Captura 4](anexo/captura_4.png) |
-| **Selección Múltiple** | **Tema en Escala de Grises** |
+| **Vista General** | **Vista General** |
 | ![Captura 5](anexo/captura_5.png) | ![Captura 6](anexo/captura_6.png) |
-| **Selector de Carpetas** | **Tema Claro / Alternativo** |
+| **Criterios de Ordenación** | **Panel de Eliminación** |
 | ![Captura 7](anexo/captura_7.png) | ![Captura 8](anexo/captura_8.png) |
-| **Controles de Reproducción** | |
-| ![Captura 9](anexo/captura_9.png) | |
+| **Controles de Reproducción** | **shuffle and loop** | 
+| ![Captura 9](anexo/captura_9.png) | ![captura10](anexo/captura10.png) |
 
 ---
 
