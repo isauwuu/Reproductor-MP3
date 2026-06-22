@@ -1,89 +1,85 @@
 package modelo.datos;
+
 import javafx.scene.paint.Color;
 
 /**
- * Representa una paleta de colores extraída de la carátula o portada de una canción.
- * Contiene colores armonizados para el fondo, paneles, bordes, acentos, texto y destellos.
+ * Representa una paleta de colores extendida de 11 colores extraída de la carátula de una canción.
+ * Proporciona una rica gama de colores para fondos, paneles, bordes, acentos primarios/secundarios,
+ * textos con jerarquía, efectos de resplandor (glow) y degradados modernos.
  */
 public class Paleta {
-    private Color fondo;
-    private Color panel;
-    private Color borde;
-    private Color acento;
-    private Color texto;
-    private Color brillante;
+    private final Color fondo;
+    private final Color panel;
+    private final Color borde;
+    private final Color acento;
+    private final Color acentoMuted;
+    private final Color texto;
+    private final Color textoMuted;
+    private final Color brillante;
+    private final Color degradadoInicio;
+    private final Color degradadoFin;
+    private final Color glow;
 
     /**
-     * Crea una nueva instancia de Paleta con los colores especificados.
-     * 
-     * @param fondo     Color de fondo general.
-     * @param panel     Color para contenedores y paneles secundarios.
-     * @param borde     Color para líneas de división y bordes.
-     * @param acento    Color de énfasis (por ejemplo, barra de progreso activa).
-     * @param texto     Color legible para el texto sobre el fondo.
-     * @param brillante Color de destello o luces animadas.
+     * Constructor de la paleta extendida.
      */
-    public Paleta(Color fondo, Color panel, Color borde, Color acento, Color texto, Color brillante) {
-        this.fondo=fondo;
-        this.panel=panel;
-        this.borde=borde;
-        this.acento=acento;
-        this.texto=texto;
-        this.brillante=brillante;
+    public Paleta(Color fondo, Color panel, Color borde, Color acento, Color acentoMuted, 
+                  Color texto, Color textoMuted, Color brillante, Color degradadoInicio, 
+                  Color degradadoFin, Color glow) {
+        this.fondo = fondo;
+        this.panel = panel;
+        this.borde = borde;
+        this.acento = acento;
+        this.acentoMuted = acentoMuted;
+        this.texto = texto;
+        this.textoMuted = textoMuted;
+        this.brillante = brillante;
+        this.degradadoInicio = degradadoInicio;
+        this.degradadoFin = degradadoFin;
+        this.glow = glow;
     }
 
-    /**
-     * Obtiene el color de fondo general.
-     * 
-     * @return El color de fondo de tipo {@link Color}.
-     */
-    public Color getFondo(){
+    public Color getFondo() {
         return fondo;
     }
 
-    /**
-     * Obtiene el color para contenedores y paneles secundarios.
-     * 
-     * @return El color del panel de tipo {@link Color}.
-     */
-    public Color getPanel(){
+    public Color getPanel() {
         return panel;
     }
 
-    /**
-     * Obtiene el color para líneas de división y bordes.
-     * 
-     * @return El color del borde de tipo {@link Color}.
-     */
-    public Color getBorde(){
+    public Color getBorde() {
         return borde;
     }
 
-    /**
-     * Obtiene el color de énfasis para elementos destacados.
-     * 
-     * @return El color de acento de tipo {@link Color}.
-     */
-    public Color getAcento(){
+    public Color getAcento() {
         return acento;
     }
 
-    /**
-     * Obtiene el color legible para el texto.
-     * 
-     * @return El color de texto de tipo {@link Color}.
-     */
-    public Color getTexto(){
+    public Color getAcentoMuted() {
+        return acentoMuted;
+    }
+
+    public Color getTexto() {
         return texto;
     }
 
-    /**
-     * Obtiene el color de destello o luces animadas.
-     * 
-     * @return El color brillante de tipo {@link Color}.
-     */
-    public Color getBrillante(){
+    public Color getTextoMuted() {
+        return textoMuted;
+    }
+
+    public Color getBrillante() {
         return brillante;
     }
-}
 
+    public Color getDegradadoInicio() {
+        return degradadoInicio;
+    }
+
+    public Color getDegradadoFin() {
+        return degradadoFin;
+    }
+
+    public Color getGlow() {
+        return glow;
+    }
+}

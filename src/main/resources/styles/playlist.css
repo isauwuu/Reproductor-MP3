@@ -1,5 +1,5 @@
 .playlist-container {
-    -fx-background-color: rgba(16, 24, 32, 0.65); /* Semi-transparent panel background */
+    -fx-background-color: linear-gradient(to bottom, derive(-panel, 15%), -panel);
     -fx-border-color: -borde;
     -fx-border-width: 4px;
 }
@@ -8,6 +8,7 @@
     -fx-text-fill: -brillante;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, -glowSutil, 3, 0.0, 0, 1);
 }
 
 /* ==================================
@@ -39,16 +40,18 @@
     -fx-border-width: 0;
 }
 
-/* Hover */
+/* Hover dinámico con glow sutil */
 .pixel-playlist .list-cell:hover {
-    -fx-background-color: rgba(26, 58, 74, 0.4);
+    -fx-background-color: -glowSutil;
+    -fx-text-fill: -brillante;
 }
 
-/* Canción seleccionada */
+/* Canción seleccionada con degradado */
 .pixel-playlist .list-cell:selected {
-    -fx-background-color: rgba(32, 168, 192, 0.35);
-    -fx-text-fill: -brillante;
+    -fx-background-color: linear-gradient(to right, -degradadoInicio, -degradadoFin);
+    -fx-text-fill: -fondo;
     -fx-font-weight: bold;
+    -fx-effect: dropshadow(two-pass-box, -glowSutil, 4, 0.0, 0, 1);
 }
 
 /* Scrollbar */
@@ -57,12 +60,16 @@
 }
 
 .pixel-playlist .scroll-bar .track {
-    -fx-background-color: rgba(16, 24, 32, 0.3);
+    -fx-background-color: -fondo;
 }
 
 .pixel-playlist .scroll-bar .thumb {
-    -fx-background-color: -acento;
+    -fx-background-color: -acentoMuted;
     -fx-background-radius: 0;
+}
+
+.pixel-playlist .scroll-bar .thumb:hover {
+    -fx-background-color: -acento;
 }
 
 /* Eliminar esquinas redondeadas */
@@ -71,18 +78,19 @@
     -fx-background-radius: 0;
 }
 
-/* Canción activa en la playlist */
+/* Canción activa en la playlist (Highlight active song background) */
 .list-cell-active {
-    -fx-background-color: rgba(32, 168, 192, 0.2); /* Highlight active song background */
+    -fx-background-color: -glowSutil;
     -fx-text-fill: -brillante;
     -fx-font-family: 'Press Start 2P';
-    -fx-border-color: rgba(192, 232, 240, 0.4);
+    -fx-border-color: -acento;
     -fx-border-width: 1px;
 }
 
 .list-cell-active:hover {
-    -fx-background-color: rgba(192, 232, 240, 0.3);
+    -fx-background-color: -glow;
 }
+
 .pixel-button-small .label-button {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
@@ -127,7 +135,7 @@
 }
 
 .list-cell:selected {
-    -fx-background-color: -acento;
+    -fx-background-color: linear-gradient(to right, -degradadoInicio, -degradadoFin);
     -fx-text-fill: -fondo;
 }
 
@@ -144,10 +152,15 @@
 }
 
 .cancion-artista {
-    -fx-text-fill: inherit;
+    -fx-text-fill: -textoMuted;
     -fx-font-family: 'Press Start 2P';
     -fx-font-size: 8px;
-    -fx-opacity: 0.7;
+}
+
+.list-cell:selected .cancion-artista,
+.list-cell-active .cancion-artista {
+    -fx-text-fill: inherit;
+    -fx-opacity: 0.85;
 }
 
 /* Deletion dialog list cell styling */
@@ -157,12 +170,12 @@
 }
 
 .cancion-cell-eliminacion:hover {
-    -fx-background-color: -borde;
+    -fx-background-color: -glowSutil;
     -fx-text-fill: -brillante;
 }
 
 .cancion-cell-eliminacion:selected {
-    -fx-background-color: -acento !important;
+    -fx-background-color: linear-gradient(to right, -degradadoInicio, -degradadoFin) !important;
     -fx-text-fill: -fondo !important;
     -fx-font-weight: bold;
 }
@@ -184,16 +197,18 @@
 }
 
 .dialog-pane .button {
-    -fx-background-color: -acento;
+    -fx-background-color: linear-gradient(to bottom, -acento, -acentoMuted);
     -fx-text-fill: -fondo;
     -fx-font-weight: bold;
-    -fx-background-radius: 4px;
+    -fx-background-radius: 0;
+    -fx-border-color: -brillante -borde -borde -brillante;
+    -fx-border-width: 2px;
     -fx-padding: 6px 18px;
     -fx-cursor: hand;
 }
 
 .dialog-pane .button:hover {
-    -fx-background-color: derive(-acento, 10%);
+    -fx-background-color: linear-gradient(to bottom, -brillante, -acento);
 }
 
 .dialog-pane .header-panel {

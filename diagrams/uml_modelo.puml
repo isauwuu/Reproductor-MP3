@@ -1,0 +1,245 @@
+@startuml
+
+title Capa del Modelo y Estructuras de Datos - Reproductor MP3
+
+skinparam classAttributeIconSize 0
+skinparam roundcorner 8
+skinparam shadowing false
+skinparam linetype ortho
+
+' Styling
+skinparam class {
+    BackgroundColor #F9FAFB
+    BorderColor #9CA3AF
+    FontColor #111827
+    FontSize 11
+    HeaderBackgroundColor #4B5563
+    HeaderFontColor #FFFFFF
+}
+
+skinparam interface {
+    BackgroundColor #ECFDF5
+    BorderColor #10B981
+    FontColor #065F46
+    HeaderBackgroundColor #059669
+    HeaderFontColor #FFFFFF
+}
+
+skinparam abstract {
+    BackgroundColor #FFFBEB
+    BorderColor #F59E0B
+    FontColor #78350F
+    HeaderBackgroundColor #D97706
+    HeaderFontColor #FFFFFF
+}
+
+skinparam package {
+    BackgroundColor #F3F4F6
+    BorderColor #D1D5DB
+    FontColor #1F2937
+    FontSize 12
+    FontStyle bold
+}
+
+skinparam arrow {
+    Color #6B7280
+    Thickness 1.2
+}
+
+package "modelo.estructuras" {
+    class NodoDoble {
+        -Object nodoInfo
+        -NodoDoble prevNodo
+        -NodoDoble nextNodo
+        +NodoDoble(Object)
+        +NodoDoble(Object, NodoDoble)
+        +NodoDoble(Object, NodoDoble, NodoDoble)
+        +void setPrevNodo(NodoDoble)
+        +NodoDoble getPrevNodo()
+        +void setNextNodo(NodoDoble)
+        +NodoDoble getNextNodo()
+        +void setNodoInfo(Object)
+        +Object getNodoInfo()
+    }
+
+    abstract class Lista0DLinkedL {
+        #NodoDoble ini
+        #NodoDoble fin
+        #int ult
+        +Lista0DLinkedL()
+        +void limpiar()
+        +boolean estaVacia()
+        +int tam()
+        +void eliminar(int pos)
+        +Object devolver(int pos)
+        +abstract int buscar(Object elemento)
+    }
+
+    abstract class Lista1DLinkedL {
+        +Lista1DLinkedL()
+        +int buscar(Object elemento)
+        +void insertar(Object elemento, int pos)
+        +void insertar(Object elemento)
+        +boolean estaVacia()
+        +void reemplazar(Object elemento, int pos)
+        +NodoDoble obtenerNodo(int pos)
+        +abstract boolean esIgual(Object a, Object b)
+    }
+
+    abstract class Lista2DLinkedL {
+        +Lista2DLinkedL()
+        +void insertar(Object elemento)
+        +int buscar(Object elemento)
+        +abstract boolean iguales(Object e1, Object e2)
+        +abstract boolean esMenor(Object e1, Object e2)
+        +abstract boolean esMayor(Object e1, Object e2)
+    }
+}
+
+package "modelo.interfaces" {
+    interface OperacionesCL2 {
+        +int buscar(Object elemento)
+        +Object devolver(int pos)
+        +void eliminar(int posicion)
+        +void limpiar()
+        +boolean estaVacia()
+        +int tam()
+    }
+    interface OperacionesCL3 {
+        +void insertar(Object elemento, int posicion)
+        +void reemplazar(Object elemento, int posicion)
+    }
+    interface OperacionesCL4 {
+        +void insertar(Object elemento)
+    }
+}
+
+package "modelo.criterios" {
+    interface CriterioOrdenacion {
+        +int comparar(Cancion c1, Cancion c2)
+    }
+    class PorNombre {
+        +int comparar(Cancion c1, Cancion c2)
+    }
+    class PorArtista {
+        +int comparar(Cancion c1, Cancion c2)
+    }
+    class PorAnio {
+        +int comparar(Cancion c1, Cancion c2)
+    }
+}
+
+package "modelo.datos" {
+    class Cancion {
+        -String titulo
+        -String artista
+        -int anio
+        -String rutaArchivo
+        -Image portada
+        -long duracionSegundos
+        +Cancion(String rutaArchivo)
+        -void cargaMetadatos()
+        -void asignarMetadatosBasicos(String, String, String)
+        -int parsearAnio(String)
+        +Image getPortada()
+        +int getAnio()
+        +String getArtista()
+        +String getTitulo()
+        +String getMediaURI()
+        +String getRutaArchivo()
+        +String toString()
+        +boolean equals(Object)
+    }
+
+    class Paleta {
+        -Color fondo
+        -Color panel
+        -Color borde
+        -Color acento
+        -Color acentoMuted
+        -Color texto
+        -Color textoMuted
+        -Color brillante
+        -Color degradadoInicio
+        -Color degradadoFin
+        -Color glow
+        +Paleta(Color, Color, Color, Color, Color, Color, Color, Color, Color, Color, Color)
+        +Color getFondo()
+        +Color getPanel()
+        +Color getBorde()
+        +Color getAcento()
+        +Color getAcentoMuted()
+        +Color getTexto()
+        +Color getTextoMuted()
+        +Color getBrillante()
+        +Color getDegradadoInicio()
+        +Color getDegradadoFin()
+        +Color getGlow()
+    }
+
+
+    class ExtractorPaleta {
+        +static final Paleta PALETA_BASE
+        +static Paleta extraerDe(Image imagen)
+        -static void ordenarPorLuminosidad(int[][])
+        -static Color buscarMasSaturado(int[][])
+        -static double luminosidad(int[])
+        -static double saturacion(int[])
+        -static Color toColor(int[])
+        +static Color aclarar(Color, double)
+        +static Color mezclarConNegro(Color, double)
+        +static String toHex(Color c)
+    }
+
+    class ListaCancion {
+        +ListaCancion()
+        +boolean esIgual(Object a, Object b)
+        +void ordenar(CriterioOrdenacion criterio)
+    }
+
+    class ListaCancionOrdenada {
+        -CriterioOrdenacion criterio
+        +ListaCancionOrdenada(CriterioOrdenacion criterio)
+        +boolean iguales(Object e1, Object e2)
+        +boolean esMenor(Object e1, Object e2)
+        +boolean esMayor(Object e1, Object e2)
+    }
+
+    class ListaArchivos {
+        +ListaArchivos()
+        +boolean esIgual(Object a, Object b)
+    }
+
+    class ListaIndices {
+        +ListaIndices()
+        +boolean esIgual(Object a, Object b)
+    }
+}
+
+' Herencia e Implementación de Estructuras
+OperacionesCL2 <|.. Lista0DLinkedL
+OperacionesCL3 <|.. Lista1DLinkedL
+OperacionesCL4 <|.. Lista2DLinkedL
+
+Lista0DLinkedL <|-- Lista1DLinkedL
+Lista0DLinkedL <|-- Lista2DLinkedL
+
+Lista1DLinkedL <|-- ListaCancion
+Lista1DLinkedL <|-- ListaArchivos
+Lista1DLinkedL <|-- ListaIndices
+Lista2DLinkedL <|-- ListaCancionOrdenada
+
+' Relaciones del Dominio
+ListaCancion "1" o-- "*" Cancion : contiene
+ListaCancionOrdenada "1" o-- "*" Cancion : contiene
+ListaCancionOrdenada "1" o-- "1" CriterioOrdenacion : usa para comparar
+NodoDoble "1" o-- "1" Cancion : envuelve
+Lista0DLinkedL "1" o-- "*" NodoDoble : contiene
+
+CriterioOrdenacion <|.. PorNombre
+CriterioOrdenacion <|.. PorArtista
+CriterioOrdenacion <|.. PorAnio
+
+ExtractorPaleta ..> Paleta : crea
+ExtractorPaleta ..> Cancion : procesa portada
+@enduml

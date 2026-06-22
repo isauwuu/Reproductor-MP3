@@ -7,8 +7,14 @@
     -panel: #101820;
     -borde: #1a3a4a;
     -acento: #20a8c0;
+    -acentoMuted: #157890;
     -texto: #78b8c8;
+    -textoMuted: #4e8898;
     -brillante: #c0e8f0;
+    -degradadoInicio: #20a8c0;
+    -degradadoFin: #157890;
+    -glow: rgba(32, 168, 192, 0.35);
+    -glowSutil: rgba(32, 168, 192, 0.15);
 }
 
 #root-pane {
@@ -19,19 +25,22 @@
 .decoration-pane {
     -fx-background-color: transparent;
 }
+
 /* Vincula la clase personalizada de la celda con la variable dinámica del ThemeManager */
 .list-view .list-cell.list-cell-active {
-    -fx-background-color: -acento;
+    -fx-background-color: linear-gradient(to right, -degradadoInicio, -degradadoFin);
+    -fx-effect: dropshadow(two-pass-box, -glowSutil, 4, 0.0, 0, 1);
 }
+
 /* Reemplaza el hover azul por defecto con un brillo sutil */
 .list-view .list-cell:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-color: rgba(255, 255, 255, 0.06);
     -fx-text-fill: -texto;
 }
 
-/* IMPORTANTE: Mantenemos el color dinámico para la canción que SÍ está sonando */
+/* Color dinámico con degradado para la canción activa al pasar el mouse */
 .list-view .list-cell.list-cell-active:hover {
-    -fx-background-color: derive(-acento, -10%);
+    -fx-background-color: linear-gradient(to right, derive(-degradadoInicio, -10%), derive(-degradadoFin, -10%));
 }
 
 /* Fondo del área de scroll del ListView */
@@ -53,14 +62,14 @@
     -fx-background-color: -fondo;
 }
 
-/* Scrollbar */
+/* Scrollbar vertical */
 .list-view .scroll-bar:vertical {
     -fx-background-color: -panel;
 }
 
 .list-view .scroll-bar:vertical .thumb {
     -fx-background-color: -borde;
-    -fx-background-radius: 4px;
+    -fx-background-radius: 0;
 }
 
 .list-view .scroll-bar:vertical .track {
@@ -74,7 +83,7 @@
 
 .list-view .scroll-bar:horizontal .thumb {
     -fx-background-color: -borde;
-    -fx-background-radius: 4px;
+    -fx-background-radius: 0;
 }
 
 .list-view .scroll-bar:horizontal .track {

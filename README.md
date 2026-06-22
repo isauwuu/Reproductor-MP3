@@ -30,24 +30,15 @@ El requisito académico central fue no usar ninguna colección de la librería e
 ### Capturas de la Interfaz
 A continuación se muestran capturas del reproductor MP3 adaptándose cromáticamente con sus diferentes tonos dinámicos según el álbum en reproducción:
 
-| Tocadiscos Retro (Vista General) | Diálogo de Selección Múltiple (Eliminación) |
-| :---: | :---: |
-| ![Captura 1](anexo/captura_1.jpeg) | ![Captura 2](anexo/captura_2.jpeg) |
-| **Tema Dinámico** | **Tema Dinámico** |
-| ![Captura 3](anexo/captura_3.jpeg) | ![Captura 4](anexo/captura_4.jpeg) |
-| **Panel de eliminacion de canciones** | **selector de carpetas o canciones** |
-| ![Captura 5](anexo/captura_5.jpeg) | ![Captura 6](anexo/captura_6.jpeg) |
-
-
-### Video Demostrativo
-Puedes observar las animaciones fluidas del vinilo, el movimiento del brazo mecánico de la aguja, el cambio dinámico de colores y el modo shuffle en acción en el siguiente video:
-
-<div align="center">
-  <video src="anexo/video_demostrativo.mp4" width="400" controls></video>
-</div>
+|           Vista General           |           Vista General           |           Vista General           |
+|:---------------------------------:|:---------------------------------:|:---------------------------------:|
+| ![Captura 1](anexo/captura_1.png) | ![Captura 2](anexo/captura_2.png) | ![Captura 3](anexo/captura_3.png) |
+|         **vista general**         |         **vista general**         |         **vista general**         |
+| ![Captura 4](anexo/captura_4.png) | ![Captura 5](anexo/captura_5.png) | ![Captura 6](anexo/captura_6.png) |
+|    **criterios de ordenación**    |     **panel de eliminación**      |   **Controles de Reproducción**   |
+| ![Captura 7](anexo/captura_7.png) | ![Captura 8](anexo/captura_8.png) | ![Captura 9](anexo/captura_9.png) |
 
 ---
-
 
 ## Características
 
@@ -96,8 +87,7 @@ modelo/
 services/
 ├── ReproductorDeAudio   → Envoltura reactiva de JavaFX MediaPlayer
 ├── ShuffleManager       → Algoritmo Fisher-Yates sobre cola de reproducción
-├── FileImportService    → Servicio de selección de archivos y carpetas MP3
-└── OrdenamientoService  → Adaptador para inyección de CriterioOrdenacion
+└── FileImportService    → Servicio de selección de archivos y carpetas MP3
 
 ui/
 ├── ThemeManager         → Inyección y propagación de variables CSS en escena
@@ -200,7 +190,6 @@ src/
 │   │   │   └── Main.java
 │   │   ├── services/
 │   │   │   ├── FileImportService.java
-│   │   │   ├── OrdenamientoService.java
 │   │   │   ├── ReproductorDeAudio.java
 │   │   │   └── ShuffleManager.java
 │   │   └── ui/

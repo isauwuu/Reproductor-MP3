@@ -1,5 +1,5 @@
 .pixel-button {
-    -fx-background-color: -panel;
+    -fx-background-color: linear-gradient(to bottom, derive(-panel, 12%), -panel);
     -fx-text-fill: -texto;
     -fx-font-family: 'Press Start 2P';
     -fx-font-size: 10px;
@@ -15,9 +15,10 @@
 }
 
 .pixel-button:hover {
-    -fx-background-color: -acento;
+    -fx-background-color: linear-gradient(to bottom, -acento, -acentoMuted);
     -fx-text-fill: -fondo;
     -fx-border-color: -brillante -borde -borde -brillante;
+    -fx-effect: dropshadow(two-pass-box, -glowSutil, 6, 0.0, 0, 2);
 }
 
 .pixel-button:pressed {
@@ -26,10 +27,11 @@
     -fx-text-fill: -fondo;
     /* Inverted bevel borders when pressed (sunk effect) */
     -fx-border-color: -borde -brillante -brillante -borde;
+    -fx-effect: none;
 }
 
 .pixel-button-small {
-    -fx-background-color: -panel;
+    -fx-background-color: linear-gradient(to bottom, derive(-panel, 12%), -panel);
     -fx-text-fill: -texto;
     -fx-font-family: 'Press Start 2P';
     -fx-font-size: 9px;
@@ -45,9 +47,10 @@
 }
 
 .pixel-button-small:hover {
-    -fx-background-color: -acento;
+    -fx-background-color: linear-gradient(to bottom, -acento, -acentoMuted);
     -fx-text-fill: -fondo;
     -fx-border-color: -brillante -borde -borde -brillante;
+    -fx-effect: dropshadow(two-pass-box, -glowSutil, 4, 0.0, 0, 1);
 }
 
 .pixel-button-small:pressed {
@@ -56,6 +59,7 @@
     -fx-text-fill: -fondo;
     /* Inverted bevel borders when pressed (sunk effect) */
     -fx-border-color: -borde -brillante -brillante -borde;
+    -fx-effect: none;
 }
 
 /* SVG icons within pixel buttons */
@@ -85,48 +89,54 @@
 }
 
 .pixel-slider .thumb {
-    -fx-background-color: -acento;
-    -fx-border-color: -brillante;
+    -fx-background-color: linear-gradient(to bottom, -brillante, -acento);
+    -fx-border-color: -acentoMuted;
     -fx-border-width: 2px;
     -fx-background-radius: 0;
     -fx-pref-width: 10px;
     -fx-pref-height: 16px;
+    -fx-effect: dropshadow(two-pass-box, -glowSutil, 4, 0.0, 0, 1);
 }
 
 /* --- ESTILO ESPECIAL PARA EL PLAY/PAUSE --- */
 .btn-play-destacado {
-    -fx-background-color: -acento;
+    -fx-background-color: linear-gradient(to bottom, -acento, -acentoMuted);
     -fx-text-fill: -fondo;
     -fx-font-size: 14px; /* Más grande que los demás */
     -fx-padding: 10px 18px 10px 18px;
     /* 3D bevel border */
     -fx-border-color: -brillante -borde -borde -brillante;
     -fx-border-width: 3px;
+    -fx-effect: dropshadow(two-pass-box, -glow, 8, 0.0, 0, 3);
 }
 
 .btn-play-destacado:hover {
-    -fx-background-color: -brillante;
+    -fx-background-color: linear-gradient(to bottom, -brillante, -acento);
     -fx-border-color: -brillante -borde -borde -brillante;
+    -fx-effect: dropshadow(two-pass-box, -glow, 12, 0.0, 0, 4);
 }
 
 .btn-play-destacado:pressed {
     -fx-translate-y: 2px;
     -fx-background-color: -borde;
     -fx-border-color: -borde -brillante -brillante -borde;
+    -fx-effect: none;
 }
 
 .pixel-button-active {
-    -fx-background-color: -acento;
+    -fx-background-color: linear-gradient(to bottom, -acento, -acentoMuted);
     -fx-text-fill: -fondo;
     /* 3D bevel border */
     -fx-border-color: -brillante -borde -borde -brillante;
     -fx-border-width: 3px;
+    -fx-effect: dropshadow(two-pass-box, -glowSutil, 6, 0.0, 0, 2);
 }
 
 .pixel-button-active:hover {
-    -fx-background-color: -brillante;
+    -fx-background-color: linear-gradient(to bottom, -brillante, -acento);
     -fx-border-color: -brillante -borde -borde -brillante;
 }
+
 .pixel-button-small .label {
     -fx-text-fill: -texto;
 }

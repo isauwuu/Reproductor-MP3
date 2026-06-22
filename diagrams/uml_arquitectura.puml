@@ -1,0 +1,106 @@
+@startuml
+
+title Diagrama de Arquitectura (Paquetes y Dependencias) - Reproductor MP3
+
+skinparam roundcorner 8
+skinparam shadowing false
+skinparam linetype ortho
+
+' Styling
+skinparam package {
+    BackgroundColor #F3F4F6
+    BorderColor #D1D5DB
+    FontColor #1F2937
+    FontSize 12
+    FontStyle bold
+}
+
+skinparam class {
+    BackgroundColor #F9FAFB
+    BorderColor #9CA3AF
+    FontColor #111827
+    FontSize 11
+}
+
+skinparam arrow {
+    Color #4B5563
+    Thickness 1.2
+}
+
+package "reproductor" {
+    class Main <<Boundary>>
+}
+
+package "controllers" {
+    class MainController
+    class ControlesController
+    class TocadiscosController
+    class SvgController
+    class PlaylistController
+    class CancionListCell
+}
+
+package "services" {
+    class ReproductorDeAudio
+    class FileImportService
+    class ShuffleManager
+}
+
+package "ui" {
+    class ThemeManager
+    class PlaceholderGenerator
+    class DeleteSongsDialog
+}
+
+package "modelo.datos" {
+    class Cancion
+    class Paleta
+    class ExtractorPaleta
+    class ListaCancion
+    class ListaCancionOrdenada
+    class ListaArchivos
+    class ListaIndices
+}
+
+package "modelo.estructuras" {
+    abstract class Lista0DLinkedL
+    abstract class Lista1DLinkedL
+    abstract class Lista2DLinkedL
+    class NodoDoble
+}
+
+package "modelo.interfaces" {
+    interface OperacionesCL2
+    interface OperacionesCL3
+    interface OperacionesCL4
+    interface ReproductorListener
+}
+
+package "modelo.criterios" {
+    interface CriterioOrdenacion
+    class PorNombre
+    class PorArtista
+    class PorAnio
+}
+
+' Dependencias entre paquetes
+reproductor ..> controllers : <<carga>>
+controllers ..> services : <<usa>>
+controllers ..> ui : <<abre>>
+controllers ..> "modelo.datos" : <<gestiona>>
+controllers ..> "modelo.estructuras" : <<recorre>>
+controllers ..> "modelo.interfaces" : <<implementa/notifica>>
+
+services ..> "modelo.datos" : <<procesa>>
+services ..> "modelo.estructuras" : <<estructura>>
+
+ui ..> "modelo.datos" : <<lee>>
+ui ..> controllers : <<callback>>
+
+"modelo.datos" ..> "modelo.estructuras" : <<extiende>>
+"modelo.datos" ..> "modelo.criterios" : <<ordena>>
+
+"modelo.estructuras" ..> "modelo.interfaces" : <<implementa>>
+"modelo.estructuras" ..> "modelo.estructuras" : <<enlaza>> (NodoDoble)
+
+@enduml

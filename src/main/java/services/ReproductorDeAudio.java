@@ -7,9 +7,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import modelo.datos.Cancion;
 import java.io.File;
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 
 /**
  * Servicio encargado de gestionar el ciclo de reproducción de los archivos MP3.

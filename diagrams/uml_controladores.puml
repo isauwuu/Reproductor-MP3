@@ -1,0 +1,292 @@
+@startuml
+
+title Capa de Controladores, Servicios e Interfaz Gráfica - Reproductor MP3
+
+skinparam classAttributeIconSize 0
+skinparam roundcorner 8
+skinparam shadowing false
+skinparam linetype ortho
+
+' Styling
+skinparam class {
+    BackgroundColor #F9FAFB
+    BorderColor #9CA3AF
+    FontColor #111827
+    FontSize 11
+    HeaderBackgroundColor #4B5563
+    HeaderFontColor #FFFFFF
+}
+
+skinparam interface {
+    BackgroundColor #ECFDF5
+    BorderColor #10B981
+    FontColor #065F46
+    HeaderBackgroundColor #059669
+    HeaderFontColor #FFFFFF
+}
+
+skinparam package {
+    BackgroundColor #F3F4F6
+    BorderColor #D1D5DB
+    FontColor #1F2937
+    FontSize 12
+    FontStyle bold
+}
+
+skinparam arrow {
+    Color #6B7280
+    Thickness 1.2
+}
+
+package "reproductor" {
+    class Main {
+        +void start(Stage stage)
+        +static void main(String[] args)
+    }
+}
+
+package "controllers" {
+    class MainController {
+        -NodoDoble cancionActual
+        -int actualPos
+        -String tiempoTotalStr
+        -SvgController motorSvg
+        -ReproductorDeAudio reproductor
+        -ShuffleManager shuffleManager
+        ~boolean playingSongDeleted
+        -TocadiscosController tocadiscosController
+        -ControlesController controlesController
+        -PlaylistController playlistController
+        -StackPane mainStackPane
+        -StackPane tocadiscos
+        +MainController()
+        +void initialize()
+        -void tocadiscoResponsive()
+        -void configuraFondo()
+        -void configuraEventoSlider(ReproductorDeAudio)
+        -void configuraTiempoCancion(ReproductorDeAudio)
+        -void configuraTocadiscoAnimaciones(ReproductorDeAudio)
+        -void configurarEventosReproductor()
+        +void onCancionAgregada()
+        +void reproducirCancionPorIndice(int)
+        -void cargarDesdeNodo(NodoDoble, int)
+        -void actualizaCancionPorIndice(int)
+        -void actualizarTema(Cancion)
+        +void actualizarPosicionTrasOrdenamiento(Cancion)
+        -void desplazarCancionActualTrasEliminacion()
+        +void eliminarCanciones(ListaIndices)
+        -void actualizarUIPostEliminacion()
+        +void onPlay()
+        +void onNext()
+        +void onPrevious()
+        +void onShuffleToggled(boolean)
+        +void onLoopToggled(boolean)
+        +void onStopSong()
+        -void reposicionarTocadiscos()
+        +int getActualPos()
+        +Cancion getCancionActual()
+    }
+
+    class ControlesController {
+        -Button btnPlayPause
+        -Button btnShuffle
+        -Button btnLoop
+        -Label lblSongTitle
+        -Label lblSongArtist
+        -Label lblTimeCurrent
+        -Label lblTimeTotal
+        -Slider progressSlider
+        -ReproductorListener listener
+        -boolean shuffle
+        -boolean loop
+        -boolean userIsInteracting
+        +ControlesController()
+        +void initialize()
+        -void actualizarValorPorCoordenada(double)
+        +void setListener(ReproductorListener)
+        +boolean isShuffle()
+        +boolean isLoop()
+        ~void onPlayPause(ActionEvent)
+        ~void onNext(ActionEvent)
+        ~void onPrevious(ActionEvent)
+        ~void onShuffle(ActionEvent)
+        ~void onLoop(ActionEvent)
+        +void resetearProgreso()
+        +boolean isSliderCambiando()
+        +void setProgreso(double)
+        +void setOnProgresoSoltado(Runnable)
+        -void actualizarEstiloBoton(Button, boolean)
+        +void cambiarTextoBotonPlay(String)
+        +void actualizarTextos(String, String)
+        +void actualizarTiempos(String, String)
+        ~void onStopSong(ActionEvent)
+        +double getProgreso()
+    }
+
+    class TocadiscosController {
+        -Group brazoMecanico
+        -Ellipse brilloVinilo
+        -Ellipse agujaPunta
+        -Ellipse viniloCentro
+        -Group perillaRotacion
+        -FadeTransition animacionVinilo
+        -Timeline brazoPlay
+        -Timeline brazoPause
+        -Rotate rotacionBrazo
+        +TocadiscosController()
+        +void initialize()
+        +void reproducirAnimacion()
+        +void pausarAnimacion()
+        +void actualizarColoresDinamicos(Color acento, Color brillante)
+    }
+
+    class SvgController {
+        -WebView bgWebView
+        -String svgTemplateOriginal
+        +SvgController(WebView bgWebView)
+        -String cargarPlantillaDesdeDisco()
+        +void actualizarFondo(Paleta paleta, Image portada, boolean)
+        +void alternarNotasAnimadas(boolean)
+        -String procesarPortada8Bits(Image)
+    }
+
+    class PlaylistController {
+        -ListaCancion listaCancion
+        -FileImportService importService
+        -MainController mainController
+        -Button btnAddSong
+        -Button btnRemoveSong
+        -Button btnAddFolder
+        -MenuButton btnMenuOrdenamiento
+        -ListView<Cancion> lvListSong
+        +PlaylistController()
+        +void setMainController(MainController)
+        +void initialize()
+        +void initCellFactory()
+        +ListaCancion getListaCancion()
+        +ListView<Cancion> getLvListSong()
+        +void refreshListView()
+        +void selectIndex(int)
+        ~void abrirArchivosEvent(ActionEvent)
+        ~void abrirCarpetaEvent(ActionEvent)
+        -void creaCancion(File)
+        +void actualizaListaView()
+        ~void removeSongEvent(ActionEvent)
+        -void ordenarYActualizar(CriterioOrdenacion, String)
+        ~void ordenarPorAnioEvent(ActionEvent)
+        ~void ordenarPorNombreEvent(ActionEvent)
+        ~void ordenarPorArtistaEvent(ActionEvent)
+    }
+
+    class CancionListCell {
+        -ImageView imageView
+        -Label titleLabel
+        -Label artistLabel
+        -HBox hbox
+        -VBox vbox
+        -MainController controller
+        -boolean modoEliminacion
+        +CancionListCell(MainController)
+        +CancionListCell(MainController, boolean)
+        -void inicializarComponentes()
+        #void updateItem(Cancion, boolean)
+        +void markCurrentSong()
+    }
+}
+
+package "services" {
+    class ReproductorDeAudio {
+        -MediaPlayer mediaPlayer
+        -ObjectProperty<Duration> tiempoActual
+        -ObjectProperty<Duration> tiempoTotal
+        -ObjectProperty<Status> estado
+        -Runnable finalizaCancion
+        +ReproductorDeAudio()
+        +void setFinalizaCancion(Runnable)
+        +void reproducirNueva(Cancion)
+        +void alternarPausaReproduccion()
+        +void adelantar(double)
+        -void limpiarMotor()
+        +void detener()
+        +void liberar()
+        +boolean tieneMedia()
+        +ObjectProperty<Duration> tiempoActualProperty()
+        +ObjectProperty<Duration> tiempoTotalProperty()
+        +ObjectProperty<Status> estadoProperty()
+    }
+
+    class FileImportService {
+        -File ultimaCarpeta
+        +FileImportService()
+        +ListaArchivos seleccionarArchivosMp3(Window)
+        +ListaArchivos seleccionarCarpetaMp3(Window)
+        +File getUltimaCarpeta()
+        +void setUltimaCarpeta(File)
+    }
+
+    class ShuffleManager {
+        -ListaIndices cola
+        -Random random
+        -int posEnCola
+        +ShuffleManager()
+        +void generarCola(int, int)
+        -void fisherYates(int)
+        -void ponerAlFrente(int)
+        +int siguiente(int, int)
+        +int anterior(int)
+        +boolean estaVacia()
+        +ListaIndices getCola()
+        +void limpiar()
+    }
+}
+
+package "ui" {
+    class ThemeManager {
+        +static void aplicarPaleta(Scene scene, Paleta paleta)
+    }
+
+    class PlaceholderGenerator {
+        +static Image crearPlaceholder8Bit(Cancion)
+    }
+
+    class DeleteSongsDialog {
+        +DeleteSongsDialog(ObservableList<Cancion>, ObservableList<String>, String, MainController)
+    }
+}
+
+package "modelo.interfaces" {
+    interface ReproductorListener {
+        +void onPlay()
+        +void onNext()
+        +void onPrevious()
+        +void onShuffleToggled(boolean activo)
+        +void onLoopToggled(boolean activo)
+        +void onStopSong()
+    }
+}
+
+' Relaciones del controlador y UI
+Main ..> MainController : carga FXML
+MainController ..|> ReproductorListener
+
+MainController "1" o-- "1" TocadiscosController : orquesta
+MainController "1" o-- "1" ControlesController : orquesta
+MainController "1" o-- "1" PlaylistController : orquesta
+MainController "1" o-- "1" SvgController : orquesta
+
+MainController "1" o-- "1" ReproductorDeAudio : usa
+MainController "1" o-- "1" ShuffleManager : usa
+
+PlaylistController "1" o-- "1" FileImportService : importa archivos
+PlaylistController "1" o-- "1" MainController : llama reproducción
+
+ControlesController "1" o-- "1" ReproductorListener : delega eventos
+CancionListCell "1" o-- "1" MainController : callback
+PlaylistController ..> CancionListCell : configura
+DeleteSongsDialog ..> CancionListCell : usa
+DeleteSongsDialog ..> MainController : usa/callback
+
+MainController ..> ThemeManager : aplica paleta
+MainController ..> PlaceholderGenerator : crea portadas alternativas
+
+@enduml

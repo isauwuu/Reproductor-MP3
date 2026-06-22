@@ -1,242 +1,498 @@
 @startuml
 
-skinparam classAttributeIconSize 0
-skinparam packageStyle rectangle
+title Diagrama de Clases Completo - Reproductor MP3 Retro (JavaFX)
 
-package "modelo.criterios" {
-	interface CriterioOrdenacion {
-		+int comparar(Cancion c1, Cancion c2)
-	}
-	class PorNombre {
-		+int comparar(Cancion c1, Cancion c2)
-	}
-	class PorArtista {
-		+int comparar(Cancion c1, Cancion c2)
-	}
-	class PorAnio {
-		+int comparar(Cancion c1, Cancion c2)
-	}
+skinparam classAttributeIconSize 0
+skinparam roundcorner 8
+skinparam shadowing false
+skinparam linetype ortho
+
+' Styling
+skinparam class {
+    BackgroundColor #F9FAFB
+    BorderColor #9CA3AF
+    FontColor #111827
+    FontSize 11
+    HeaderBackgroundColor #4B5563
+    HeaderFontColor #FFFFFF
 }
 
-package "modelo.datos" {
-	class Cancion {
-		-String titulo
-		-String artista
-		-int anio
-		-String rutaArchivo
-		-Image portada
-		-boolean valida
-		-long duracionSegundos
-		-int posEnLista
-		+Cancion(String rutaArchivo,int posEnLista)
-		+boolean isValida()
-		+Image getPortada()
-		+int getAnio()
-		+String getArtista()
-		+String getTitulo()
-		+String getMediaURI()
-		+void setTitulo(String)
-		+void setArtista(String)
-		+void setAnio(int)
-		+void setPortada(Image)
-		+long getDuracionSegundos()
-		+String getDuracionFormateada()
-	}
+skinparam interface {
+    BackgroundColor #ECFDF5
+    BorderColor #10B981
+    FontColor #065F46
+    HeaderBackgroundColor #059669
+    HeaderFontColor #FFFFFF
+}
 
-	class ListaCancion {
-		+NodoDoble getPrimero()
-		+boolean esIgual(Object a,Object b)
-	}
+skinparam abstract {
+    BackgroundColor #FFFBEB
+    BorderColor #F59E0B
+    FontColor #78350F
+    HeaderBackgroundColor #D97706
+    HeaderFontColor #FFFFFF
+}
 
-	class ListaCancionOrdenada {
-		-OrdenamientoService comparador
-		-CriterioOrdenacion criterio
-		+ListaCancionOrdenada(CriterioOrdenacion criterio)
-		+boolean iguales(Object e1,Object e2)
-		+boolean esMenor(Object e1,Object e2)
-		+boolean esMayor(Object e1,Object e2)
-	}
+skinparam package {
+    BackgroundColor #F3F4F6
+    BorderColor #D1D5DB
+    FontColor #1F2937
+    FontSize 12
+    FontStyle bold
+}
 
-	class ListaIndices {
-		+boolean esIgual(Object a,Object b)
-	}
+skinparam arrow {
+    Color #6B7280
+    Thickness 1.2
+}
 
-	class ExtractorPaleta {
-		+static Paleta extraerDe(Image imagen)
-		+static String toHex(Color c)
-	}
-
-	class Paleta {
-		-Color fondo
-		-Color panel
-		-Color borde
-		-Color acento
-		-Color texto
-		-Color brillante
-		+Paleta(Color fondo, Color panel, Color borde, Color acento, Color texto, Color brillante)
-		+Color getFondo()
-		+Color getPanel()
-	}
+package "modelo.criterios" {
+    interface CriterioOrdenacion {
+        +int comparar(Cancion c1, Cancion c2)
+    }
+    class PorNombre {
+        +int comparar(Cancion c1, Cancion c2)
+    }
+    class PorArtista {
+        +int comparar(Cancion c1, Cancion c2)
+    }
+    class PorAnio {
+        +int comparar(Cancion c1, Cancion c2)
+    }
 }
 
 package "modelo.estructuras" {
-	class NodoDoble {
-		-Object nodoInfo
-		-NodoDoble prevNodo
-		-NodoDoble nextNodo
-		+NodoDoble(Object)
-		+NodoDoble(Object, NodoDoble, NodoDoble)
-		+Object getNodoInfo()
-	}
+    class NodoDoble {
+        -Object nodoInfo
+        -NodoDoble prevNodo
+        -NodoDoble nextNodo
+        +NodoDoble(Object)
+        +NodoDoble(Object, NodoDoble)
+        +NodoDoble(Object, NodoDoble, NodoDoble)
+        +void setPrevNodo(NodoDoble)
+        +NodoDoble getPrevNodo()
+        +void setNextNodo(NodoDoble)
+        +NodoDoble getNextNodo()
+        +void setNodoInfo(Object)
+        +Object getNodoInfo()
+    }
 
-	abstract class Lista0DLinkedL {
-		#NodoDoble ini
-		#NodoDoble fin
-		#int ult
-		+void limpiar()
-		+boolean estaVacia()
-		+int tam()
-		+void eliminar(int pos)
-		+Object devolver(int pos)
-		+int buscar(Object elemento)
-	}
+    abstract class Lista0DLinkedL {
+        #NodoDoble ini
+        #NodoDoble fin
+        #int ult
+        +Lista0DLinkedL()
+        +void limpiar()
+        +boolean estaVacia()
+        +int tam()
+        +void eliminar(int pos)
+        +Object devolver(int pos)
+        +abstract int buscar(Object elemento)
+    }
 
-	abstract class Lista1DLinkedL {
-		+int buscar(Object elemento)
-		+void insertar(Object elemento, int pos)
-		+void reemplazar(Object elemento, int pos)
-		+NodoDoble obtenerNodo(int pos)
-		+boolean esIgual(Object a,Object b)
-	}
+    abstract class Lista1DLinkedL {
+        +Lista1DLinkedL()
+        +int buscar(Object elemento)
+        +void insertar(Object elemento, int pos)
+        +void insertar(Object elemento)
+        +boolean estaVacia()
+        +void reemplazar(Object elemento, int pos)
+        +NodoDoble obtenerNodo(int pos)
+        +abstract boolean esIgual(Object a, Object b)
+    }
 
-	abstract class Lista2DLinkedL {
-		-CriterioOrdenacion criterio
-		+void insertar(Object elemento)
-		+int buscar(Object elemento)
-		+boolean iguales(Object e1,Object e2)
-		+boolean esMenor(Object e1,Object e2)
-		+boolean esMayor(Object e1,Object e2)
-	}
+    abstract class Lista2DLinkedL {
+        +Lista2DLinkedL()
+        +void insertar(Object elemento)
+        +int buscar(Object elemento)
+        +abstract boolean iguales(Object e1, Object e2)
+        +abstract boolean esMenor(Object e1, Object e2)
+        +abstract boolean esMayor(Object e1, Object e2)
+    }
 }
 
 package "modelo.interfaces" {
-	interface OperacionesCL2 {
-		+int buscar(Object elemento)
-		+Object devolver(int pos)
-		+void eliminar(int posicion)
-		+void limpiar()
-		+boolean estaVacia()
-		+int tam()
-	}
-	interface OperacionesCL3 {
-		+void insertar(Object elemento, int posicion)
-		+void reemplazar(Object elemento, int posicion)
-	}
-	interface OperacionesCL4 {
-		+void insertar(Object elemento)
-	}
-	interface ReproductorListener {
-		+void onPlay()
-		+void onNext()
-		+void onPrevious()
-		+void onShuffleToggled(boolean activo)
-		+void onLoopToggled(boolean activo)
-	}
+    interface OperacionesCL2 {
+        +int buscar(Object elemento)
+        +Object devolver(int pos)
+        +void eliminar(int posicion)
+        +void limpiar()
+        +boolean estaVacia()
+        +int tam()
+    }
+    interface OperacionesCL3 {
+        +void insertar(Object elemento, int posicion)
+        +void reemplazar(Object elemento, int posicion)
+    }
+    interface OperacionesCL4 {
+        +void insertar(Object elemento)
+    }
+    interface ReproductorListener {
+        +void onPlay()
+        +void onNext()
+        +void onPrevious()
+        +void onShuffleToggled(boolean activo)
+        +void onLoopToggled(boolean activo)
+        +void onStopSong()
+    }
 }
 
-package controllers {
-	class MainController {
-		-NodoDoble cancionActual
-		-File ultimaCarpeta
-		-ListaCancion listaCancion
-		-int actualPos
-		-ReproductorDeAudio reproductor
-		-ShuffleManager shuffleManager
-		+void initialize()
-		+void abrirArchivosEvent(ActionEvent)
-	}
-	class ControlesController {
-		-ReproductorListener listener
-		+void setListener(ReproductorListener)
-		+boolean isShuffle()
-		+boolean isLoop()
-		+boolean isLoopSong()
-		+void actualizarTextos(String,String)
-	}
-	class TocadiscosController {
-		+void reproducirAnimacion()
-		+void pausarAnimacion()
-		+void actualizarColoresDinamicos(Color acento, Color brillante)
-	}
-	class SvgController {
-		-WebView bgWebView
-		+SvgController(WebView bgWebView)
-		+void actualizarFondo(Paleta paleta, Image portada)
-	}
+package "modelo.datos" {
+    class Cancion {
+        -String titulo
+        -String artista
+        -int anio
+        -String rutaArchivo
+        -Image portada
+        -long duracionSegundos
+        +Cancion(String rutaArchivo)
+        -void cargaMetadatos()
+        -void asignarMetadatosBasicos(String, String, String)
+        -int parsearAnio(String)
+        +Image getPortada()
+        +int getAnio()
+        +String getArtista()
+        +String getTitulo()
+        +String getMediaURI()
+        +String getRutaArchivo()
+        +String toString()
+        +boolean equals(Object)
+    }
+
+    class Paleta {
+        -Color fondo
+        -Color panel
+        -Color borde
+        -Color acento
+        -Color acentoMuted
+        -Color texto
+        -Color textoMuted
+        -Color brillante
+        -Color degradadoInicio
+        -Color degradadoFin
+        -Color glow
+        +Paleta(Color, Color, Color, Color, Color, Color, Color, Color, Color, Color, Color)
+        +Color getFondo()
+        +Color getPanel()
+        +Color getBorde()
+        +Color getAcento()
+        +Color getAcentoMuted()
+        +Color getTexto()
+        +Color getTextoMuted()
+        +Color getBrillante()
+        +Color getDegradadoInicio()
+        +Color getDegradadoFin()
+        +Color getGlow()
+    }
+
+
+    class ExtractorPaleta {
+        +static final Paleta PALETA_BASE
+        +static Paleta extraerDe(Image imagen)
+        -static void ordenarPorLuminosidad(int[][])
+        -static Color buscarMasSaturado(int[][])
+        -static double luminosidad(int[])
+        -static double saturacion(int[])
+        -static Color toColor(int[])
+        +static Color aclarar(Color, double)
+        +static Color mezclarConNegro(Color, double)
+        +static String toHex(Color c)
+    }
+
+    class ListaCancion {
+        +ListaCancion()
+        +boolean esIgual(Object a, Object b)
+        +void ordenar(CriterioOrdenacion criterio)
+    }
+
+    class ListaCancionOrdenada {
+        -CriterioOrdenacion criterio
+        +ListaCancionOrdenada(CriterioOrdenacion criterio)
+        +boolean iguales(Object e1, Object e2)
+        +boolean esMenor(Object e1, Object e2)
+        +boolean esMayor(Object e1, Object e2)
+    }
+
+    class ListaArchivos {
+        +ListaArchivos()
+        +boolean esIgual(Object a, Object b)
+    }
+
+    class ListaIndices {
+        +ListaIndices()
+        +boolean esIgual(Object a, Object b)
+    }
 }
 
-package services {
-	class OrdenamientoService {
-		-CriterioOrdenacion criterio
-		+void setCriterio(CriterioOrdenacion criterio)
-		+int comparar(Cancion c1, Cancion c2)
-	}
-	class ReproductorDeAudio {
-		-MediaPlayer mediaPlayer
-		-ObjectProperty<Duration> tiempoActual
-		-ObjectProperty<Duration> tiempoTotal
-		-ObjectProperty<MediaPlayer.Status> estado
-		-Runnable finalizaCancion
-		+void reproducirNueva(Cancion)
-		+void alternarPausaReproduccion()
-		+void adelantar(double porcentaje)
-	}
+package "reproductor" {
+    class Main {
+        +void start(Stage stage)
+        +static void main(String[] args)
+    }
+    note top of Main
+      <b>Nota de Arquitectura:</b>
+      Este es el diagrama de clases global del Reproductor MP3.
+      Para vistas detalladas, consulte los diagramas específicos:
+      - [[uml_arquitectura.puml Diagrama de Arquitectura (Paquetes y Dependencias)]]
+      - [[uml_modelo.puml Diagrama del Modelo (Estructuras de Datos y Criterios)]]
+      - [[uml_controladores.puml Diagrama de Controladores (Servicios e Interfaz Gráfica)]]
+    end note
 }
 
-package ui {
-	class ShuffleManager {
-		-ListaIndices colaShuffle
-		-int posEnCola
-		+void generarCola(int cantidadCanciones,int posActual)
-		+int siguiente(int cantidadCanciones,int posActual)
-		+int anterior(int posActual)
-	}
-	class ThemeManager {
-		+static void aplicarPaleta(Scene scene, Paleta paleta)
-	}
+package "controllers" {
+    class MainController {
+        -NodoDoble cancionActual
+        -int actualPos
+        -String tiempoTotalStr
+        -SvgController motorSvg
+        -ReproductorDeAudio reproductor
+        -ShuffleManager shuffleManager
+        ~boolean playingSongDeleted
+        -TocadiscosController tocadiscosController
+        -ControlesController controlesController
+        -PlaylistController playlistController
+        -StackPane mainStackPane
+        -StackPane tocadiscos
+        +MainController()
+        +void initialize()
+        -void tocadiscoResponsive()
+        -void configuraFondo()
+        -void configuraEventoSlider(ReproductorDeAudio)
+        -void configuraTiempoCancion(ReproductorDeAudio)
+        -void configuraTocadiscoAnimaciones(ReproductorDeAudio)
+        -void configurarEventosReproductor()
+        +void onCancionAgregada()
+        +void reproducirCancionPorIndice(int)
+        -void cargarDesdeNodo(NodoDoble, int)
+        -void actualizaCancionPorIndice(int)
+        -void actualizarTema(Cancion)
+        +void actualizarPosicionTrasOrdenamiento(Cancion)
+        -void desplazarCancionActualTrasEliminacion()
+        +void eliminarCanciones(ListaIndices)
+        -void actualizarUIPostEliminacion()
+        +void onPlay()
+        +void onNext()
+        +void onPrevious()
+        +void onShuffleToggled(boolean)
+        +void onLoopToggled(boolean)
+        +void onStopSong()
+        -void reposicionarTocadiscos()
+        +int getActualPos()
+        +Cancion getCancionActual()
+    }
+
+    class ControlesController {
+        -Button btnPlayPause
+        -Button btnShuffle
+        -Button btnLoop
+        -Label lblSongTitle
+        -Label lblSongArtist
+        -Label lblTimeCurrent
+        -Label lblTimeTotal
+        -Slider progressSlider
+        -ReproductorListener listener
+        -boolean shuffle
+        -boolean loop
+        -boolean userIsInteracting
+        +ControlesController()
+        +void initialize()
+        -void actualizarValorPorCoordenada(double)
+        +void setListener(ReproductorListener)
+        +boolean isShuffle()
+        +boolean isLoop()
+        ~void onPlayPause(ActionEvent)
+        ~void onNext(ActionEvent)
+        ~void onPrevious(ActionEvent)
+        ~void onShuffle(ActionEvent)
+        ~void onLoop(ActionEvent)
+        +void resetearProgreso()
+        +boolean isSliderCambiando()
+        +void setProgreso(double)
+        +void setOnProgresoSoltado(Runnable)
+        -void actualizarEstiloBoton(Button, boolean)
+        +void cambiarTextoBotonPlay(String)
+        +void actualizarTextos(String, String)
+        +void actualizarTiempos(String, String)
+        ~void onStopSong(ActionEvent)
+        +double getProgreso()
+    }
+
+    class TocadiscosController {
+        -Group brazoMecanico
+        -Ellipse brilloVinilo
+        -Ellipse agujaPunta
+        -Ellipse viniloCentro
+        -Group perillaRotacion
+        -FadeTransition animacionVinilo
+        -Timeline brazoPlay
+        -Timeline brazoPause
+        -Rotate rotacionBrazo
+        +TocadiscosController()
+        +void initialize()
+        +void reproducirAnimacion()
+        +void pausarAnimacion()
+        +void actualizarColoresDinamicos(Color acento, Color brillante)
+    }
+
+    class SvgController {
+        -WebView bgWebView
+        -String svgTemplateOriginal
+        +SvgController(WebView bgWebView)
+        -String cargarPlantillaDesdeDisco()
+        +void actualizarFondo(Paleta paleta, Image portada, boolean)
+        +void alternarNotasAnimadas(boolean)
+        -String procesarPortada8Bits(Image)
+    }
+
+    class PlaylistController {
+        -ListaCancion listaCancion
+        -FileImportService importService
+        -MainController mainController
+        -Button btnAddSong
+        -Button btnRemoveSong
+        -Button btnAddFolder
+        -MenuButton btnMenuOrdenamiento
+        -ListView<Cancion> lvListSong
+        +PlaylistController()
+        +void setMainController(MainController)
+        +void initialize()
+        +void initCellFactory()
+        +ListaCancion getListaCancion()
+        +ListView<Cancion> getLvListSong()
+        +void refreshListView()
+        +void selectIndex(int)
+        ~void abrirArchivosEvent(ActionEvent)
+        ~void abrirCarpetaEvent(ActionEvent)
+        -void creaCancion(File)
+        +void actualizaListaView()
+        ~void removeSongEvent(ActionEvent)
+        -void ordenarYActualizar(CriterioOrdenacion, String)
+        ~void ordenarPorAnioEvent(ActionEvent)
+        ~void ordenarPorNombreEvent(ActionEvent)
+        ~void ordenarPorArtistaEvent(ActionEvent)
+    }
+
+    class CancionListCell {
+        -ImageView imageView
+        -Label titleLabel
+        -Label artistLabel
+        -HBox hbox
+        -VBox vbox
+        -MainController controller
+        -boolean modoEliminacion
+        +CancionListCell(MainController)
+        +CancionListCell(MainController, boolean)
+        -void inicializarComponentes()
+        #void updateItem(Cancion, boolean)
+        +void markCurrentSong()
+    }
 }
 
-package reproductor {
-	class Main
+package "services" {
+    class ReproductorDeAudio {
+        -MediaPlayer mediaPlayer
+        -ObjectProperty<Duration> tiempoActual
+        -ObjectProperty<Duration> tiempoTotal
+        -ObjectProperty<Status> estado
+        -Runnable finalizaCancion
+        +ReproductorDeAudio()
+        +void setFinalizaCancion(Runnable)
+        +void reproducirNueva(Cancion)
+        +void alternarPausaReproduccion()
+        +void adelantar(double)
+        -void limpiarMotor()
+        +void detener()
+        +void liberar()
+        +boolean tieneMedia()
+        +ObjectProperty<Duration> tiempoActualProperty()
+        +ObjectProperty<Duration> tiempoTotalProperty()
+        +ObjectProperty<Status> estadoProperty()
+    }
+
+    class FileImportService {
+        -File ultimaCarpeta
+        +FileImportService()
+        +ListaArchivos seleccionarArchivosMp3(Window)
+        +ListaArchivos seleccionarCarpetaMp3(Window)
+        +File getUltimaCarpeta()
+        +void setUltimaCarpeta(File)
+    }
+
+    class ShuffleManager {
+        -ListaIndices cola
+        -Random random
+        -int posEnCola
+        +ShuffleManager()
+        +void generarCola(int, int)
+        -void fisherYates(int)
+        -void ponerAlFrente(int)
+        +int siguiente(int, int)
+        +int anterior(int)
+        +boolean estaVacia()
+        +ListaIndices getCola()
+        +void limpiar()
+    }
 }
 
-' Relaciones (extends / implements / uses)
-CriterioOrdenacion <|.. PorNombre
-CriterioOrdenacion <|.. PorArtista
-CriterioOrdenacion <|.. PorAnio
+package "ui" {
+    class ThemeManager {
+        +static void aplicarPaleta(Scene scene, Paleta paleta)
+    }
 
-Lista0DLinkedL <|-- Lista1DLinkedL
-Lista0DLinkedL <|-- Lista2DLinkedL
-Lista1DLinkedL <|-- ListaCancion
-Lista2DLinkedL <|-- ListaCancionOrdenada
+    class PlaceholderGenerator {
+        +static Image crearPlaceholder8Bit(Cancion)
+    }
 
+    class DeleteSongsDialog {
+        +DeleteSongsDialog(ObservableList<Cancion>, ObservableList<String>, String, MainController)
+    }
+}
+
+' Relaciones Estructurales
 OperacionesCL2 <|.. Lista0DLinkedL
 OperacionesCL3 <|.. Lista1DLinkedL
 OperacionesCL4 <|.. Lista2DLinkedL
 
-PorNombre ..|> CriterioOrdenacion
-PorArtista ..|> CriterioOrdenacion
-PorAnio ..|> CriterioOrdenacion
+Lista0DLinkedL <|-- Lista1DLinkedL
+Lista0DLinkedL <|-- Lista2DLinkedL
 
+Lista1DLinkedL <|-- ListaCancion
+Lista1DLinkedL <|-- ListaArchivos
+Lista1DLinkedL <|-- ListaIndices
+Lista2DLinkedL <|-- ListaCancionOrdenada
+
+CriterioOrdenacion <|.. PorNombre
+CriterioOrdenacion <|.. PorArtista
+CriterioOrdenacion <|.. PorAnio
+
+' Relaciones de Asociación y Uso
 ListaCancion "1" o-- "*" Cancion : contiene
-ListaCancionOrdenada ..> OrdenamientoService : usa
-OrdenamientoService ..> CriterioOrdenacion : delega
-MainController ..> ReproductorDeAudio : usa
-MainController ..> ListaCancion
-MainController ..> ListaCancionOrdenada
-MainController ..> ShuffleManager
-MainController ..> SvgController
-MainController ..> ThemeManager
+ListaCancionOrdenada "1" o-- "1" CriterioOrdenacion : delega orden
+NodoDoble "1" o-- "1" Cancion : envuelve
+Lista0DLinkedL "1" o-- "*" NodoDoble : contiene
+
+MainController ..|> ReproductorListener
+MainController "1" o-- "1" TocadiscosController : orquesta
+MainController "1" o-- "1" ControlesController : orquesta
+MainController "1" o-- "1" PlaylistController : orquesta
+MainController "1" o-- "1" SvgController : orquesta
+MainController "1" o-- "1" ReproductorDeAudio : usa
+MainController "1" o-- "1" ShuffleManager : usa
+MainController "1" o-- "1" NodoDoble : reproduce
+MainController ..> ThemeManager : usa
+MainController ..> PlaceholderGenerator : usa
+
+PlaylistController "1" o-- "1" MainController : interactúa
+PlaylistController "1" o-- "1" FileImportService : importa
+PlaylistController "1" o-- "1" ListaCancion : gestiona
+PlaylistController ..> CancionListCell : crea
+PlaylistController ..> DeleteSongsDialog : abre
+
+ControlesController "1" o-- "1" ReproductorListener : notifica eventos
+CancionListCell "1" o-- "1" MainController : callback
+DeleteSongsDialog ..> MainController : notifica eliminación
+
+ExtractorPaleta ..> Paleta : genera
+MainController ..> Paleta : aplica
 
 @enduml
-

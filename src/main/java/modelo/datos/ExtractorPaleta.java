@@ -7,24 +7,29 @@ import javafx.scene.paint.Color;
 import java.awt.image.BufferedImage;
 
 /**
- * Servicio encargado de extraer y construir una paleta cromática armonizada ({@link Paleta})
+ * Servicio encargado de extraer y construir una paleta cromática enriquecida y armonizada ({@link Paleta})
  * a partir de la portada de la canción actual. Utiliza ColorThief para analizar la imagen
  * y agrupar los colores según luminosidad y nivel de saturación.
  */
 public class ExtractorPaleta {
 
-    /** Paleta de colores base por defecto para el reproductor (estilo retro-cyberpunk). */
+    /** Paleta de colores base por defecto para el reproductor (estilo retro-cyberpunk enriquecido). */
     public static final Paleta PALETA_BASE = new Paleta(
         Color.web("#080c10"), // Fondo profundo
         Color.web("#101820"), // Panel
         Color.web("#1a3a4a"), // Borde/Separador
         Color.web("#20a8c0"), // Acento
-        Color.web("#78b8c8"), // Texto normal
-        Color.web("#c0e8f0")  // Texto destacado/Brillante
+        Color.web("#157890"), // Acento secundario (muted)
+        Color.web("#78b8c8"), // Texto principal
+        Color.web("#4e8898"), // Texto secundario (muted)
+        Color.web("#c0e8f0"), // Texto destacado/Brillante
+        Color.web("#20a8c0"), // Degradado inicio
+        Color.web("#157890"), // Degradado fin
+        Color.web("#20a8c0")  // Glow color
     );
 
     /**
-     * Extrae una paleta de 6 colores complementarios a partir de la imagen de portada.
+     * Extrae una paleta extendida y adaptativa a partir de la imagen de portada.
      * Si la imagen es nula o el proceso falla, se retorna {@link #PALETA_BASE}.
      * 
      * @param imagen Imagen de la portada de la canción (JavaFX).
@@ -38,21 +43,63 @@ public class ExtractorPaleta {
             if (transformada == null)
                 return PALETA_BASE;
 
-            // Extrae 6 colores dominantes
-            int[][] colores = ColorThief.getPalette(transformada, 6, 10, true);
-            if (colores == null || colores.length < 3)
+            int[][] colores = ColorThief.getPalette(transformada, 10, 10, true);
+            if (colores == null || colores.length < 4)
                 return PALETA_BASE;
 
             ordenarPorLuminosidad(colores);
 
-            Color fondo = mezclarConNegro(toColor(colores[0]), 0.5);
-            Color panel = toColor(colores[0]);
-            Color borde = toColor(colores[colores.length / 2]);
             Color acento = buscarMasSaturado(colores);
-            Color texto = aclarar(toColor(colores[colores.length - 1]), 0.2);
-            Color brillante = aclarar(toColor(colores[colores.length - 1]), 0.6);
+            Color acentoMuted;
 
-            return new Paleta(fondo, panel, borde, acento, texto, brillante);
+            Color colorMasBrillante = toColor(colores[colores.length - 1]);
+            boolean tieneBlancoDominante = (colorMasBrillante.getBrightness() > 0.82 && colorMasBrillante.getSaturation() < 0.18);
+
+            Color fondo;
+            Color panel;
+            Color borde;
+            Color degradadoInicio;
+            Color degradadoFin;
+            Color texto;
+            Color brillante;
+
+            if (acento.getSaturation() < 0.12) {
+                fondo = Color.web("#060810");
+                panel = Color.web("#0e1220");
+                borde = Color.web("#1c223a");
+                acento = Color.web("#F3F4F6");
+                acentoMuted = Color.web("#9CA3AF");
+                degradadoInicio = Color.web("#FFFFFF");
+                degradadoFin = Color.web("#9CA3AF");
+                texto = Color.web("#E5E7EB");
+                brillante = Color.web("#FFFFFF");
+            } else {
+                double satFondo = Math.max(acento.getSaturation() * 0.85, 0.45);
+                fondo = Color.hsb(acento.getHue(), satFondo, 0.08);
+                double satPanel = Math.max(acento.getSaturation() * 0.75, 0.38);
+                panel = Color.hsb(acento.getHue(), satPanel, 0.15);
+                double satBorde = Math.max(acento.getSaturation() * 0.65, 0.32);
+                borde = Color.hsb(acento.getHue(), satBorde, 0.23);
+
+                degradadoInicio = acento;
+
+                if (tieneBlancoDominante) {
+                    degradadoFin = colorMasBrillante;
+                    acentoMuted = aclarar(acento, 0.40);
+                    texto = Color.web("#F3F4F6");
+                    brillante = Color.web("#FFFFFF");
+                } else {
+                    acentoMuted = buscarSegundoMasSaturado(colores, acento);
+                    degradadoFin = mezclarConNegro(acentoMuted, 0.15);
+                    texto = aclarar(toColor(colores[colores.length - 2]), 0.20);
+                    brillante = aclarar(toColor(colores[colores.length - 1]), 0.50);
+                }
+            }
+
+            Color textoMuted = mezclarConNegro(texto, 0.35);
+            Color glow = acento;
+
+            return new Paleta(fondo, panel, borde, acento, acentoMuted, texto, textoMuted, brillante, degradadoInicio, degradadoFin, glow);
         } catch (Exception e) {
             return PALETA_BASE;
         }
@@ -95,6 +142,30 @@ public class ExtractorPaleta {
     }
 
     /**
+     * Busca el segundo color más saturado de la paleta dominantes para usar como acento secundario.
+     * Si no encuentra otro distinto al acento principal, rota el tono (hue) de forma complementaria.
+     */
+    private static Color buscarSegundoMasSaturado(int[][] colores, Color acento) {
+        int[] segundo = colores[0];
+        double maxSat = 0;
+        for (int[] colore : colores) {
+            Color c = toColor(colore);
+            if (c.equals(acento)) continue;
+            double sat = saturacion(colore);
+            if (sat > maxSat) {
+                maxSat = sat;
+                segundo = colore;
+            }
+        }
+        Color segColor = toColor(segundo);
+        if (segColor.equals(acento)) {
+            double hue = (acento.getHue() + 30) % 360;
+            return Color.hsb(hue, acento.getSaturation(), acento.getBrightness());
+        }
+        return segColor;
+    }
+
+    /**
      * Calcula la luminosidad percibida de un color en base a coeficientes estándar de luminancia.
      * 
      * @param rgb Arreglo de 3 enteros conteniendo los valores R, G y B.
@@ -125,7 +196,7 @@ public class ExtractorPaleta {
      * @param rgb Arreglo [R, G, B].
      * @return Objeto Color.
      */
-    private static Color toColor(int[] rgb) {
+    public static Color toColor(int[] rgb) {
         return Color.rgb(rgb[0], rgb[1], rgb[2]);
     }
 
@@ -136,7 +207,7 @@ public class ExtractorPaleta {
      * @param factor Factor de aclaramiento.
      * @return El color aclarado.
      */
-    private static Color aclarar(Color c, double factor) {
+    public static Color aclarar(Color c, double factor) {
         return new Color(
             Math.min(1.0, c.getRed() + (1 - c.getRed()) * factor), 
             Math.min(1.0, c.getGreen() + (1 - c.getGreen()) * factor), 
@@ -152,7 +223,7 @@ public class ExtractorPaleta {
      * @param factor Factor de oscuridad.
      * @return El color oscurecido.
      */
-    private static Color mezclarConNegro(Color c, double factor) {
+    public static Color mezclarConNegro(Color c, double factor) {
         return new Color(c.getRed() * (1 - factor), c.getGreen() * (1 - factor), c.getBlue() * (1 - factor), 1.0);
     }
 
